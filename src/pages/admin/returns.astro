@@ -1,0 +1,22 @@
+---
+import AdminLayout from '../layouts/AdminLayout.astro';
+import ReturnQueue from '../components/admin/returns/ReturnQueue.svelte';
+import { env } from 'cloudflare:workers';
+
+if (!Astro.locals.user || (Astro.locals.user.role !== 'admin' && Astro.locals.user.role !== 'staff')) {
+  return Astro.redirect('/auth/login');
+}
+
+let RMAs = [];
+if (env.DB) {
+  try {
+    const { results } = await env.DB.prepare("SELECT * FROM orders WHERE status = 'RETURN_REQUESTED'").all();
+    RMAs = results || [];
+  } catch (e) {}
+}
+---
+<AdminLayout title="Returns Matrix" subtitle="Active RMA Queue" currentPath="/admin/returns">
+  <div class="max-w-7xl">
+    <ReturnQueue client:load rmas={RMAs} />
+  </div>
+</AdminLayout>

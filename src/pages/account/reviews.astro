@@ -1,0 +1,61 @@
+---
+import AccountLayout from '../../layouts/Account.astro';
+import { env } from 'cloudflare:workers';
+
+const user = Astro.locals.user;
+if (!user) return Astro.redirect('/auth/login');
+
+let myReviews = [];
+if (env.DB) {
+  try {
+    const { results } = await env.DB.prepare(`
+      SELECT r.id, r.rating, r.title, r.status, r.created_at, p.title as product_title, p.slug
+      FROM reviews r
+      JOIN products p ON r.product_id = p.id
+      WHERE r.customer_id = ?1
+      ORDER BY r.created_at DESC
+    `).bind(user.id).all();
+    myReviews = results || [];
+  } catch (e) {}
+}
+
+const renderStars = (rating: number) => '★'.repeat(rating) + '☆'.repeat(5 - rating);
+---
+
+<AccountLayout title="My Field Reports" currentPath="/account/reviews">
+  <div class="max-w-4xl mx-auto space-y-6">
+    <div class="border-b border-white/10 pb-4">
+      <h1 class="text-xl font-bold text-white uppercase tracking-widest">Submitted Reports</h1>
+      <p class="text-xs text-white/50 font-mono mt-1">Manage your product evaluations.</p>
+    </div>
+
+    <div class="space-y-4">
+      {myReviews.map(review => (
+        <div class="bg-[#111318] border border-white/10 p-6 flex flex-col sm:flex-row justify-between gap-6 hover:border-white/30 transition-colors">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="text-amber-400 text-sm tracking-widest">{renderStars(review.rating)}</span>
+              {review.status === 'APPROVED' ? 
+                <span class="text-[9px] px-2 py-0.5 border border-[#36f4a4]/30 text-[#36f4a4] bg-[#36f4a4]/10 uppercase tracking-widest">Published</span> :
+              review.status === 'REJECTED' ? 
+                <span class="text-[9px] px-2 py-0.5 border border-rose-500/30 text-rose-400 bg-rose-500/10 uppercase tracking-widest">Rejected</span> :
+                <span class="text-[9px] px-2 py-0.5 border border-amber-500/30 text-amber-400 bg-amber-500/10 uppercase tracking-widest">Pending Review</span>
+              }
+            </div>
+            <h3 class="text-sm font-bold text-white mb-1">{review.title}</h3>
+            <p class="text-[10px] font-mono text-white/50 mb-2">For: <a href={`/shop/product/${review.slug}`} class="text-[#36f4a4] hover:underline">{review.product_title}</a></p>
+          </div>
+          <div class="text-right flex flex-col justify-between items-end">
+            <span class="text-[10px] font-mono text-white/30">{new Date(review.created_at).toLocaleDateString()}</span>
+          </div>
+        </div>
+      ))}
+      
+      {myReviews.length === 0 && (
+        <div class="p-12 border border-white/10 text-center bg-[#111318]">
+          <p class="text-xs font-mono text-white/40 uppercase">No field reports submitted.</p>
+        </div>
+      )}
+    </div>
+  </div>
+</AccountLayout>

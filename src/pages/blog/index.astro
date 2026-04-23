@@ -1,0 +1,23 @@
+---
+import StorefrontLayout from '../../layouts/Storefront.astro';
+
+const posts = [
+  { title: "How Global Arbitrage Drops Hardware Prices by 30%", slug: "global-arbitrage-explained", date: "April 8, 2026" },
+  { title: "Are Refurbished Units Worth the Risk? A Data Analysis", slug: "refurbished-data-analysis", date: "April 1, 2026" }
+];
+---
+
+<StorefrontLayout title="Intelligence Blog">
+  <div class="max-w-4xl mx-auto px-4 py-20">
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900 uppercase mb-12">Intelligence.</h1>
+    
+    <div class="space-y-8">
+      {posts.map(post => (
+        <a href={`/blog/${post.slug}`} class="block border-b border-gray-200 pb-8 group">
+          <p class="text-[10px] font-mono text-gray-400 uppercase tracking-widest mb-2">{post.date}</p>
+          <h2 class="text-xl font-bold text-gray-900 group-hover:text-[#10b981] transition-colors">{post.title}</h2>
+        </a>
+      ))}
+    </div>
+  </div>
+</StorefrontLayout>

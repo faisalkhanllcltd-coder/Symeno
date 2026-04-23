@@ -1,0 +1,29 @@
+---
+import AccountLayout from '../../layouts/Account.astro';
+import OrderListManager from '../../components/storefront/account/OrderListManager.svelte';
+import { env } from 'cloudflare:workers';
+
+const user = Astro.locals.user;
+if (!user) return Astro.redirect('/auth/login');
+
+let orders = [];
+if (env.DB) {
+  try {
+    const { results } = await env.DB.prepare("SELECT id, created_at, status, total, tracking_url FROM orders WHERE customer_id = ? ORDER BY created_at DESC").bind(user.id).all();
+    orders = results || [];
+  } catch (e) {}
+}
+---
+
+<AccountLayout title="Order Ledger" currentPath="/account/orders">
+  <div class="max-w-4xl mx-auto space-y-6">
+    <div class="border-b border-white/10 pb-4 flex justify-between items-end">
+      <div>
+        <h1 class="text-xl font-bold text-white uppercase tracking-widest">Transaction Ledger</h1>
+        <p class="text-xs text-white/50 font-mono mt-1">Review your operational history</p>
+      </div>
+    </div>
+    
+    <OrderListManager client:load orders={orders} />
+  </div>
+</AccountLayout>

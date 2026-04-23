@@ -1,0 +1,12 @@
+
+CREATE TABLE IF NOT EXISTS return_requests (
+  id TEXT PRIMARY KEY,
+  order_id TEXT NOT NULL,
+  customer_id TEXT NOT NULL,
+  status TEXT DEFAULT 'PENDING_APPROVAL',
+  reason TEXT NOT NULL,
+  condition TEXT NOT NULL,
+  resolution TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);

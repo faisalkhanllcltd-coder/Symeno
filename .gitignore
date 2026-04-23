@@ -1,0 +1,22 @@
+# Node & Build Artifacts
+node_modules/
+dist/
+.astro/
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+# Cloudflare & Edge
+.wrangler/
+.mf/
+
+# OS & Editor
+.DS_Store
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

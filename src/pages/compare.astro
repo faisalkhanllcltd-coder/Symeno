@@ -1,0 +1,25 @@
+---
+import StorefrontLayout from '../layouts/Storefront.astro';
+---
+
+<StorefrontLayout title="Hardware Comparison">
+  <div class="max-w-7xl mx-auto px-4 py-20">
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900 uppercase mb-12">Hardware Comparison.</h1>
+    
+    <div class="overflow-x-auto border border-gray-200">
+      <table class="w-full text-left bg-white">
+        <thead>
+          <tr class="bg-gray-50 border-b border-gray-200 text-[10px] uppercase tracking-widest font-mono text-gray-500">
+            <th class="p-4 w-1/4">Spec</th>
+            <th class="p-4 border-l border-gray-200">Item A</th>
+            <th class="p-4 border-l border-gray-200">Item B</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm divide-y divide-gray-200">
+          <tr><td class="p-4 font-bold text-gray-900 bg-gray-50 font-mono text-xs uppercase">Price</td><td class="p-4 border-l border-gray-200">--</td><td class="p-4 border-l border-gray-200">--</td></tr>
+          <tr><td class="p-4 font-bold text-gray-900 bg-gray-50 font-mono text-xs uppercase">Condition</td><td class="p-4 border-l border-gray-200">--</td><td class="p-4 border-l border-gray-200">--</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</StorefrontLayout>

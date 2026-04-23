@@ -1,0 +1,296 @@
+---
+import StorefrontLayout from '../../../layouts/Storefront.astro';
+import type { Product, ProductVariant } from '../../../types/storefront';
+
+// NEW IMPORTS: The Trust & Retention Matrix
+import WishlistButton from '../../../components/storefront/WishlistButton.svelte';
+import ReviewSection from '../../../components/storefront/product/ReviewSection.svelte';
+import RecentlyViewed from '../../../components/storefront/product/RecentlyViewed.svelte';
+
+// FORCE EDGE SSR & CACHING
+export const prerender = false;
+Astro.response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+
+const { slug } = Astro.params;
+const db = (Astro.locals as any).runtime?.env?.DB;
+const user = Astro.locals.user; // Needed for wishlist check
+
+let product: Product | null = null;
+let variants: ProductVariant[] = [];
+let reviews: any[] = [];
+let isWishlisted = false;
+let errorMessage = '';
+
+if (!db) {
+  errorMessage = "Database connection failed.";
+} else {
+  try {
+    const prodResult = await db.prepare('SELECT * FROM products WHERE slug = ?1 AND stock_status != \'OUT_OF_STOCK\'').bind(slug).first();
+    
+    if (prodResult) {
+      product = {
+        id: prodResult.id,
+        slug: prodResult.slug,
+        brand: prodResult.brand,
+        title: prodResult.title,
+        description: prodResult.description,
+        basePrice: prodResult.base_price,
+        retailPrice: prodResult.retail_price,
+        stockStatus: prodResult.stock_status,
+      } as Product;
+
+      // 1. Fetch Variants
+      const varResult = await db.prepare('SELECT * FROM product_variants WHERE product_id = ?1').bind(product.id).all();
+      variants = (varResult.results || []).map((v: any) => ({
+        id: v.id,
+        productId: v.product_id,
+        sku: v.sku,
+        title: v.title,
+        priceAdjustment: v.price_adjustment,
+        inventoryQuantity: v.inventory_quantity
+      }));
+
+      // 2. Fetch Approved Reviews (Server-Side for SEO/Speed)
+      const reviewsRes = await db.prepare(`
+        SELECT r.id, r.rating, r.title, r.comment, r.created_at, r.is_verified_buyer,
+               u.first_name, u.last_name 
+        FROM reviews r
+        LEFT JOIN users u ON r.customer_id = u.id
+        WHERE r.product_id = ?1 AND r.status = 'APPROVED'
+        ORDER BY r.created_at DESC
+      `).bind(product.id).all();
+      reviews = reviewsRes.results || [];
+
+      // 3. Check Wishlist Status if logged in
+      if (user) {
+        const wishRes = await db.prepare('SELECT id FROM wishlists WHERE customer_id = ?1 AND product_id = ?2').bind(user.id, product.id).first();
+        isWishlisted = !!wishRes;
+      }
+    }
+  } catch (error) {
+    console.error('[PRODUCT_FETCH_ERROR]', error);
+    errorMessage = "Failed to retrieve telemetry.";
+  }
+}
+
+if (!product && !errorMessage) {
+  return Astro.redirect('/404');
+}
+
+const relatedProducts = [
+  { slug: 'apple-airpods-max', name: 'AirPods Max', price: 399.00, brand: 'Apple' },
+  { slug: 'sony-xm4', name: 'Sony WH-1000XM4', price: 199.00, brand: 'Sony' }
+];
+
+const hasDiscount = product?.retailPrice && product.retailPrice > product.basePrice;
+---
+
+<StorefrontLayout title={`${product?.title || 'Unknown SKU'} | Verified Wholesale | Symeno`} description={`Secure the ${product?.title} at true wholesale arbitrage pricing.`}>
+  {product && (
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": product.title,
+      "description": product.description,
+      "brand": {
+        "@type": "Brand",
+        "name": product.brand
+      },
+      "sku": product.id,
+      "offers": {
+        "@type": "Offer",
+        "url": `https://symeno.com/shop/product/${product.slug}`,
+        "priceCurrency": "USD",
+        "price": product.basePrice.toString(),
+        "availability": product.stockStatus === 'IN_STOCK' ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+        "itemCondition": "https://schema.org/NewCondition"
+      }
+    })} />
+  )}
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative transition-colors duration-300">
+    
+    <div class="absolute inset-0 opacity-[0.03] pointer-events-none transition-opacity duration-300" style="background-image: linear-gradient(var(--color-content) 1px, transparent 1px), linear-gradient(90deg, var(--color-content) 1px, transparent 1px); background-size: 32px 32px;"></div>
+
+    {errorMessage && (
+      <div class="p-6 bg-brand-alert/10 border border-brand-alert/30 text-brand-alert font-mono uppercase tracking-widest text-center rounded-xl mb-12">
+        {errorMessage}
+      </div>
+    )}
+
+    {product && (
+      <>
+        <div id="product-meta" data-product={JSON.stringify({ id: product.id, slug: product.slug, title: product.title, price: product.basePrice, image_url: '' })} style="display:none;"></div>
+
+        <nav class="flex text-[10px] font-mono text-content-muted uppercase tracking-widest mb-8 relative z-10 transition-colors duration-300">
+          <a href="/" class="hover:text-brand transition-colors focus:outline-none">Base</a>
+          <span class="mx-2">/</span>
+          <a href="/shop" class="hover:text-brand transition-colors focus:outline-none">Catalog</a>
+          <span class="mx-2">/</span>
+          <a href={`/brands/${product.brand.toLowerCase()}`} class="hover:text-brand transition-colors focus:outline-none">{product.brand}</a>
+          <span class="mx-2">/</span>
+          <span class="text-brand truncate max-w-[150px] sm:max-w-none">{product.title}</span>
+        </nav>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mb-20 relative z-10">
+          
+          <div class="space-y-6">
+            <div class="bg-surface shadow-ambient rounded-xl aspect-square relative flex items-center justify-center group overflow-hidden transition-colors duration-300">
+              <div class="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-brand/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div class="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-brand/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <span class="text-xs font-mono text-content-muted opacity-40 uppercase tracking-widest transition-colors duration-300">Primary Visual Array</span>
+              
+              <WishlistButton client:load productId={product.id} initialState={isWishlisted} />
+            </div>
+            
+            <div class="grid grid-cols-4 gap-4">
+              {Array.from({ length: 4 }).map(() => (
+                <div class="bg-surface-hover rounded-md aspect-square flex items-center justify-center hover:ring-1 hover:ring-brand transition-all cursor-pointer shadow-ambient">
+                  <span class="text-[8px] font-mono text-content-muted opacity-40 transition-colors duration-300">IMG</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div class="flex flex-col justify-center">
+            <a href={`/brands/${product.brand.toLowerCase()}`} class="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-content-muted hover:text-brand transition-colors mb-4 w-max focus:outline-none">
+              <span class="w-1.5 h-1.5 bg-brand"></span> {product.brand} Directory &rarr;
+            </a>
+            
+            <h1 class="text-3xl md:text-5xl font-bold tracking-tighter text-content uppercase mb-4 leading-none transition-colors duration-300">
+              {product.title}
+            </h1>
+
+            <div class="flex items-end gap-4 font-mono mb-8 pb-8 transition-colors duration-300">
+              <span class="text-4xl font-bold text-brand tracking-tighter transition-colors duration-300">${product.basePrice.toFixed(2)}</span>
+              
+              {hasDiscount && (
+                <div class="flex flex-col pb-1 transition-colors duration-300">
+                  <span class="text-[10px] text-content-muted uppercase tracking-widest line-through">Retail: ${product.retailPrice!.toFixed(2)}</span>
+                  <span class="text-xs text-content font-bold uppercase tracking-widest transition-colors duration-300">Arbitrage: Save ${Math.floor(product.retailPrice! - product.basePrice)}</span>
+                </div>
+              )}
+            </div>
+
+            <p class="text-sm text-content-muted font-mono leading-relaxed mb-10 transition-colors duration-300">
+              {product.description}
+            </p>
+
+            <div class="bg-surface shadow-ambient p-6 mb-8 relative overflow-hidden group rounded-xl transition-colors duration-300">
+              <div class="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-brand/5 to-transparent pointer-events-none"></div>
+              
+              <div class="flex items-center justify-between mb-6">
+                <span class="text-[10px] font-mono uppercase tracking-widest text-content flex items-center gap-2 transition-colors duration-300">
+                  <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-brand"></span></span> Network Status: Ready
+                </span>
+              </div>
+              
+              {variants.length > 0 && (
+                <div class="mb-6">
+                  <label for="variant-select" class="block text-[10px] font-mono uppercase tracking-widest text-content-muted mb-2">Select Variant</label>
+                  <select id="variant-select" class="w-full bg-base border border-outline text-content text-sm px-4 py-3 focus:outline-none focus:ring-1 focus:ring-brand rounded-md font-mono transition-colors duration-300 shadow-ambient cursor-pointer">
+                    {variants.map(v => (
+                      <option value={v.id} data-price-adj={v.priceAdjustment}>
+                        {v.title} {v.priceAdjustment > 0 ? `(+$${v.priceAdjustment.toFixed(2)})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <button 
+                id="add-to-cart-btn"
+                class="w-full bg-brand text-brand-dark py-4 rounded-md text-sm font-bold uppercase tracking-widest hover:opacity-90 transition-all duration-300 shadow-[0_0_15px_rgba(54,244,164,0.15)] hover:shadow-[0_0_25px_rgba(54,244,164,0.3)] focus:outline-none"
+                data-product-id={product.id}
+              >
+                Execute Acquisition
+              </button>
+            </div>
+
+            <div class="flex items-center gap-6 text-[10px] font-mono text-content-muted uppercase tracking-widest transition-colors duration-300">
+              <div class="flex items-center gap-2"><svg class="w-4 h-4 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Verified Serial</div>
+              <a href="/policies/returns" class="flex items-center gap-2 hover:text-brand transition-colors focus:outline-none"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z" /></svg> 30-Day RMA Protocol</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative z-10">
+          <ReviewSection client:load productId={product.id} initialReviews={reviews} />
+        </div>
+
+        <div class="pt-16 relative z-10 border-t border-white/10">
+          <h2 class="text-xl font-bold tracking-tighter text-content uppercase mb-8 flex items-center gap-3 transition-colors duration-300">
+            <span class="w-2 h-2 bg-content-muted opacity-50"></span> Operators Also Deployed
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {relatedProducts.map(rel => (
+              <a href={`/shop/product/${rel.slug}`} class="group flex flex-col bg-surface shadow-ambient p-4 rounded-xl hover:-translate-y-1 transition-all duration-300">
+                <div class="bg-surface-hover aspect-[4/5] mb-4 relative flex items-center justify-center overflow-hidden rounded-lg transition-colors duration-300">
+                  <span class="text-[10px] font-mono text-content-muted opacity-40">Visual</span>
+                </div>
+                <span class="text-[10px] font-mono text-content-muted uppercase tracking-widest mb-1 transition-colors duration-300">{rel.brand}</span>
+                <h3 class="text-sm font-bold text-content mb-1 group-hover:text-brand transition-colors truncate">{rel.name}</h3>
+                <div class="flex items-baseline gap-2 font-mono mt-auto">
+                  <span class="text-sm font-bold text-brand">${rel.price.toFixed(2)}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div class="mt-20 relative z-10">
+           <RecentlyViewed client:only="svelte" currentProductId={product.id} />
+        </div>
+      </>
+    )}
+
+  </div>
+</StorefrontLayout>
+
+<script>
+  // 1. Cart Integration Script
+  const btn = document.getElementById('add-to-cart-btn');
+  const variantSelect = document.getElementById('variant-select') as HTMLSelectElement | null;
+
+  btn?.addEventListener('click', () => {
+    const productId = btn.dataset.productId;
+    if (!productId) return;
+
+    let variantId = undefined;
+    if (variantSelect) {
+      variantId = variantSelect.value;
+    }
+
+    import('../../../stores/cart.svelte.ts').then(module => {
+      const { cart } = module;
+      cart.addItem(productId, variantId, 1);
+      cart.toggleCart();
+    }).catch(err => {
+      console.error("Failed to load cart store:", err);
+    });
+    
+    const originalText = btn.innerText;
+    btn.innerText = 'Acquisition Confirmed';
+    btn.classList.add('bg-content', 'text-base');
+    btn.classList.remove('bg-brand', 'text-brand-dark');
+    
+    setTimeout(() => {
+      btn.innerText = originalText;
+      btn.classList.remove('bg-content', 'text-base');
+      btn.classList.add('bg-brand', 'text-brand-dark');
+    }, 2000);
+  });
+
+  // 2. Recently Viewed Auto-Tracker (Pushes current item to LocalStorage on load)
+  const metaEl = document.getElementById('product-meta');
+  if (metaEl && metaEl.dataset.product) {
+    try {
+      const p = JSON.parse(metaEl.dataset.product);
+      import('../../../stores/recentlyViewed.svelte.ts').then(({ recentStore }) => {
+        recentStore.add(p);
+      });
+    } catch(e) {
+      console.error("Failed to track view.", e);
+    }
+  }
+</script>

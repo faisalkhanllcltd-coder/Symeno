@@ -1,0 +1,90 @@
+---
+import StorefrontLayout from '../../layouts/Storefront.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { brand: 'sony' }, props: { displayName: 'Sony Corporation' } },
+    { params: { brand: 'apple' }, props: { displayName: 'Apple Inc.' } },
+    { params: { brand: 'lg' }, props: { displayName: 'LG Electronics' } },
+    { params: { brand: 'logitech' }, props: { displayName: 'Logitech' } },
+    { params: { brand: 'keychron' }, props: { displayName: 'Keychron' } }
+  ];
+}
+
+const { brand } = Astro.params;
+const { displayName } = Astro.props;
+
+// Mock Database Reused
+const allProducts = [
+  { id: 'sony-xm5', name: 'Sony WH-1000XM5', price: 249.00, retail: 399.00, category: 'audio', brand: 'Sony' },
+  { id: 'apple-airpods-max', name: 'AirPods Max', price: 399.00, retail: 549.00, category: 'audio', brand: 'Apple' },
+  { id: 'lg-ultragear', name: 'LG 27" UltraGear OLED', price: 649.00, retail: 899.00, category: 'displays', brand: 'LG' },
+  { id: 'logitech-mx', name: 'Logitech MX Master 3S', price: 89.00, retail: 119.00, category: 'peripherals', brand: 'Logitech' },
+  { id: 'keychron-k8', name: 'Keychron K8 Pro', price: 79.00, retail: 109.00, category: 'peripherals', brand: 'Keychron' }
+];
+
+// Normalize the database brand name to match the URL parameter
+const activeProducts = allProducts.filter(p => p.brand.toLowerCase() === brand);
+---
+
+<StorefrontLayout title={`${displayName} Hardware | Symeno`} description={`Verified wholesale arbitrage for ${displayName} hardware.`}>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 relative">
+    
+    <div class="absolute inset-0 opacity-[0.02] pointer-events-none" style="background-image: linear-gradient(#dae5e6 1px, transparent 1px), linear-gradient(90deg, #dae5e6 1px, transparent 1px); background-size: 32px 32px;"></div>
+
+    <nav class="flex text-[10px] font-mono text-[#dae5e6]/40 uppercase tracking-widest mb-8 relative z-10">
+      <a href="/" class="hover:text-white transition-colors">Base</a>
+      <span class="mx-2">/</span>
+      <a href="/brands" class="hover:text-white transition-colors">Directory</a>
+      <span class="mx-2">/</span>
+      <span class="text-[#36f4a4]">{displayName}</span>
+    </nav>
+
+    <div class="border-b border-[#dae5e6]/10 pb-8 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-2 h-2 bg-[#36f4a4]"></span>
+          <p class="text-[10px] font-mono uppercase tracking-widest text-[#dae5e6]/60">Authorized Supplier Node</p>
+        </div>
+        <h1 class="text-4xl md:text-6xl font-bold tracking-tighter text-white uppercase">{displayName}<span class="text-[#36f4a4]">.</span></h1>
+      </div>
+      
+      <div class="bg-[#0b1516] border border-[#dae5e6]/10 px-4 py-3 flex gap-6 text-[10px] font-mono uppercase tracking-widest">
+        <div><span class="text-[#dae5e6]/40 block mb-1">Status</span><span class="text-[#36f4a4]">Verified</span></div>
+        <div><span class="text-[#dae5e6]/40 block mb-1">Active SKUs</span><span class="text-white">{activeProducts.length}</span></div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
+      {activeProducts.length > 0 ? activeProducts.map(product => (
+        <a href={`/shop/product/${product.id}`} class="group flex flex-col focus:outline-none">
+          <div class="bg-[#0b1516] border border-[#dae5e6]/10 aspect-[4/5] mb-4 relative flex items-center justify-center overflow-hidden group-hover:border-[#36f4a4]/50 transition-colors">
+            
+            {product.retail > product.price && (
+              <div class="absolute top-3 left-3 bg-[#36f4a4]/10 border border-[#36f4a4]/30 text-[#36f4a4] text-[9px] font-bold uppercase tracking-widest px-2 py-1 z-10">
+                Save ${Math.floor(product.retail - product.price)}
+              </div>
+            )}
+            <span class="text-[10px] font-mono text-[#dae5e6]/20">Unit Visual</span>
+          </div>
+          <span class="text-[10px] font-mono text-[#dae5e6]/40 uppercase tracking-widest mb-1">
+            {product.category}
+          </span>
+          <h2 class="text-sm font-bold text-white mb-1 group-hover:text-[#36f4a4] transition-colors truncate">{product.name}</h2>
+          <div class="flex items-baseline gap-2 font-mono mt-auto">
+            <span class="text-sm font-bold text-[#36f4a4]">${product.price.toFixed(2)}</span>
+            
+            {product.retail > product.price && (
+              <span class="text-[10px] text-[#dae5e6]/40 line-through">${product.retail.toFixed(2)}</span>
+            )}
+          </div>
+        </a>
+      )) : (
+        <div class="col-span-full py-20 text-center border border-[#dae5e6]/10 bg-[#0b1516]">
+          <p class="text-xs font-mono uppercase tracking-widest text-[#dae5e6]/40">No units currently secured from this supplier.</p>
+        </div>
+      )}
+    </div>
+
+  </div>
+</StorefrontLayout>

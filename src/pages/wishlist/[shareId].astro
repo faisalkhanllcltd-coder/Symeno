@@ -1,0 +1,60 @@
+---
+import StorefrontLayout from '../../layouts/Storefront.astro';
+import { env } from 'cloudflare:workers';
+
+const { shareId } = Astro.params;
+const db = (env as any).DB;
+
+let ownerName = "Someone";
+let wishlistItems: any[] = [];
+
+if (db) {
+  try {
+    // FIX: Using the correct 'customers' table as defined in your schema
+    const user = await db.prepare("SELECT id, first_name FROM customers WHERE id LIKE ? OR email LIKE ? LIMIT 1").bind(`%${shareId}%`, `%${shareId}%`).first(); 
+    
+    if (user) {
+      ownerName = user.first_name || "A User";
+      const { results } = await db.prepare(`
+        SELECT p.title, p.slug, p.base_price, p.image_url, COALESCE(v.inventory_quantity, 0) as stock
+        FROM wishlists w
+        JOIN products p ON w.product_id = p.id
+        LEFT JOIN product_variants v ON p.id = v.product_id AND v.is_default = 1
+        WHERE w.customer_id = ?1
+        ORDER BY w.created_at DESC
+      `).bind(user.id).all();
+      wishlistItems = results || [];
+    }
+  } catch (e) {
+    console.error('[WISHLIST_DB_ERROR]', e);
+  }
+}
+
+if (wishlistItems.length === 0) {
+  return Astro.redirect('/404');
+}
+---
+
+<StorefrontLayout title={`${ownerName}'s Wishlist | Symeno`}>
+  <main class="pt-32 pb-24 px-6 max-w-6xl mx-auto">
+    <div class="mb-12 border-b border-outline pb-6 text-center">
+      <h1 class="text-3xl font-bold text-content uppercase tracking-widest">{ownerName}'s Wishlist</h1>
+      <p class="text-xs text-content-muted font-mono mt-2">Shared inventory selection</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {wishlistItems.map((item: any) => (
+        <a href={`/shop/product/${item.slug}`} class="bg-surface border border-outline flex flex-col hover:border-brand/50 transition-colors group">
+          <div class="aspect-square bg-base relative overflow-hidden">
+            <img src={item.image_url || '/placeholder.png'} alt={item.title} class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />
+            {item.stock <= 0 && <div class="absolute bottom-0 left-0 w-full bg-rose-500/90 text-white text-[10px] font-bold text-center py-1 uppercase tracking-widest">Out of Stock</div>}
+          </div>
+          <div class="p-4">
+            <h3 class="text-xs font-bold text-content mb-1 truncate">{item.title}</h3>
+            <p class="text-[10px] font-mono text-brand font-bold">${item.base_price?.toFixed(2)}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </main>
+</StorefrontLayout>

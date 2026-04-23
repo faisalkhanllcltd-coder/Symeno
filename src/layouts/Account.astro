@@ -1,0 +1,112 @@
+---
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';        
+
+interface Props {
+  title: string;
+  currentPath?: string;
+}
+
+const { title, currentPath = "/account" } = Astro.props;
+
+// Security Check: Kicks unauthenticated users to login 
+if (!Astro.locals.user) {
+  return Astro.redirect('/auth/login');
+}
+
+const navItems = [
+  { label: 'Overview', path: '/account', exact: true }, 
+  { label: 'Orders & Returns', path: '/account/orders', exact: false },
+  { label: 'Saved Items', path: '/account/wishlist', exact: false },
+  { label: 'Addresses', path: '/account/addresses', exact: false },
+  { label: 'Settings', path: '/account/settings', exact: false }
+];
+const currentYear = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} | System Operator | Symeno</title>   
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+    <ClientRouter />
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+  </head>
+  <body class="bg-base text-content font-sans antialiased min-h-screen flex flex-col selection:bg-brand/20 selection:text-brand relative overflow-x-hidden transition-colors duration-300">
+
+    <div class="fixed inset-0 opacity-[0.05] pointer-events-none z-0 bg-[linear-gradient(var(--color-content)_1px,transparent_1px),linear-gradient(90deg,var(--color-content)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+
+    <header class="h-[64px] border-b border-outline bg-surface/90 backdrop-blur-md shrink-0 flex items-center px-4 md:px-8 relative z-20 transition-colors">
+      <div class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-brand/40 via-transparent to-transparent"></div>
+
+      <div class="flex-1">
+        <a href="/" class="text-xl font-bold tracking-tighter text-content group focus:outline-none">
+          SYMENO<span class="text-brand group-hover:drop-shadow-[0_0_8px_var(--color-brand)] transition-all">.</span>
+        </a>
+      </div>
+
+      <div class="hidden md:flex flex-1 items-center justify-center gap-2">
+        <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-brand"></span></span>
+        <span class="font-mono text-[10px] uppercase tracking-widest text-content-muted">Secure Session Active</span>
+      </div>
+
+      <div class="flex-1 flex items-center justify-end gap-4 md:gap-6 text-sm font-medium">
+        <a href="/shop" class="hidden md:block text-content-muted hover:text-brand transition-colors focus:outline-none font-mono text-xs uppercase tracking-widest">Storefront &rarr;</a>
+        <form action="/api/auth/logout" method="POST" id="logout-form" data-astro-reload>
+          <button type="submit" class="text-content-muted hover:text-brand-alert transition-colors uppercase font-mono tracking-widest text-[10px] md:text-xs font-bold focus:outline-none">Terminate</button>
+        </form>
+      </div>
+    </header>
+
+    <nav class="md:hidden w-full border-b border-outline bg-base sticky top-0 z-10 no-scrollbar overflow-x-auto relative transition-colors">
+      <ul class="flex whitespace-nowrap snap-x snap-mandatory">
+        {navItems.map(item => {
+          const isActive = item.exact ? currentPath === item.path : currentPath.includes(item.path);
+          return (
+            <li class="snap-start">
+              <a href={item.path} class={`block px-5 py-4 text-xs font-bold uppercase tracking-widest transition-colors border-b-2 ${isActive ? 'text-brand border-brand' : 'text-content-muted border-transparent hover:text-content'}`}>{item.label}</a>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+
+    <div class="flex-1 flex flex-col md:flex-row w-full max-w-7xl mx-auto relative z-10">
+
+      <aside class="hidden md:block w-[240px] bg-base border-r border-outline shrink-0 py-8 min-h-[calc(100vh-64px)] transition-colors">
+        <ul class="space-y-2 px-4">
+          <li class="px-4 pb-4 mb-4 border-b border-outline text-[10px] font-mono text-content-muted uppercase tracking-widest">Operator Matrix</li>
+          {navItems.map(item => {
+            const isActive = item.exact ? currentPath === item.path : currentPath.includes(item.path);
+            return (
+              <li>
+                <a href={item.path} class={`group flex items-center px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all ${isActive ? 'bg-surface text-content border-l-2 border-brand' : 'text-content-muted border-l-2 border-transparent hover:bg-surface hover:text-content hover:border-outline'}`}>
+                  <span class={`mr-3 font-mono ${isActive ? 'text-brand' : 'text-transparent group-hover:text-content-muted'}`}>&gt;</span>
+                  {item.label}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </aside>
+
+      <main class="flex-1 w-full max-w-full overflow-hidden">
+        <div class="max-w-[860px] mx-auto px-4 py-8 md:px-12 md:py-12">
+          <slot />
+        </div>
+      </main>
+    </div>
+
+    <footer class="border-t border-outline bg-base py-6 mt-auto shrink-0 relative z-10 transition-colors">
+      <div class="max-w-7xl mx-auto px-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-mono uppercase tracking-widest text-content-muted">
+        <p>&copy; {currentYear} Symeno LLC. Internal Systems.</p>
+        <nav class="flex gap-6"><a href="/policies/privacy" class="hover:text-content transition-colors focus:outline-none">Privacy</a><a href="/policies/terms" class="hover:text-content transition-colors focus:outline-none">Terms</a><a href="/contact" class="hover:text-brand transition-colors focus:outline-none">Support Ping</a></nav>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+---
+// src/components/storefront/DealTicker.astro
+const deals = [
+  "London, UK · M. Taylor just saved $45 on Bose Headphones",
+  "Only 4 left · Samsung Odyssey OLED G9",
+  "Dubai, UAE · S. Ahmed just saved $120 on Dyson V15",
+  "Toronto, CA · K. Chen just saved $60 on Apple AirPods",
+  "New York, US · D. Smith just saved $300 on Sony A7IV"
+];
+---
+<section class="w-full border-y border-[#dae5e6]/10 bg-[#070d0e] overflow-hidden flex items-center h-12">
+  <div class="flex whitespace-nowrap animate-[marquee_40s_linear_infinite] hover:[animation-play-state:paused] w-max">
+    {[1, 2].map(() => (
+      <div class="flex items-center">
+        {deals.map((deal) => {
+          const parts = deal.split(/($\d+)/);
+          return (
+            <div class="flex items-center">
+              <span class="text-xs font-mono text-[#dae5e6]/70 px-8 tracking-wide">
+                {parts.map(p => p.startsWith('$') ? <span class="text-[#36f4a4] font-bold">{p}</span> : p)}
+              </span>
+              <span class="text-[#36f4a4]/30">&middot;</span>
+            </div>
+          )
+        })}
+      </div>
+    ))}
+  </div>
+</section>

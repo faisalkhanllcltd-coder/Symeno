@@ -1,0 +1,85 @@
+﻿---
+import AdminLayout from '../../../layouts/Admin.astro';
+import { env } from 'cloudflare:workers';
+
+if (!Astro.locals.user) return Astro.redirect('/auth/login');
+
+const { id } = Astro.params;
+const db = (env as any).DB;
+
+let customer = null;
+let orders: any[] = [];
+
+if (db) {
+  try {
+    customer = await db.prepare(`SELECT * FROM customers WHERE id = ?1`).bind(id).first();
+    if (customer) {
+      const { results } = await db.prepare(`SELECT * FROM orders WHERE customer_email = ?1 ORDER BY created_at DESC`).bind(customer.email).all();
+      orders = results || [];
+    }
+  } catch (e) {
+    console.warn("DB not fully migrated", e);
+  }
+}
+
+if (!customer) return Astro.redirect('/404');
+
+const breadcrumbs = [
+  { label: 'Customers', url: '/admin/customers' },
+  { label: customer.id }
+];
+---
+
+<AdminLayout 
+  title={`${customer.first_name} ${customer.last_name}`} 
+  subtitle={customer.email}
+  breadcrumbs={breadcrumbs} 
+  currentPath="/admin/customers"
+>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="col-span-1 bg-[#111318] border border-white/10 p-6 h-fit">
+      <h3 class="text-[10px] font-mono uppercase tracking-widest text-white/40 mb-4 border-b border-white/10 pb-2">Identity Matrix</h3>
+      <div class="space-y-4 font-mono text-xs">
+        <div>
+          <span class="text-white/40 block mb-1">Internal ID</span>
+          <span class="text-[#36f4a4]">{customer.id}</span>
+        </div>
+        <div>
+          <span class="text-white/40 block mb-1">Email Address</span>
+          <span class="text-white">{customer.email}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-span-1 lg:col-span-2 bg-[#111318] border border-white/10 overflow-hidden">
+      <div class="p-4 border-b border-white/10 bg-white/[0.02]">
+        <h2 class="text-xs font-mono uppercase tracking-widest text-white font-bold">Acquisition History</h2>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-black/40 border-b border-white/10">
+              <th class="px-6 py-4 text-[10px] font-mono uppercase tracking-widest text-white/40 font-normal">Order ID</th>
+              <th class="px-6 py-4 text-[10px] font-mono uppercase tracking-widest text-white/40 font-normal">Status</th>
+              <th class="px-6 py-4 text-[10px] font-mono uppercase tracking-widest text-white/40 font-normal text-right">Total</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/[0.04]">
+            {orders.map(order => (
+              <tr class="hover:bg-white/[0.02] transition-colors">
+                <td class="px-6 py-4 text-xs font-mono text-[#36f4a4]">
+                  <a href={`/admin/orders/${order.id}`}>{order.id}</a>
+                </td>
+                <td class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest font-mono text-white/80">{order.status}</td>
+                <td class="px-6 py-4 text-xs font-mono text-right text-white">${(order.amount_total || 0).toFixed(2)}</td>
+              </tr>
+            ))}
+            {orders.length === 0 && (
+              <tr><td colspan="3" class="px-6 py-12 text-center text-[10px] font-mono text-white/30 uppercase tracking-widest">No orders found for this identity.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</AdminLayout>

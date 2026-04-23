@@ -1,0 +1,22 @@
+﻿[
+  { "name": "Coffee & Tea Tools", "slug": "coffee-tea-tools" },
+  { "name": "Drinkware Accessories", "slug": "drinkware-accessories" },
+  { "name": "Baking Accessories", "slug": "baking-accessories" },
+  { "name": "Kitchen Gadgets & Prep", "slug": "kitchen-gadgets-prep" },
+  { "name": "Home & Drawer Organization", "slug": "home-drawer-organization" },
+  { "name": "Desk & Workspace", "slug": "desk-workspace" },
+  { "name": "Indoor Plant Care", "slug": "indoor-plant-care" },
+  { "name": "Shoe Care & Maintenance", "slug": "shoe-care-maintenance" },
+  { "name": "Everyday Carry (EDC)", "slug": "everyday-carry" },
+  { "name": "Travel Accessories", "slug": "travel-accessories" },
+  { "name": "Reading Accessories", "slug": "reading-accessories" },
+  { "name": "Stationery & Journaling", "slug": "stationery-journaling" },
+  { "name": "Fitness & Mobility", "slug": "fitness-mobility" },
+  { "name": "Meditation & Focus", "slug": "meditation-focus" },
+  { "name": "Hair Accessories", "slug": "hair-accessories" },
+  { "name": "Bathroom Organization", "slug": "bathroom-organization" },
+  { "name": "Pet Walking Gear", "slug": "pet-walking-gear" },
+  { "name": "Pet Travel", "slug": "pet-travel" },
+  { "name": "Tabletop & Puzzle Accessories", "slug": "tabletop-puzzle-accessories" },
+  { "name": "Photography & Tech Care", "slug": "photography-tech-care" }
+]

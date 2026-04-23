@@ -1,0 +1,57 @@
+﻿@import "tailwindcss";
+
+/* The dynamic theme engine driven by CSS variables */
+@theme {
+  --color-base: var(--theme-base);
+  --color-surface: var(--theme-surface);
+  --color-surface-hover: var(--theme-surface-hover);
+
+  --color-content: var(--theme-content);
+  --color-content-muted: var(--theme-content-muted);
+
+  --color-outline: var(--theme-outline);
+
+  --color-brand: #36f4a4;
+  --color-brand-dark: #003822;
+  --color-brand-alert: #f43f5e;
+
+  /* The Digital Luminary: Ambient Light */
+  --shadow-ambient: 0 40px 60px -15px rgba(218, 229, 230, 0.06);
+}
+
+@layer base {
+  :root {
+    --theme-base: #f8fafc;
+    --theme-surface: #ffffff;
+    --theme-surface-hover: #f1f5f9;
+    --theme-content: #0f172a;
+    --theme-content-muted: #64748b;
+    --theme-outline: #e2e8f0;
+  }
+
+  .dark {
+    --theme-base: #0b1516;
+    --theme-surface: #131d1e;
+    --theme-surface-hover: #172122;
+    --theme-content: #ffffff;
+    --theme-content-muted: rgba(218, 229, 230, 0.6);
+    --theme-outline: rgba(218, 229, 230, 0.1);
+  }
+
+  /* Global Scrollbar Purge */
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
+  * {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  html,
+  body {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+  }
+}

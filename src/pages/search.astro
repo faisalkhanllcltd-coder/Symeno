@@ -1,0 +1,16 @@
+﻿---
+import Storefront from '../layouts/Storefront.astro';
+const query = Astro.url.searchParams.get('q') || '';
+---
+<Storefront title={`Search: ${query}`}>
+  <div class="max-w-7xl mx-auto py-24 px-4 sm:px-6 lg:px-8 text-center">
+    <h1 class="text-4xl font-bold tracking-tighter uppercase mb-4">Query: <span class="text-brand">{query || "ALL HARDWARE"}</span></h1>
+    <p class="text-content-muted font-mono uppercase tracking-widest text-sm mb-12">Global hardware indexing and arbitrage search...</p>
+    
+    <div class="bg-surface border border-outline rounded-xl p-12 shadow-ambient inline-block max-w-2xl w-full">
+      <svg class="w-12 h-12 text-content-muted mx-auto mb-4 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+      <p class="text-content font-mono uppercase tracking-widest text-xs">Search indexing engine currently provisioning.</p>
+      <a href="/shop" class="mt-8 inline-block bg-brand text-brand-dark px-8 py-3 text-xs font-bold uppercase tracking-widest hover:opacity-90 transition-opacity">Return to Catalog</a>
+    </div>
+  </div>
+</Storefront>

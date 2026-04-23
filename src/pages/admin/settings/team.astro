@@ -1,0 +1,9 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { env } from 'cloudflare:workers';
+---
+import TeamManager from '../../components/admin/settings/TeamManager.svelte';
+const { results } = (env.DB) ? await env.DB.prepare(SELECT * FROM users WHERE role IN ('admin', 'staff')).all() : {results:[]};
+<AdminLayout title=Access Control subtitle=Staff & Operator Matrix currentPath=/admin/settings/team>
+  <div class=max-w-6xl><TeamManager client:load team={results} /></div>
+</AdminLayout>

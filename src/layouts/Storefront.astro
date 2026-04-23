@@ -1,0 +1,503 @@
+﻿---
+import '../styles/global.css';
+import CartBadge from '../components/storefront/cart/CartBadge.svelte';
+import CartDrawer from '../components/storefront/cart/CartDrawer.svelte';
+// TELEMETRY UPGRADE: Injecting orphaned marketing scripts
+import GoogleTag from '../components/analytics/GoogleTag.astro';
+import MetaPixel from '../components/analytics/MetaPixel.astro';
+
+// MARKETING & SCALE MATRIX UPGRADES
+import SEOHead from '../components/storefront/seo/SEOHead.astro';
+import PromoBanner from '../components/storefront/marketing/PromoBanner.svelte';
+import NewsletterCapture from '../components/storefront/marketing/NewsletterCapture.svelte';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Top Brands. Real Prices. No Games." } = Astro.props;
+const currentYear = new Date().getFullYear();
+
+// SEO Schema Generation for Edge Injection
+const schema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Symeno",
+  "url": "https://symeno.com",
+  "description": "Operational efficiency applied to consumer electronics. We leverage global arbitrage to secure premium hardware at zero-markup wholesale rates.",
+  "sameAs": [
+    "https://twitter.com/symeno",
+    "https://linkedin.com/company/symeno"
+  ]
+});
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <SEOHead title={`${title} | Symeno`} description={description} />
+    
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+    
+    <script type="application/ld+json" is:inline set:html={schema}></script>
+
+    <GoogleTag id="G-XXXXXXXXXX" part="head" />
+    <MetaPixel id="XXXXXXXXXX" part="head" />
+
+    <script is:inline>
+      const theme = (() => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      })();
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      if (typeof localStorage !== 'undefined') localStorage.setItem('theme', theme);
+    </script>
+  </head>
+  
+  <body class="bg-base text-content font-sans antialiased flex flex-col min-h-screen selection:bg-brand/20 selection:text-brand transition-colors duration-300">
+    
+    <PromoBanner client:load />
+
+    <div class="bg-surface text-content relative z-50 h-10 flex items-center justify-center transition-colors duration-300">
+      <div class="md:hidden flex items-center gap-3 text-[10px] font-mono tracking-widest uppercase px-4 w-full justify-center">
+        <span class="w-1.5 h-1.5 rounded-full bg-brand animate-[dot-pulse_1.5s_ease-in-out_infinite]"></span>
+        <span>Free Priority Shipping Over <span class="text-brand font-bold">$150</span></span>
+      </div>
+
+      <div class="hidden md:flex relative w-full max-w-7xl mx-auto h-full items-center justify-center overflow-hidden" id="announcement-carousel">
+        <div class="carousel-msg absolute inset-0 flex items-center justify-center gap-3 text-xs font-mono uppercase tracking-widest transition-opacity duration-500 opacity-100 z-10">
+          <span class="w-1.5 h-1.5 rounded-full bg-brand animate-[dot-pulse_1.5s_ease-in-out_infinite]"></span>
+          <span>Free priority shipping on orders over <span class="text-brand font-bold">$150</span> <a href="/shop" class="ml-2 text-content-muted hover:text-brand underline decoration-transparent hover:decoration-brand transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand">Shop Now &rarr;</a></span>
+        </div>
+        <div class="carousel-msg absolute inset-0 flex items-center justify-center gap-3 text-xs font-mono uppercase tracking-widest transition-opacity duration-500 opacity-0 z-0">
+          <span class="w-1.5 h-1.5 rounded-full bg-brand animate-[dot-pulse_1.5s_ease-in-out_infinite]"></span>
+          <span>Flash Deal: <span class="text-brand font-bold">20% Off Apple Audio</span> <a href="/shop/audio" class="ml-2 text-content-muted hover:text-brand underline decoration-transparent hover:decoration-brand transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand">Claim Deal &rarr;</a></span>
+        </div>
+        <div class="carousel-msg absolute inset-0 flex items-center justify-center gap-3 text-xs font-mono uppercase tracking-widest transition-opacity duration-500 opacity-0 z-0">
+          <span class="w-1.5 h-1.5 rounded-full bg-brand animate-[dot-pulse_1.5s_ease-in-out_infinite]"></span>
+          <span>The Symeno Promise: <span class="text-brand font-bold">14-Day Price Match</span> <a href="/about" class="ml-2 text-content-muted hover:text-brand underline decoration-transparent hover:decoration-brand transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand">Read Thesis &rarr;</a></span>
+        </div>
+      </div>
+    </div>
+
+    <header id="main-nav" class="sticky top-0 z-40 w-full backdrop-blur-2xl bg-surface/80 transition-all duration-300 ease-out h-[72px]">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div class="flex justify-between items-center h-full">
+          
+          <div class="flex items-center gap-4">
+            <button id="mobile-menu-btn" type="button" title="Menu" class="md:hidden p-2 -ml-2 text-content-muted hover:text-content transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm" aria-label="Open menu">
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+            </button>
+            <a href="/" class="flex-shrink-0 flex items-center gap-1 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm">
+              <span class="text-2xl font-bold tracking-tighter text-content transition-colors">SYMENO<span class="text-brand">.</span></span>
+            </a>
+          </div>
+
+          <nav class="hidden md:flex space-x-8 h-full" id="desktop-nav">
+            <div class="relative h-full flex items-center group nav-item">
+              <a href="/" class="text-sm font-medium text-content-muted hover:text-content tracking-tight py-2 relative transition-colors focus-visible:outline-none focus-visible:text-brand">
+                Home
+                <span class="absolute bottom-0 left-0 w-full h-[2px] bg-brand origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+              </a>
+            </div>
+            
+            <div class="relative h-full flex items-center group nav-item" data-menu="catalog">
+              <a href="/shop" class="text-sm font-semibold text-content tracking-tight py-2 relative flex items-center gap-1 focus-visible:outline-none focus-visible:text-brand">
+                Shop <svg class="w-3 h-3 text-content-muted group-hover:text-brand transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                <span class="absolute bottom-0 left-0 w-full h-[2px] bg-brand origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+              </a>
+            </div>
+
+            <div class="relative h-full flex items-center group nav-item" data-menu="brands">
+              <a href="/brands" class="text-sm font-semibold text-content tracking-tight py-2 relative flex items-center gap-1 focus-visible:outline-none focus-visible:text-brand">
+                Brands <svg class="w-3 h-3 text-content-muted group-hover:text-brand transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                <span class="absolute bottom-0 left-0 w-full h-[2px] bg-brand origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+              </a>
+            </div>
+            
+            <div class="relative h-full flex items-center group nav-item">
+              <a href="/deals" class="text-sm font-bold text-brand-alert tracking-tight py-2 relative transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:opacity-80">
+                Deals
+                <span class="absolute bottom-0 left-0 w-full h-[2px] bg-brand-alert origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+              </a>
+            </div>
+
+            <div class="relative h-full flex items-center group nav-item">
+              <a href="/new-arrivals" class="text-sm font-medium text-content-muted hover:text-brand tracking-tight py-2 relative transition-colors focus-visible:outline-none focus-visible:text-brand">
+                New Arrivals
+                <span class="absolute bottom-0 left-0 w-full h-[2px] bg-brand origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+              </a>
+            </div>
+          </nav>
+
+          <div class="flex items-center gap-4 md:gap-6">
+            
+            <button id="theme-toggle-header" title="Toggle Theme" class="text-content-muted hover:text-brand transition-colors hover:scale-110 duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-full p-1" aria-label="Toggle Theme">
+              <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-2.25-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" /></svg>
+              <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" /></svg>
+            </button>
+
+            <button id="mobile-search-trigger" title="Search" class="md:hidden text-content-muted hover:text-brand transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-full p-1" aria-label="Open mobile search">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+            </button>
+
+            <button id="desktop-search-toggle-btn" title="Search" class="hidden md:block text-content-muted hover:text-brand transition-colors hover:scale-110 duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-full p-1" aria-label="Open desktop search">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+            </button>
+            
+            <a href="/auth/login" title="Account Access" class="hidden md:block text-content-muted hover:text-brand transition-colors hover:scale-110 duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-full p-1" aria-label="Login">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+            </a>
+            
+            <div title="Shopping Cart">
+              <CartBadge client:load />
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+      <div id="desktop-search-panel" class="hidden md:block absolute top-full left-0 w-full bg-base shadow-ambient transform -translate-y-2 opacity-0 pointer-events-none transition-all duration-300 z-50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <form action="/search" method="GET" class="relative flex items-center w-full group">
+            <div class="absolute left-4 text-content-muted group-focus-within:text-brand transition-colors">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+            </div>
+            <input type="text" name="q" id="desktop-search-input" placeholder="Search hardware, brands, or SKU numbers..." class="w-full bg-surface border border-outline text-content pl-12 pr-32 py-4 text-sm md:text-base font-mono focus-visible:outline-none focus-visible:border-brand transition-colors rounded-none placeholder-content-muted">
+            <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-brand text-brand-dark px-6 py-2.5 text-xs font-bold uppercase tracking-widest hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark">
+              Execute
+            </button>
+          </form>
+          <div class="mt-4 flex flex-wrap items-center gap-3 text-[10px] font-mono text-content-muted uppercase tracking-widest">
+            <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 bg-brand-alert animate-pulse"></span> Trending:</span>
+            <a href="/shop/product/sony-xm5" class="hover:text-brand transition-colors border border-outline bg-surface px-2 py-1 focus-visible:outline-none focus-visible:border-brand">Sony XM5</a>
+            <a href="/brands/apple" class="hover:text-brand transition-colors border border-outline bg-surface px-2 py-1 focus-visible:outline-none focus-visible:border-brand">Apple Audio</a>
+            <a href="/shop/displays" class="hover:text-brand transition-colors border border-outline bg-surface px-2 py-1 focus-visible:outline-none focus-visible:border-brand">OLED Displays</a>
+          </div>
+        </div>
+      </div>
+
+      <div id="mega-menu" class="absolute top-full left-0 w-full bg-base shadow-ambient opacity-0 pointer-events-none transition-opacity duration-200 z-40">
+      </div>
+    </header>
+
+    <main class="flex-grow flex flex-col relative w-full">
+      <slot />
+    </main>
+
+    <footer class="bg-surface text-content-muted pt-16 pb-8 mt-auto transition-colors duration-300">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
+          
+          <div class="lg:col-span-4">
+            <a href="/" class="text-xl font-bold tracking-tighter text-content uppercase mb-4 block focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand w-max">SYMENO<span class="text-brand">.</span></a>
+            <p class="text-sm font-mono max-w-sm leading-relaxed mb-6">
+              Operational efficiency applied to consumer electronics. We leverage global arbitrage to secure premium hardware at zero-markup wholesale rates.
+            </p>
+
+            <div class="mb-8 pt-4 ">
+              <span class="text-[10px] font-bold uppercase tracking-widest block mb-3 font-mono text-content">Interface Mode</span>
+              <div class="flex items-center gap-3">
+                <svg class="w-4 h-4 text-content-muted" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-2.25-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" /></svg>
+                <button id="theme-toggle-footer" type="button" class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent bg-outline hover:opacity-80 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand" role="switch" aria-label="Toggle Theme" title="Toggle Theme">
+                  <span id="theme-toggle-footer-knob" class="pointer-events-none inline-block h-3.5 w-3.5 transform rounded-full bg-content shadow ring-0 transition duration-200 ease-in-out translate-x-0 dark:translate-x-4"></span>
+                </button>
+                <svg class="w-4 h-4 text-content-muted" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" /></svg>
+              </div>
+            </div>
+
+            <div class="space-y-1 mb-6 text-[10px] font-mono uppercase tracking-widest">
+              <p>Company Reg No. 15389422</p>
+              <p>128 City Road, London, EC1V 2NX</p>
+            </div>
+            
+            <div class="flex gap-3 mb-10">
+              <a href="#" aria-label="Social Matrix X" class="w-8 h-5 bg-surface border border-outline flex items-center justify-center text-[8px] font-mono hover:border-brand transition-colors focus-visible:outline-none focus-visible:border-brand focus-visible:text-brand">X</a>
+              <a href="#" aria-label="Social Matrix LinkedIn" class="w-8 h-5 bg-surface border border-outline flex items-center justify-center text-[8px] font-mono hover:border-brand transition-colors focus-visible:outline-none focus-visible:border-brand focus-visible:text-brand">IN</a>
+              <a href="#" aria-label="Payment Gateway Intel" class="w-8 h-5 bg-surface border border-outline flex items-center justify-center text-[8px] font-mono hover:border-brand transition-colors focus-visible:outline-none focus-visible:border-brand focus-visible:text-brand">PAY</a>
+              <a href="#" aria-label="Security Protocols" class="w-8 h-5 bg-surface border border-outline flex items-center justify-center text-[8px] font-mono hover:border-brand transition-colors focus-visible:outline-none focus-visible:border-brand focus-visible:text-brand">SEC</a>
+            </div>
+
+            <div class="border-t border-white/10 pt-8 pr-8">
+              <NewsletterCapture client:load />
+            </div>
+          </div>
+
+          <div class="lg:col-span-2">
+            <h3 class="text-[10px] font-bold uppercase tracking-widest text-content font-mono mb-4">Shop</h3>
+            <ul class="space-y-3 text-sm">
+              <li><a href="/shop" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">Shop All</a></li>
+              <li><a href="/new-arrivals" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">New Arrivals</a></li>
+              <li><a href="/deals" class="text-brand-alert font-medium hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:underline">Deals</a></li>
+              <li><a href="/brands" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">All Brands</a></li>
+              <li><a href="/shop/audio" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">Audio</a></li>
+              <li><a href="/shop/displays" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">Displays</a></li>
+              <li><a href="/shop/peripherals" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">Peripherals</a></li>
+            </ul>
+          </div>
+
+          <div class="lg:col-span-2">
+            <h3 class="text-[10px] font-bold uppercase tracking-widest text-content font-mono mb-4">Help</h3>
+            <ul class="space-y-3 text-sm">
+              <li><a href="/contact" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">Contact Us</a></li>
+              <li><a href="/faq" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">FAQ</a></li>
+              <li><a href="/support/track-order" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">Track My Order</a></li>
+              <li><a href="/support/start-return" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">Start a Return</a></li>
+              <li><a href="/policies/authenticity" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">Authenticity Policy</a></li>
+              <li><a href="/b2b" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">B2B / Wholesale</a></li>
+            </ul>
+          </div>
+
+          <div class="lg:col-span-2">
+            <h3 class="text-[10px] font-bold uppercase tracking-widest text-content font-mono mb-4">Company</h3>
+            <ul class="space-y-3 text-sm">
+              <li><a href="/about" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">About Symeno</a></li>
+              <li><a href="/blog" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">Blog</a></li>
+              <li><a href="/careers" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">Careers</a></li>
+              <li><a href="/press" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">Press</a></li>
+            </ul>
+          </div>
+
+          <div class="lg:col-span-2">
+            <h3 class="text-[10px] font-bold uppercase tracking-widest text-content font-mono mb-4">Legal</h3>
+            <ul class="space-y-3 text-sm">
+              <li><a href="/policies/terms" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">Terms of Service</a></li>
+              <li><a href="/policies/privacy" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">Privacy Policy</a></li>
+              <li><a href="/policies/shipping" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">Shipping Policy</a></li>
+              <li><a href="/policies/returns" class="hover:text-brand transition-colors focus-visible:outline-none focus-visible:text-brand">Returns Policy</a></li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div class=" pt-8 flex flex-col items-center justify-center text-center gap-4">
+          <p class="text-[10px] font-mono uppercase tracking-widest leading-relaxed">
+            &copy; {currentYear} Symeno Ltd &middot; Registered in UK &middot; Reg. No. 15389422 &middot; All prices include VAT
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <div id="mobile-drawer-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+    <aside id="mobile-drawer" class="fixed inset-y-0 left-0 w-[85vw] max-w-sm bg-base z-50 transform -translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-ambient">
+      
+      <div class="h-16 flex items-center justify-between px-6 shrink-0">
+        <span class="text-xl font-bold tracking-tighter text-content">MENU</span>
+        <button id="close-drawer-btn" class="text-content-muted hover:text-content transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm p-1" aria-label="Close menu">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+
+      <div class="p-4 bg-surface">
+        <form action="/search" method="GET" class="relative flex items-center w-full group">
+          <div class="absolute left-3 text-content-muted group-focus-within:text-brand transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+          </div>
+          <input type="text" name="q" id="mobile-search-input" placeholder="Search hardware..." class="w-full bg-base border border-outline text-content pl-9 pr-4 py-3 text-xs font-mono focus-visible:outline-none focus-visible:border-brand transition-colors rounded-none placeholder-content-muted">
+        </form>
+        <div class="mt-3 flex flex-wrap gap-2 text-[9px] font-mono uppercase tracking-widest">
+          <span class="text-content-muted">Trending:</span>
+          <a href="/shop/product/sony-xm5" class="text-content-muted hover:text-brand border-b border-transparent hover:border-brand focus-visible:outline-none focus-visible:text-brand">Sony XM5</a>
+          <a href="/shop/displays" class="text-content-muted hover:text-brand border-b border-transparent hover:border-brand focus-visible:outline-none focus-visible:text-brand">Displays</a>
+        </div>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto py-4 px-4 space-y-2">
+        <a href="/shop/audio" class="flex items-center justify-between p-4 bg-surface hover:bg-surface-hover border border-outline transition-colors group focus-visible:outline-none focus-visible:border-brand">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 bg-base flex items-center justify-center border border-outline"><span class="text-[8px] font-mono text-content-muted">IMG</span></div>
+            <span class="text-sm font-semibold text-content tracking-wide">Audio</span>
+          </div>
+          <svg class="w-4 h-4 text-content-muted group-hover:text-brand transition-colors" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+        </a>
+        <a href="/shop/displays" class="flex items-center justify-between p-4 bg-surface hover:bg-surface-hover border border-outline transition-colors group focus-visible:outline-none focus-visible:border-brand">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 bg-base flex items-center justify-center border border-outline"><span class="text-[8px] font-mono text-content-muted">IMG</span></div>
+            <span class="text-sm font-semibold text-content tracking-wide">Displays</span>
+          </div>
+          <svg class="w-4 h-4 text-content-muted group-hover:text-brand transition-colors" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+        </a>
+        <div class="pt-6 mt-4 space-y-4 px-4">
+          <a href="/deals" class="block text-sm font-bold text-brand-alert hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:underline">Live Deals</a>
+          <a href="/about" class="block text-sm font-medium text-content-muted hover:text-content transition-colors focus-visible:outline-none focus-visible:text-brand">Our Thesis</a>
+          <a href="/auth/login" class="block text-sm font-medium text-content-muted hover:text-content transition-colors focus-visible:outline-none focus-visible:text-brand">Account Access</a>
+        </div>
+      </nav>
+    </aside>
+    
+    <CartDrawer client:load />
+
+    <script>
+      // 1. THEME ENGINE SYNC LOGIC
+      const themeToggleBtn = document.getElementById('theme-toggle-header');
+      const darkIcon = document.getElementById('theme-toggle-dark-icon');
+      const lightIcon = document.getElementById('theme-toggle-light-icon');
+      
+      const themeToggleFooterBtn = document.getElementById('theme-toggle-footer');
+      const themeToggleFooterKnob = document.getElementById('theme-toggle-footer-knob');
+
+      function updateThemeUI() {
+        const isDark = document.documentElement.classList.contains('dark');
+        
+        if (isDark) {
+          lightIcon?.classList.remove('hidden');
+          darkIcon?.classList.add('hidden');
+          themeToggleFooterKnob?.classList.add('translate-x-4');
+          themeToggleFooterKnob?.classList.remove('translate-x-0');
+        } else {
+          darkIcon?.classList.remove('hidden');
+          lightIcon?.classList.add('hidden');
+          themeToggleFooterKnob?.classList.remove('translate-x-4');
+          themeToggleFooterKnob?.classList.add('translate-x-0');
+        }
+      }
+
+      // FIX: Explicitly typed theme parameter
+      function setTheme(theme: string) {
+        if (theme === 'light') {
+          document.documentElement.classList.remove('dark');
+        } else {
+          document.documentElement.classList.add('dark');
+        }
+        localStorage.setItem('theme', theme);
+        updateThemeUI();
+      }
+
+      themeToggleBtn?.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        setTheme(isDark ? 'light' : 'dark');
+      });
+
+      themeToggleFooterBtn?.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        setTheme(isDark ? 'light' : 'dark');
+      });
+
+      updateThemeUI();
+
+      // 2. HEIGHT COMPRESSION ON SCROLL
+      window.addEventListener('scroll', () => {
+        const nav = document.getElementById('main-nav');
+        if (window.scrollY > 80) {
+          nav?.classList.remove('h-[72px]');
+          nav?.classList.add('h-[52px]');
+        } else {
+          nav?.classList.add('h-[72px]');
+          nav?.classList.remove('h-[52px]');
+        }
+      });
+
+      // 3. DESKTOP ANNOUNCEMENT CROSSFADE CAROUSEL
+      const messages = document.querySelectorAll('.carousel-msg');
+      if (messages.length > 1) {
+        let currentIndex = 0;
+        setInterval(() => {
+          messages[currentIndex]?.classList.remove('opacity-100', 'z-10');
+          messages[currentIndex]?.classList.add('opacity-0', 'z-0');
+          
+          currentIndex = (currentIndex + 1) % messages.length;
+          
+          messages[currentIndex]?.classList.remove('opacity-0', 'z-0');
+          messages[currentIndex]?.classList.add('opacity-100', 'z-10');
+        }, 4000);
+      }
+
+      // 4. MOBILE DRAWER LOGIC
+      const drawer = document.getElementById('mobile-drawer');
+      const overlay = document.getElementById('mobile-drawer-overlay');
+      const openBtn = document.getElementById('mobile-menu-btn');
+      const closeBtn = document.getElementById('close-drawer-btn');
+      const mobileSearchTrigger = document.getElementById('mobile-search-trigger');
+      const mobileSearchInput = document.getElementById('mobile-search-input');
+
+      // FIX: Explicitly typed parameter
+      function toggleDrawer(open: boolean, focusSearch = false) {
+        if (open) {
+          drawer?.classList.remove('-translate-x-full');
+          overlay?.classList.remove('opacity-0', 'pointer-events-none');
+          document.body.style.overflow = 'hidden'; 
+          if (focusSearch) {
+            setTimeout(() => (mobileSearchInput as HTMLInputElement)?.focus(), 300);
+          }
+        } else {
+          drawer?.classList.add('-translate-x-full');
+          overlay?.classList.add('opacity-0', 'pointer-events-none');
+          document.body.style.overflow = '';
+        }
+      }
+
+      openBtn?.addEventListener('click', () => toggleDrawer(true));
+      mobileSearchTrigger?.addEventListener('click', () => toggleDrawer(true, true));
+      closeBtn?.addEventListener('click', () => toggleDrawer(false));
+      overlay?.addEventListener('click', () => toggleDrawer(false));
+
+      // 5. MEGA MENU 120ms DELAY LOGIC
+      let hoverTimeout: ReturnType<typeof setTimeout>; 
+      const navItems = document.querySelectorAll('.nav-item');
+      const megaMenu = document.getElementById('mega-menu');
+
+      navItems.forEach(item => {
+        // FIX: Explicitly typed event and target casting
+        item.addEventListener('mouseenter', (e: Event) => {
+          clearTimeout(hoverTimeout);
+          hoverTimeout = setTimeout(() => {
+            const target = e.currentTarget as HTMLElement; 
+            if (target && target.dataset.menu) {
+              megaMenu?.classList.remove('opacity-0', 'pointer-events-none');
+            }
+          }, 120);
+        });
+
+        item.addEventListener('mouseleave', () => {
+          clearTimeout(hoverTimeout);
+          megaMenu?.classList.add('opacity-0', 'pointer-events-none');
+        });
+      });
+
+      // 6. PREMIUM DESKTOP SEARCH PANEL LOGIC
+      const desktopSearchBtn = document.getElementById('desktop-search-toggle-btn');
+      const desktopSearchPanel = document.getElementById('desktop-search-panel');
+      const desktopSearchInput = document.getElementById('desktop-search-input');
+
+      function closeDesktopSearch() {
+        desktopSearchPanel?.classList.add('opacity-0', 'pointer-events-none', '-translate-y-2');
+        desktopSearchPanel?.classList.remove('opacity-100', 'translate-y-0');
+      }
+
+      // FIX: Explicitly typed event
+      desktopSearchBtn?.addEventListener('click', (e: Event) => {
+        e.stopPropagation();
+        const isClosed = desktopSearchPanel?.classList.contains('opacity-0');
+        
+        if (isClosed) {
+          desktopSearchPanel?.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-2');
+          desktopSearchPanel?.classList.add('opacity-100', 'translate-y-0');
+          setTimeout(() => (desktopSearchInput as HTMLInputElement)?.focus(), 100);
+        } else {
+          closeDesktopSearch();
+        }
+      });
+
+      document.addEventListener('click', (e: Event) => {
+        // FIX: Typecast target to Node for Playwright compatibility
+        const target = e.target as Node;
+        if (desktopSearchPanel && !desktopSearchPanel.contains(target) && target !== desktopSearchBtn && !desktopSearchBtn?.contains(target)) {
+          closeDesktopSearch();
+        }
+      });
+    </script>
+  </body>
+</html>

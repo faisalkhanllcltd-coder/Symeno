@@ -1,0 +1,42 @@
+---
+import StorefrontLayout from '../../layouts/Storefront.astro';
+---
+<StorefrontLayout title="Privacy Policy">
+  <div class="bg-[#0b1516] min-h-screen py-16 md:py-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-white tracking-tighter mb-4">Privacy Policy.</h1>
+        <p class="text-xs font-mono text-[#36f4a4] uppercase tracking-widest">Last Updated: October 15, 2025</p>
+      </div>
+
+      <div class="space-y-12 text-[#dae5e6]/70 font-light leading-relaxed">
+        
+        <section>
+          <h2 class="text-white font-bold text-xl mb-4 border-b border-[#dae5e6]/10 pb-2">Data Minimization Doctrine</h2>
+          <p class="mb-4">Symeno LLC operates on a strict data minimization protocol. We collect only the exact data points mathematically necessary to process your transaction, ship your physical goods, and prevent fraud. We do not sell your data. We do not rent your data. Trust is our only currency.</p>
+        </section>
+
+        <section>
+          <h2 class="text-white font-bold text-xl mb-4 border-b border-[#dae5e6]/10 pb-2">What We Collect</h2>
+          <ul class="list-disc pl-5 space-y-2 mb-4">
+            <li><strong class="text-white font-medium">Transactional Data:</strong> Name, shipping address, and email (for order receipts and tracking).</li>
+            <li><strong class="text-white font-medium">Payment Data:</strong> Handled securely at the edge via Stripe. <span class="text-[#36f4a4]">Symeno servers never see, touch, or store your raw credit card numbers.</span></li>
+            <li><strong class="text-white font-medium">Telemetry:</strong> Anonymized session data to track site performance and detect bot attacks.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-white font-bold text-xl mb-4 border-b border-[#dae5e6]/10 pb-2">Third-Party Subprocessors</h2>
+          <p class="mb-4">We utilize enterprise-grade infrastructure to securely route your data. These entities are contractually bound to strict privacy standards:</p>
+          <ul class="list-disc pl-5 space-y-2 mb-4">
+            <li><strong>Cloudflare:</strong> DNS routing, edge caching, and bot mitigation.</li>
+            <li><strong>Stripe:</strong> Payment intent authorization and PCI-compliant processing.</li>
+            <li><strong>Resend:</strong> Transactional email delivery.</li>
+          </ul>
+        </section>
+
+      </div>
+    </div>
+  </div>
+</StorefrontLayout>

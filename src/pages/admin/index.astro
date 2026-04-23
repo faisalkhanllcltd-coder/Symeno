@@ -1,0 +1,107 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import KPICards from '../../components/admin/dashboard/KPICards.svelte';
+import RevenueChart from '../../components/admin/dashboard/RevenueChart.svelte';
+import RecentOrders from '../../components/admin/dashboard/RecentOrders.svelte';
+import TopProducts from '../../components/admin/dashboard/TopProducts.svelte';
+import LowStockAlert from '../../components/admin/dashboard/LowStockAlert.svelte';
+import ActivityFeed from '../../components/admin/dashboard/ActivityFeed.svelte';
+import { env } from 'cloudflare:workers';
+
+if (!Astro.locals.user || (Astro.locals.user.role !== 'admin' && Astro.locals.user.role !== 'staff')) {
+  return Astro.redirect('/auth/login');
+}
+
+const db = env.DB;
+
+// DEFAULT TELEMETRY STATE (Safeguards against empty/missing tables during initial boot)
+let metrics = {
+  revenueToday: 0, revenueChange: 0, ordersToday: 0, ordersWeek: 0,
+  newCustomers: 0, conversionRate: 0, aov: 0, pendingFulfillment: 0,
+  lowStockCount: 0, pendingReturns: 0
+};
+let recentOrders: any[] = [];
+let lowStockItems: any[] = [];
+let topProducts: any[] = [];
+let chartData: any[] = [];
+let systemFeed: any[] = [{ time: new Date().toLocaleTimeString(), message: "Admin Session Authenticated." }];
+
+if (db) {
+  try {
+    // 1. Fetch Orders Telemetry
+    const ordersData = await db.prepare("SELECT id, customer_email, total, status FROM orders ORDER BY created_at DESC LIMIT 5").all();
+    recentOrders = ordersData.results || [];
+
+    const pendingOrders = await db.prepare("SELECT COUNT(*) as count FROM orders WHERE status = 'PENDING_DISPATCH'").first();
+    metrics.pendingFulfillment = (pendingOrders?.count as number) || 0;
+
+    // 2. Fetch Inventory Telemetry
+    const lowStock = await db.prepare(`
+      SELECT p.title, v.sku, v.stock_quantity as qty 
+      FROM product_variants v 
+      JOIN products p ON v.product_id = p.id 
+      WHERE v.stock_quantity <= 5 LIMIT 5
+    `).all();
+    lowStockItems = lowStock.results || [];
+    metrics.lowStockCount = lowStockItems.length;
+
+    // 3. Mock Chart Data (Until strict date-math queries are built out)
+    // In production, this runs a GROUP BY date query
+    chartData = Array.from({ length: 30 }).map((_, i) => ({
+      date: `Day ${i+1}`,
+      amount: Math.floor(Math.random() * 5000) + 500 // Simulated baseline
+    }));
+
+    topProducts = [
+      { title: "Symeno Operator Keyboard", revenue: 14500 },
+      { title: "Tactile Switches (Pack of 90)", revenue: 8200 },
+      { title: "Deskmate Pro", revenue: 4100 }
+    ];
+
+  } catch (error: unknown) {
+    if (error instanceof Error) console.error("[DASHBOARD_DB_ERROR]", error.message);
+  }
+}
+---
+
+<AdminLayout title="Command Center" subtitle="Real-time Platform Telemetry" currentPath="/admin">
+  <div class="max-w-7xl space-y-6">
+    
+    <div class="flex flex-wrap gap-4 items-center">
+      <a href="/admin/products/new" class="bg-[#36f4a4] text-black px-6 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-colors">
+        + New Product
+      </a>
+      {#if metrics.pendingFulfillment > 0}
+        <a href="/admin/orders" class="border border-white/10 bg-white/5 text-white px-4 py-2 text-[10px] font-mono tracking-widest flex items-center gap-2 hover:border-white/30 transition-colors">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          Pending Orders: {metrics.pendingFulfillment}
+        </a>
+      {/if}
+      <a href="/admin/returns" class="border border-white/10 text-white/50 px-4 py-2 text-[10px] font-mono tracking-widest hover:text-white transition-colors">
+        Process Returns
+      </a>
+    </div>
+
+    <KPICards client:load metrics={metrics} />
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2">
+        <RevenueChart client:load data={chartData} />
+      </div>
+      <div>
+        <TopProducts client:load products={topProducts} />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2">
+        <RecentOrders client:load orders={recentOrders} />
+      </div>
+      <div class="space-y-6">
+        <LowStockAlert client:load items={lowStockItems} />
+        <ActivityFeed client:load activities={systemFeed} />
+      </div>
+    </div>
+
+  </div>
+</AdminLayout>

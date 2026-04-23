@@ -1,0 +1,8 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { env } from 'cloudflare:workers';
+---
+import PaymentSettings from '../../components/admin/settings/PaymentSettings.svelte';
+<AdminLayout title=Gateways subtitle=Checkout & Payment Processing currentPath=/admin/settings/payments>
+  <div class=max-w-4xl><PaymentSettings client:load /></div>
+</AdminLayout>

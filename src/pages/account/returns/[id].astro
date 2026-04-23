@@ -1,0 +1,47 @@
+---
+import AccountLayout from '../../../layouts/Account.astro';
+import ReturnStatus from '../../../components/storefront/returns/ReturnStatus.svelte';
+import { env } from 'cloudflare:workers';
+
+const user = Astro.locals.user;
+if (!user) return Astro.redirect('/auth/login');
+
+const { id } = Astro.params;
+let rma = null;
+
+if (env.DB) {
+  try {
+    rma = await env.DB.prepare("SELECT * FROM orders WHERE id = ? AND customer_id = ? AND (status LIKE '%RETURN%' OR status = 'REFUNDED')").bind(id, user.id).first();
+  } catch (e) {}
+}
+
+if (!rma) return Astro.redirect('/404');
+---
+
+<AccountLayout title={`RMA Details`} currentPath="/account/returns">
+  <div class="max-w-4xl mx-auto space-y-8">
+    <div class="border-b border-white/10 pb-6">
+      <div class="flex items-center gap-3">
+        <h1 class="text-xl font-bold text-white uppercase tracking-widest font-mono">RMA-{id.substring(0,6).toUpperCase()}</h1>
+        <span class="text-[9px] px-2 py-0.5 border border-amber-500/30 text-amber-400 bg-amber-500/10 uppercase tracking-widest">{rma.status.replace('_', ' ')}</span>
+      </div>
+      <p class="text-xs text-white/50 font-mono mt-1">Original Order: #{id.substring(0,8)}</p>
+    </div>
+
+    <ReturnStatus client:load status={rma.status} />
+
+    <div class="bg-[#111318] border border-white/10 p-6">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-white/50 font-mono mb-4 border-b border-white/10 pb-2">Next Steps</h2>
+      {#if rma.status === 'RETURN_REQUESTED'}
+        <p class="text-sm text-white/80 font-mono leading-relaxed">Your request is under review. Please allow up to 24 hours for our operations team to authorize the return. You will receive an email with a prepaid shipping label once approved.</p>
+      {:else if rma.status === 'RETURN_APPROVED'}
+        <div class="space-y-4">
+          <p class="text-sm text-white/80 font-mono leading-relaxed">Your return is authorized. Please print your shipping label and drop the package at your nearest courier facility within 14 days.</p>
+          <button class="bg-[#36f4a4] text-black px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-white transition-colors">Download Shipping Label PDF</button>
+        </div>
+      {:else if rma.status === 'REFUNDED'}
+        <p class="text-sm text-[#36f4a4] font-mono leading-relaxed">This RMA is closed. The refund of ${rma.total.toFixed(2)} has been issued to your original payment method.</p>
+      {/if}
+    </div>
+  </div>
+</AccountLayout>

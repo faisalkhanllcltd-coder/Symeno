@@ -1,0 +1,102 @@
+---
+import StorefrontLayout from '../../layouts/Storefront.astro';
+
+// FORCE EDGE SSR: Remove getStaticPaths so dynamic D1 pricing and edge caching can operate.
+export const prerender = false;
+
+// PERFORMANCE UPGRADE: Cloudflare CDN Caching Strategy (1 Hour Edge Cache, 24 Hour Stale Revalidate)
+Astro.response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+
+const { category } = Astro.params;
+if (!category) return Astro.redirect('/404');
+
+// Category Metadata mapping (moved from getStaticPaths)
+const categoryMeta: Record<string, { name: string, desc: string }> = {
+  'audio': { name: 'Audio & Acoustics', desc: 'Studio-grade sound reproduction hardware.' },
+  'displays': { name: 'Displays & Monitors', desc: 'High-refresh rate visual matrices.' },
+  'peripherals': { name: 'Peripherals & Input', desc: 'Precision tactile interfaces and mechanical switches.' },
+  'components': { name: 'Core Components', desc: 'Raw processing and storage units.' }
+};
+
+const meta = categoryMeta[category as string];
+if (!meta) return Astro.redirect('/404');
+
+// D1 Query for active products in this category
+const db = (Astro.locals as any).runtime?.env?.DB;
+let activeProducts: any[] = [];
+
+if (db) {
+  try {
+    const { results } = await db.prepare(`
+      SELECT slug, title as name, base_price as price, retail_price as retail, brand 
+      FROM products 
+      WHERE category = ?1 AND stock_status != 'OUT_OF_STOCK'
+    `).bind(category).all();
+    activeProducts = results || [];
+  } catch (error) {
+    console.error('[D1_CATEGORY_QUERY_ERROR]', error);
+  }
+}
+---
+
+<StorefrontLayout title={`${meta.name} | Wholesale Arbitrage | Symeno`} description={meta.desc}>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 relative">
+    
+    <div class="absolute inset-0 opacity-[0.02] pointer-events-none" style="background-image: linear-gradient(#dae5e6 1px, transparent 1px), linear-gradient(90deg, #dae5e6 1px, transparent 1px); background-size: 32px 32px;"></div>
+
+    <nav class="flex text-[10px] font-mono text-[#dae5e6]/40 uppercase tracking-widest mb-8 relative z-10">
+      <a href="/" class="hover:text-white transition-colors focus:outline-none">Base</a>
+      <span class="mx-2">/</span>
+      <a href="/shop" class="hover:text-white transition-colors focus:outline-none">Catalog</a>
+      <span class="mx-2">/</span>
+      <span class="text-[#36f4a4]">{meta.name}</span>
+    </nav>
+
+    <div class="border-b border-[#dae5e6]/10 pb-8 mb-12 relative z-10">
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tighter text-white uppercase mb-4 group">{meta.name}<span class="text-[#36f4a4]">.</span></h1>
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <p class="text-sm text-[#dae5e6]/60 font-mono max-w-xl">{meta.desc}</p>
+        <span class="bg-[#0b1516] border border-[#dae5e6]/10 px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-[#dae5e6]/50 shadow-[0_0_10px_rgba(0,0,0,0.5)]">
+          {activeProducts.length} Units Secured
+        </span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
+      {activeProducts.length > 0 ? activeProducts.map(product => (
+        <a href={`/shop/product/${product.slug}`} class="group flex flex-col focus:outline-none relative">
+          
+          <div class="bg-[#0b1516] border border-[#dae5e6]/10 aspect-[4/5] mb-4 relative flex items-center justify-center overflow-hidden group-hover:border-[#36f4a4]/50 transition-colors">
+            <div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/20"></div>
+            <div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/20"></div>
+            
+            {product.retail > product.price && (
+              <div class="absolute top-3 left-3 bg-[#131d1e] border border-[#36f4a4]/30 text-[#36f4a4] text-[9px] font-bold uppercase tracking-widest px-2 py-1 z-10">
+                Save ${Math.floor(product.retail - product.price)}
+              </div>
+            )}
+            <span class="text-[10px] font-mono text-[#dae5e6]/20">Hardware Array</span>
+          </div>
+          
+          <span class="text-[10px] font-mono text-[#dae5e6]/40 uppercase tracking-widest mb-1 group-hover:text-[#dae5e6]/80 transition-colors">
+            {product.brand}
+          </span>
+          
+          <h2 class="text-sm font-bold text-white mb-1 group-hover:text-[#36f4a4] transition-colors truncate">{product.name}</h2>
+          
+          <div class="flex items-baseline gap-2 font-mono mt-auto">
+            <span class="text-sm font-bold text-[#36f4a4]">${product.price.toFixed(2)}</span>
+            {product.retail > product.price && (
+              <span class="text-[10px] text-[#dae5e6]/40 line-through">${product.retail.toFixed(2)}</span>
+            )}
+          </div>
+        </a>
+      )) : (
+        <div class="col-span-full py-20 text-center border border-[#dae5e6]/10 bg-[#0b1516]">
+          <p class="text-xs font-mono uppercase tracking-widest text-[#dae5e6]/40">Inventory Depleted. Check back next drop.</p>
+        </div>
+      )}
+    </div>
+
+  </div>
+</StorefrontLayout>

@@ -1,0 +1,69 @@
+name = "symeno-store"
+compatibility_date = "2024-09-23"
+compatibility_flags = [ "nodejs_compat_v2" ]
+pages_build_output_dir = "dist"
+
+# PUBLIC VARIABLES
+# These are safe to commit. They tell Cloudflare Edge what public keys to use.
+[vars]
+PUBLIC_STRIPE_KEY = "pk_test_placeholder"
+PUBLIC_SITE_URL = "https://symeno.com"
+R2_ACCOUNT_ID = "your_cloudflare_account_id"
+R2_BUCKET_NAME = "symeno-images"
+# SECRETS (Do NOT hardcode these here. Run these in your terminal):
+# npx wrangler secret put STRIPE_SECRET_KEY
+# npx wrangler secret put STRIPE_WEBHOOK_SECRET
+# npx wrangler secret put R2_ACCESS_KEY_ID
+# npx wrangler secret put R2_SECRET_ACCESS_KEY
+
+[[d1_databases]]
+binding = "DB"
+database_name = "symeno-db"
+database_id = "symeno-db-id"
+migrations_dir = "migrations"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "symeno-kv-id"
+
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "symeno-images"
+
+# ASYNC INFRASTRUCTURE: Background Task Offloading      
+[[queues.producers]]
+binding = "EMAIL_QUEUE"
+queue = "symeno-email-queue"
+
+[[queues.consumers]]
+queue = "symeno-email-queue"
+max_batch_size = 10
+max_batch_timeout = 5
+
+# STAGING ENVIRONMENT: Protects production from test mutations
+[env.staging]
+name = "symeno-store-staging"
+
+# Staging Public Variables
+[env.staging.vars]
+PUBLIC_STRIPE_KEY = "pk_test_placeholder"
+PUBLIC_SITE_URL = "https://staging.symeno.com"
+R2_ACCOUNT_ID = "your_cloudflare_account_id"
+R2_BUCKET_NAME = "symeno-images-staging"
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "symeno-db-staging"
+database_id = "preview-symeno-db-id" # Swap with your actual staging D1 ID
+migrations_dir = "migrations"
+
+[[env.staging.kv_namespaces]]
+binding = "KV"
+id = "preview-symeno-kv-id" # Swap with your actual staging KV ID
+
+[[env.staging.r2_buckets]]
+binding = "IMAGES"
+bucket_name = "symeno-images-staging"
+
+[triggers]
+crons = ["0 0 * * *"] # Run at midnight (00:00) every day

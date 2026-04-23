@@ -1,0 +1,11 @@
+﻿---
+import AdminLayout from '../../../layouts/Admin.astro';
+
+if (!Astro.locals.user) return Astro.redirect('/auth/login');
+const breadcrumbs = [{ label: 'Products', url: '/admin/products' }, { label: 'Provision Hardware' }];
+---
+<AdminLayout title="Provision Hardware" subtitle="Form architecture secured" breadcrumbs={breadcrumbs} currentPath="/admin/products">
+  <div class="bg-[#111318] border border-white/10 p-16 text-center">
+    <p class="text-white/50 font-mono uppercase tracking-widest text-xs">Connect to API endpoint.</p>
+  </div>
+</AdminLayout>

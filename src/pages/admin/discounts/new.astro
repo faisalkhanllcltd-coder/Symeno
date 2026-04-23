@@ -1,0 +1,24 @@
+---
+import AdminLayout from '../../../layouts/Admin.astro';
+import DiscountForm from '../../../components/admin/discounts/DiscountForm.svelte';
+
+if (!Astro.locals.user) return Astro.redirect('/auth/login');
+
+const breadcrumbs = [
+  { label: 'Discounts', url: '/admin/discounts' },
+  { label: 'New Promotion' }
+];
+---
+
+<AdminLayout 
+  title="Initialize Promotion" 
+  subtitle="Configure pricing constraints" 
+  breadcrumbs={breadcrumbs} 
+  currentPath="/admin/discounts"
+>
+  <div class="max-w-[1200px]">
+    <div class="bg-[#111318] border border-white/10 p-6">
+      <DiscountForm client:load />
+    </div>
+  </div>
+</AdminLayout>

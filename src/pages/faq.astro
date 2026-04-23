@@ -1,0 +1,20 @@
+---
+import StorefrontLayout from '../layouts/Storefront.astro';
+import FaqAccordion from '../components/storefront/support/FaqAccordion.svelte';
+
+const faqItems = [
+  { question: "How does your pricing work?", answer: "Symeno utilizes automated arbitrage algorithms to source authorized inventory from regions with lower wholesale costs. We pass those savings directly to you by maintaining a low-overhead operational model." },
+  { question: "Are the products authentic?", answer: "Every unit is serial-verified and sourced through authorized distributors. We do not engage with third-party marketplaces or grey-market sellers." },
+  { question: "What is your return policy?", answer: "Unopened hardware can be returned within 30 days of delivery. Once the factory seal is broken, items are subject to a 15% restocking fee unless a verifiable technical defect is present." }
+];
+---
+
+<StorefrontLayout title="FAQ">
+  <div class="max-w-4xl mx-auto px-4 py-20">
+    <div class="mb-12">
+      <h1 class="text-4xl font-bold tracking-tighter text-gray-900 mb-4 uppercase">Operational Intelligence.</h1>
+      <p class="text-sm text-gray-500 font-mono uppercase tracking-widest">Frequently Asked Questions & Protocols</p>
+    </div>
+    <FaqAccordion client:load items={faqItems} />
+  </div>
+</StorefrontLayout>

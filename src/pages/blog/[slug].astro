@@ -1,0 +1,16 @@
+﻿---
+import Storefront from '../../layouts/Storefront.astro';
+
+// If using Astro Content Collections, this would use getStaticPaths()
+// For SSR, we read params directly.
+const { slug } = Astro.params;
+---
+<Storefront title={`Transmission: ${slug}`}>
+  <div class="max-w-3xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
+    <a href="/blog" class="text-xs font-mono uppercase tracking-widest text-content-muted hover:text-brand transition-colors mb-8 inline-block">&larr; Return to Index</a>
+    <h1 class="text-4xl font-bold tracking-tighter uppercase mb-6">Transmission: <span class="text-brand">{slug}</span></h1>
+    <div class="bg-surface border border-outline rounded-xl p-8 shadow-ambient font-mono text-sm leading-relaxed text-content-muted">
+      <p>Secure content payload for slug '{slug}' is rendering...</p>
+    </div>
+  </div>
+</Storefront>

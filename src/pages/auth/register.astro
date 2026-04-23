@@ -1,0 +1,36 @@
+﻿---
+import Storefront from '../../layouts/Storefront.astro';
+---
+<Storefront title="Register Access">
+  <div class="max-w-md mx-auto py-24 px-4">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold uppercase mb-2 tracking-tighter text-content">Request Access</h1>
+      <p class="text-sm font-mono text-content-muted">Provision a new cryptographic identity.</p>
+    </div>
+    <div class="bg-surface border border-outline rounded-xl p-8 shadow-ambient">
+        <form action="/api/auth/register" method="POST" class="space-y-6">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <input type="text" name="firstName" placeholder="First Name" class="w-full bg-base border border-outline px-4 py-3 text-content outline-none font-mono text-sm rounded-lg transition-all" />
+            </div>
+            <div>
+              <input type="text" name="lastName" placeholder="Last Name" class="w-full bg-base border border-outline px-4 py-3 text-content outline-none font-mono text-sm rounded-lg transition-all" />
+            </div>
+          </div>
+          <div>
+            <input type="email" name="email" required placeholder="Email Address" class="w-full bg-base border border-outline px-4 py-3 text-content outline-none font-mono text-sm rounded-lg transition-all" />
+          </div>
+          <div>
+            <input type="password" name="password" required placeholder="Password" class="w-full bg-base border border-outline px-4 py-3 text-content outline-none font-mono text-sm rounded-lg transition-all" />
+            <p class="text-[10px] text-content-muted mt-2 font-mono uppercase tracking-widest">Min 8 chars, 1 uppercase, 1 number.</p>
+          </div>
+          <button type="submit" class="w-full bg-brand text-brand-dark py-4 font-bold uppercase tracking-widest hover:opacity-90 rounded-lg shadow-lg shadow-brand/10">
+            Initialize Identity
+          </button>      
+        </form>
+    </div>
+    <div class="mt-8 text-center">
+        <a href="/auth/login" class="text-xs font-mono uppercase text-content-muted hover:text-brand tracking-widest transition-colors">Already provisioned? Login.</a>
+    </div>
+  </div>
+</Storefront>

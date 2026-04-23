@@ -1,0 +1,80 @@
+---
+import AccountLayout from '../../layouts/Account.astro';
+import DynamicGreeting from '../../components/storefront/account/DynamicGreeting.svelte';
+import DashboardStats from '../../components/storefront/account/DashboardStats.svelte';
+import RecentOrdersWidget from '../../components/storefront/account/RecentOrdersWidget.svelte';
+import AccountQuickLinks from '../../components/storefront/account/AccountQuickLinks.svelte';
+import AccountRecommendations from '../../components/storefront/account/AccountRecommendations.svelte';
+import { env } from 'cloudflare:workers';
+
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect('/auth/login');
+}
+
+// Default States
+let stats = { totalOrders: 0, totalSpent: 0, points: 0 };
+let recentOrders = [];
+let recommendations = [];
+let recTitle = "Trending in the Matrix";
+
+// Edge-optimized data fetching using D1 Batch
+if (env.DB) {
+  try {
+    const db = env.DB;
+    
+    // 1. Fetch Aggregates & Recent Orders concurrently
+    const [statsRes, ordersRes] = await db.batch([
+      db.prepare("SELECT COUNT(id) as count, SUM(total) as spent FROM orders WHERE customer_id = ? AND status != 'CANCELLED'").bind(user.id),
+      db.prepare("SELECT id, created_at, status, total FROM orders WHERE customer_id = ? ORDER BY created_at DESC LIMIT 2").bind(user.id)
+    ]);
+
+    stats.totalOrders = statsRes.results[0]?.count || 0;
+    stats.totalSpent = statsRes.results[0]?.spent || 0;
+    stats.points = Math.floor(stats.totalSpent * 0.1); // Basic logic: 1 point per $10 spent
+    
+    recentOrders = ordersRes.results || [];
+
+    // 2. Fallback Recommendation Engine Logic
+    if (recentOrders.length > 0) {
+      // Logic: Based on past orders, show active products (Skipping complex ML for Edge speed)
+      recTitle = "Based on your operational history";
+      const { results } = await db.prepare(`SELECT title, slug, base_price, image_url FROM products WHERE is_active = 1 ORDER BY RANDOM() LIMIT 3`).all();
+      recommendations = results || [];
+    } else {
+      // New user fallback: show latest products
+      const { results } = await db.prepare(`SELECT title, slug, base_price, image_url FROM products WHERE is_active = 1 ORDER BY created_at DESC LIMIT 3`).all();
+      recommendations = results || [];
+    }
+  } catch (error) {
+    console.error("[ACCOUNT_DB_ERROR]", error);
+  }
+}
+---
+
+<AccountLayout title="Operator Dashboard" currentPath="/account">
+  <div class="max-w-5xl mx-auto space-y-8">
+    
+    <div class="border-b border-white/10 pb-6">
+      <DynamicGreeting client:load name={user.first_name} />
+      <p class="text-xs text-white/50 font-mono mt-2">Personal Identity & Ledger Management</p>
+    </div>
+
+    <DashboardStats stats={stats} />
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <div class="lg:col-span-2 space-y-8">
+        <RecentOrdersWidget orders={recentOrders} />
+        <AccountRecommendations products={recommendations} title={recTitle} />
+      </div>
+
+      <div>
+        <h3 class="text-xs font-bold uppercase tracking-widest text-white font-mono mb-4">Fast Travel</h3>
+        <AccountQuickLinks />
+      </div>
+
+    </div>
+
+  </div>
+</AccountLayout>

@@ -1,0 +1,28 @@
+---
+import AdminLayout from '../layouts/AdminLayout.astro';
+import ReviewModerationTable from '../components/admin/reviews/ReviewModerationTable.svelte';
+import { env } from 'cloudflare:workers';
+
+if (!Astro.locals.user || (Astro.locals.user.role !== 'admin' && Astro.locals.user.role !== 'staff')) {
+  return Astro.redirect('/auth/login');
+}
+
+let reviews = [];
+if (env.DB) {
+  try {
+    const { results } = await env.DB.prepare(`
+      SELECT r.*, p.title as product_title, u.email as customer_email 
+      FROM reviews r
+      JOIN products p ON r.product_id = p.id
+      LEFT JOIN users u ON r.customer_id = u.id
+      ORDER BY r.created_at DESC LIMIT 100
+    `).all();
+    reviews = results || [];
+  } catch (e) {}
+}
+---
+<AdminLayout title="Trust Center" subtitle="Customer Review Moderation" currentPath="/admin/reviews">
+  <div class="max-w-7xl">
+    <ReviewModerationTable client:load reviews={reviews} />
+  </div>
+</AdminLayout>

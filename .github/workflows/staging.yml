@@ -1,0 +1,48 @@
+name: Staging Deployment Matrix
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy-staging:
+    name: Build & Deploy to Edge (Staging)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Acquire Source Code
+        uses: actions/checkout@v4
+
+      - name: Initialize Node Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Execute D1 Migrations (Staging)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: d1 migrations apply symeno-db-staging --env staging --remote
+
+      - name: Build Astro Artifacts
+        run: npm run build
+        env:
+          # Injects public variables strictly for the staging environment build
+          PUBLIC_STRIPE_KEY: ${{ vars.PUBLIC_STRIPE_KEY_STAGING }}
+          PUBLIC_SITE_URL: "https://staging.symeno.com"
+
+      - name: Deploy to Cloudflare Edge (Preview Branch)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: pages deploy dist --project-name symeno-store --branch staging

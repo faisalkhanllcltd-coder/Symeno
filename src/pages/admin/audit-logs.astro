@@ -1,0 +1,72 @@
+---
+import AdminLayout from '../layouts/AdminLayout.astro';
+import AuditLogTable from '../components/admin/audit-logs/AuditLogTable.svelte';
+import AuditLogFilters from '../components/admin/audit-logs/AuditLogFilters.svelte';
+import { env } from 'cloudflare:workers';
+
+if (!Astro.locals.user || Astro.locals.user.role !== 'admin') {
+  return Astro.redirect('/auth/login');
+}
+
+// Initial server-side fetch
+let initialLogs = [];
+if (env.DB) {
+  try {
+    const { results } = await env.DB.prepare(`
+      SELECT a.*, u.email as actor_email 
+      FROM audit_logs a 
+      LEFT JOIN users u ON a.actor_id = u.id 
+      ORDER BY a.created_at DESC LIMIT 50
+    `).all();
+    initialLogs = results || [];
+  } catch (e) {}
+}
+---
+
+<AdminLayout title="Security & Compliance" subtitle="Immutable Audit Ledger" currentPath="/admin/audit-logs">
+  <div class="max-w-7xl space-y-6">
+    <div id="audit-app" data-initial={JSON.stringify(initialLogs)}></div>
+    <script>
+      import { mount } from 'svelte';
+      import AuditLogTable from '../components/admin/audit-logs/AuditLogTable.svelte';
+      import AuditLogFilters from '../components/admin/audit-logs/AuditLogFilters.svelte';
+      
+      const container = document.getElementById('audit-app');
+      const initialData = JSON.parse(container.dataset.initial);
+      
+      // Temporary state management for the Astro script block
+      let currentLogs = initialData;
+      let tableComponent;
+
+      const fetchLogs = async (filters) => {
+        const params = new URLSearchParams();
+        if (filters.action) params.append('action', filters.action);
+        if (filters.entity) params.append('entity', filters.entity);
+        
+        const res = await fetch(`/api/admin/audit-logs?${params.toString()}`);
+        if (res.ok) {
+          const newLogs = await res.json();
+          // Unmount old table, mount new table with updated props
+          container.innerHTML = '';
+          mountFilters();
+          mountTable(newLogs);
+        }
+      };
+
+      const mountFilters = () => {
+        mount(AuditLogFilters, { target: container, props: { onFilter: fetchLogs } });
+      };
+
+      const mountTable = (logs) => {
+        const tableWrapper = document.createElement('div');
+        tableWrapper.className = 'mt-6';
+        container.appendChild(tableWrapper);
+        mount(AuditLogTable, { target: tableWrapper, props: { logs } });
+      };
+
+      // Initial Mount
+      mountFilters();
+      mountTable(currentLogs);
+    </script>
+  </div>
+</AdminLayout>

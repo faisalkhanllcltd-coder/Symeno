@@ -1,0 +1,2 @@
+-- Migration: Add category column to products
+ALTER TABLE products ADD COLUMN category TEXT NOT NULL DEFAULT 'uncategorized';

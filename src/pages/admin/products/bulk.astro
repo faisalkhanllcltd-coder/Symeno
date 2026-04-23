@@ -1,0 +1,16 @@
+
+---
+import AdminLayout from '../../../layouts/Admin.astro';
+const user = Astro.locals.user;
+if (!user || user.role !== 'admin') return Astro.redirect('/auth/admin/login');
+---
+<AdminLayout title='Bulk Operations | Admin'>
+  <div class='p-8 max-w-4xl mx-auto'>
+    <h1 class='text-2xl font-bold text-white uppercase tracking-widest mb-2'>Mass Ingestion Protocol</h1>
+    <p class='text-xs font-mono text-white/50 mb-8'>Upload CSV matrix for bulk inventory adjustments.</p>
+    <div class='bg-[#111318] border border-white/10 border-dashed p-12 text-center hover:border-[#36f4a4]/50 transition-colors cursor-pointer'>
+      <span class='text-xs font-bold text-white uppercase tracking-widest block mb-2'>Select CSV Payload</span>
+      <span class='text-[10px] font-mono text-white/40'>Strict schema enforcement active. Max 5MB.</span>
+    </div>
+  </div>
+</AdminLayout>

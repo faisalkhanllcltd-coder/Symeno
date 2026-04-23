@@ -1,0 +1,83 @@
+---
+import Storefront from '../../layouts/Storefront.astro';
+
+const errorMap: Record<string, string> = {
+  'invalid_credentials': 'The credentials provided are invalid.',
+  'server_error': 'A system error occurred. Please try again.'
+};
+
+let errorMessage = null;
+if (Astro.cookies.has('auth_error')) {
+  const code = Astro.cookies.get('auth_error')?.value;
+  errorMessage = code ? (errorMap[code] || errorMap['server_error']) : null;
+  Astro.cookies.delete('auth_error', { path: '/' });
+}
+
+---
+<Storefront title="Authenticate">
+  <div class="max-w-md mx-auto py-24 px-4">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold uppercase mb-2 text-content tracking-tighter">Account Access</h1>
+        <p class="text-sm font-mono text-content-muted">Authorized personnel and verified clients only.</p>
+    </div>
+
+    <div id="auth-error-container" class="hidden mb-6 p-4 bg-brand-alert/10 border border-brand-alert/30 text-brand-alert text-xs font-mono uppercase tracking-widest text-center shadow-[0_0_15px_rgba(239,68,68,0.15)] flex items-center justify-center gap-2">
+        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+        <div id="auth-error" class="font-bold"></div>
+    </div>
+    
+    <div class="bg-surface border border-outline rounded-xl p-8 shadow-ambient">
+        <form id="login-form" class="space-y-6" onsubmit="event.preventDefault(); return false;">
+          <div><input type="email" id="email" name="email" required placeholder="Email address" class="w-full bg-base border border-outline px-4 py-3 text-content outline-none font-mono text-sm rounded-lg" /></div>
+          <div><input type="password" id="password" name="password" required placeholder="Password" class="w-full bg-base border border-outline px-4 py-3 text-content outline-none font-mono text-sm rounded-lg" /></div>
+          <button type="submit" id="auth-submit-btn" class="w-full bg-brand text-brand-dark py-4 font-bold uppercase tracking-widest hover:opacity-90 rounded-lg transition-opacity">Authenticate</button>
+        </form>
+    </div>
+    <div class="mt-8 text-center"><a href="/auth/register" class="text-xs font-mono text-content-muted hover:text-brand uppercase tracking-widest">No credentials? Register.</a></div>
+  </div>
+
+  <script is:inline>
+    // Execute immediately before DCL
+    window.addEventListener('load', () => {
+        const form = document.getElementById('login-form');
+        const btn = document.getElementById('auth-submit-btn');
+        const errorContainer = document.getElementById('auth-error-container');
+        const errorText = document.getElementById('auth-error');
+
+        async function processLogin() {
+            errorContainer.classList.add('hidden');
+            const formData = new FormData(form);
+            
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    body: formData,
+                    redirect: 'manual'
+                });
+
+                if (res.type === 'opaqueredirect' || res.status === 302 || res.status === 301 || res.redirected || (res.status >= 200 && res.status < 300)) {
+                    window.location.href = res.url || '/account/orders';
+                    return;
+                }
+
+                if (res.status === 401) {
+                    errorText.textContent = "The credentials provided are invalid.";
+                } else if (res.status === 403) {
+                    errorText.textContent = "Access denied by security matrix.";
+                } else {
+                    errorText.textContent = "A system error occurred. Please try again.";
+                }
+                errorContainer.classList.remove('hidden');
+            } catch (err) {
+                errorText.textContent = "Network error. Check connection.";
+                errorContainer.classList.remove('hidden');
+            }
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            processLogin();
+        });
+    });
+  </script>
+</Storefront>

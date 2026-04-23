@@ -1,0 +1,204 @@
+---
+// src/pages/admin/products/[id].astro
+import AdminLayout from '../../../layouts/Admin.astro';
+import VariantManager from '../../../components/admin/products/VariantManager.svelte';
+import { logAuditAction } from '../../../lib/audit';
+import type { Product, ProductVariant } from '../../../types/storefront';
+import { env } from 'cloudflare:workers';
+
+const user = Astro.locals.user;
+if (!user) return Astro.redirect('/auth/login');
+
+const { id } = Astro.params;
+let errorMessage = '';
+let product: Product | null = null;
+let variants: ProductVariant[] = [];
+
+// FIX: Secure bindings via env object
+const db = env.DB;
+
+if (!db) {
+  throw new Error('Database connection failed. Check bindings.');
+}
+
+try {
+  const prodResult = await db.prepare('SELECT * FROM products WHERE id = ?1').bind(id).first();
+  if (!prodResult) return Astro.redirect('/admin/products');
+  
+  product = {
+    id: prodResult.id as string,
+    slug: prodResult.slug as string,
+    brand: prodResult.brand as string,
+    title: prodResult.title as string,
+    description: prodResult.description as string,
+    basePrice: prodResult.base_price as number,
+    retailPrice: prodResult.retail_price as number | null,
+    stockStatus: prodResult.stock_status as 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK',
+  } as Product;
+
+  const varResult = await db.prepare('SELECT * FROM product_variants WHERE product_id = ?1').bind(id).all();
+  variants = (varResult.results || []).map((v: any) => ({
+    id: v.id,
+    productId: v.product_id,
+    sku: v.sku,
+    title: v.title,
+    priceAdjustment: v.price_adjustment,
+    inventoryQuantity: v.inventory_quantity
+  })) as ProductVariant[];
+
+} catch (error) {
+  console.error('[DB_FETCH_ERROR]', error);
+  errorMessage = 'Failed to load product telemetry from the database.';
+}
+
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData();
+
+    const brand = data.get('brand') as string;
+    const title = data.get('title') as string;
+    const description = data.get('description') as string;
+    const basePrice = parseFloat(data.get('basePrice') as string);
+    const retailPriceRaw = data.get('retailPrice') as string;
+    const retailPrice = retailPriceRaw ? parseFloat(retailPriceRaw) : null;
+    const stockStatus = data.get('stockStatus') as string;
+
+    const variantIds = data.getAll('variant_id[]');
+    const variantSkus = data.getAll('variant_sku[]');
+    const variantTitles = data.getAll('variant_title[]');
+    const variantPrices = data.getAll('variant_price[]');
+    const variantQtys = data.getAll('variant_qty[]');
+
+    const statements = [];
+
+    statements.push(
+      db.prepare(
+        `UPDATE products 
+         SET brand = ?1, title = ?2, description = ?3, base_price = ?4, retail_price = ?5, stock_status = ?6, updated_at = CURRENT_TIMESTAMP
+         WHERE id = ?7`
+      ).bind(brand, title, description, basePrice, retailPrice, stockStatus, id)
+    );
+
+    statements.push(
+      db.prepare(`DELETE FROM product_variants WHERE product_id = ?1`).bind(id)
+    );
+
+    for (let i = 0; i < variantIds.length; i++) {
+      if (!variantSkus[i] || !variantTitles[i]) continue;
+      statements.push(
+        db.prepare(
+          `INSERT INTO product_variants (id, product_id, sku, title, price_adjustment, inventory_quantity)
+           VALUES (?1, ?2, ?3, ?4, ?5, ?6)`
+        ).bind(
+          variantIds[i], id, variantSkus[i], variantTitles[i],
+          parseFloat((variantPrices[i] as string) || '0'),
+          parseInt((variantQtys[i] as string) || '0', 10)
+        )
+      );
+    }
+
+    await db.batch(statements);
+
+    // STRICT AUDIT LOGGING: Mapping exact properties to the AuditPayload schema
+    await logAuditAction(db, {
+      action: 'UPDATE',
+      entity_type: 'PRODUCT',
+      entity_id: id as string,
+      actor_id: user.id || 'admin_master_01',
+      details: { after: { title, brand, stockStatus } },
+      ip_address: Astro.request.headers.get('cf-connecting-ip') || '127.0.0.1'
+    });
+
+    return Astro.redirect('/admin/products');
+
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('[PRODUCT_UPDATE_ERROR]', error.message);
+      errorMessage = error.message;
+    }
+  }
+}
+
+const breadcrumbs = [
+  { label: 'Products', url: '/admin/products' },
+  { label: id as string }
+];
+---
+
+<AdminLayout title={`Modify SKU`} subtitle={`ID: ${id}`} breadcrumbs={breadcrumbs} currentPath="/admin/products" primaryAction={product?.slug ? { label: "View Live", url: `/shop/product/${product.slug}` } : undefined}>
+  <div class="max-w-4xl space-y-6">
+
+    {errorMessage && (
+      <div class="p-4 bg-rose-500/10 border border-rose-500/30">
+        <p class="text-xs font-bold text-rose-400 font-mono uppercase tracking-widest">{errorMessage}</p>
+      </div>
+    )}
+
+    {product && (
+      <form method="POST" class="space-y-6">
+        
+        <div class="bg-[#111318] border border-white/10 p-6 sm:p-8">
+          <h2 class="text-xs font-bold text-white font-mono uppercase tracking-widest mb-6 border-b border-white/10 pb-2">Core Telemetry</h2>
+          
+          <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+            <div class="sm:col-span-3">
+              <label for="brand" class="block text-[10px] font-bold uppercase tracking-widest text-white/50 font-mono mb-2">Brand</label>
+              <input type="text" name="brand" id="brand" value={product.brand} required class="block w-full bg-[#1A1D23] border border-white/10 text-white px-3 py-2 text-sm focus:outline-none focus:border-[#36f4a4]/50 rounded-none font-mono transition-colors" />
+            </div>
+
+            <div class="sm:col-span-6">
+              <label for="title" class="block text-[10px] font-bold uppercase tracking-widest text-white/50 font-mono mb-2">Product Title</label>
+              <input type="text" name="title" id="title" value={product.title} required class="block w-full bg-[#1A1D23] border border-white/10 text-white px-3 py-2 text-sm focus:outline-none focus:border-[#36f4a4]/50 rounded-none font-mono transition-colors" />
+            </div>
+
+            <div class="sm:col-span-6">
+              <label for="description" class="block text-[10px] font-bold uppercase tracking-widest text-white/50 font-mono mb-2">Description / Editorial</label>
+              <textarea id="description" name="description" rows="4" required class="block w-full bg-[#1A1D23] border border-white/10 text-white px-3 py-2 text-sm focus:outline-none focus:border-[#36f4a4]/50 rounded-none font-mono transition-colors">{product.description}</textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-[#111318] border border-white/10 p-6 sm:p-8">
+          <h2 class="text-xs font-bold text-white font-mono uppercase tracking-widest mb-6 border-b border-white/10 pb-2">Financials & Status</h2>
+          
+          <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+            <div class="sm:col-span-2 relative">
+              <label for="basePrice" class="block text-[10px] font-bold uppercase tracking-widest text-white/50 font-mono mb-2">Base Price</label>
+              <span class="absolute left-3 top-[30px] text-white/40 font-mono">$</span>
+              <input type="number" step="0.01" name="basePrice" id="basePrice" value={product.basePrice} required class="block w-full bg-[#1A1D23] border border-white/10 text-white pl-7 pr-3 py-2 text-sm focus:outline-none focus:border-[#36f4a4]/50 rounded-none font-mono transition-colors" />
+            </div>
+
+            <div class="sm:col-span-2 relative">
+              <label for="retailPrice" class="block text-[10px] font-bold uppercase tracking-widest text-white/50 font-mono mb-2">Retail Price (RRP)</label>
+              <span class="absolute left-3 top-[30px] text-white/40 font-mono">$</span>
+              <input type="number" step="0.01" name="retailPrice" id="retailPrice" value={product.retailPrice || ''} class="block w-full bg-[#1A1D23] border border-white/10 text-white pl-7 pr-3 py-2 text-sm focus:outline-none focus:border-[#36f4a4]/50 rounded-none font-mono transition-colors" />
+            </div>
+
+            <div class="sm:col-span-2">
+              <label for="stockStatus" class="block text-[10px] font-bold uppercase tracking-widest text-white/50 font-mono mb-2">Global Status</label>
+              <select id="stockStatus" name="stockStatus" class="block w-full bg-[#1A1D23] border border-white/10 text-white px-3 py-2 text-sm focus:outline-none focus:border-[#36f4a4]/50 rounded-none cursor-pointer font-mono transition-colors">
+                <option value="IN_STOCK" selected={product.stockStatus === 'IN_STOCK'}>IN_STOCK</option>
+                <option value="LOW_STOCK" selected={product.stockStatus === 'LOW_STOCK'}>LOW_STOCK</option>
+                <option value="OUT_OF_STOCK" selected={product.stockStatus === 'OUT_OF_STOCK'}>OUT_OF_STOCK</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-[#111318] border border-white/10 p-6 sm:p-8">
+          <VariantManager client:load initialVariants={variants} />
+        </div>
+
+        <div class="flex justify-end gap-4 pt-4">
+          <a href="/admin/products" class="border border-white/10 text-white px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-white/5 transition-colors focus:outline-none">
+            Abort
+          </a>
+          <button type="submit" class="bg-[#36f4a4] text-[#003822] px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-white transition-colors focus:outline-none shadow-[0_0_15px_rgba(54,244,164,0.15)]">
+            Commit Changes
+          </button>
+        </div>
+
+      </form>
+    )}
+  </div>
+</AdminLayout>

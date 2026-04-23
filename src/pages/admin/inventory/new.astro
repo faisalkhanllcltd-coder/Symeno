@@ -1,0 +1,25 @@
+---
+// src/pages/admin/inventory/new.astro
+import AdminLayout from '../../../layouts/Admin.astro';
+import ProductForm from '../../../components/admin/products/ProductForm.svelte';
+
+if (!Astro.locals.user) return Astro.redirect('/auth/login');
+
+const breadcrumbs = [
+  { label: 'Inventory', url: '/admin/inventory' },
+  { label: 'Initialize Node' }
+];
+---
+
+<AdminLayout 
+  title="Initialize Inventory Node" 
+  subtitle="Data propagates immediately to the edge Storefront"
+  breadcrumbs={breadcrumbs}
+  currentPath="/admin/inventory"
+>
+  <div class="max-w-5xl">
+    <div class="bg-[#111318] p-6 md:p-8 border border-white/10">
+      <ProductForm client:load />
+    </div>
+  </div>
+</AdminLayout>

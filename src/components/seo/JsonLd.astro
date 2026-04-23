@@ -1,0 +1,17 @@
+---
+// src/components/seo/JsonLd.astro
+
+interface Props {
+  schema: Record<string, any>;
+}
+
+const { schema } = Astro.props;
+
+// Ensure the schema.org context is universally applied
+const structuredData = {
+  "@context": "https://schema.org",
+  ...schema
+};
+---
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />

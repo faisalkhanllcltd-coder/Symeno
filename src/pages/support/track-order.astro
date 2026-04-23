@@ -1,0 +1,13 @@
+---
+import StorefrontLayout from '../../layouts/Storefront.astro';
+import GuestTracker from '../../components/storefront/support/GuestTracker.svelte';
+---
+<StorefrontLayout title="Track Logistics | Symeno">
+  <main class="pt-32 pb-24 px-6 min-h-screen">
+    <div class="max-w-2xl mx-auto mb-12 text-center">
+      <h1 class="text-3xl md:text-5xl font-bold text-white uppercase tracking-tighter mb-4">Logistics Telemetry</h1>
+      <p class="text-white/60 font-mono text-sm max-w-xl mx-auto">Enter your credentials to intercept real-time routing data for your shipment.</p>
+    </div>
+    <GuestTracker client:load />
+  </main>
+</StorefrontLayout>

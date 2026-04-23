@@ -1,0 +1,53 @@
+---
+import StorefrontLayout from '../../layouts/Storefront.astro';
+
+const brands = [
+  { name: 'Apple', slug: 'apple', status: 'Verified', nodes: 12 },
+  { name: 'Sony', slug: 'sony', status: 'Verified', nodes: 8 },
+  { name: 'LG', slug: 'lg', status: 'Verified', nodes: 4 },
+  { name: 'Logitech', slug: 'logitech', status: 'Verified', nodes: 6 },
+  { name: 'Keychron', slug: 'keychron', status: 'Verified', nodes: 3 }
+];
+---
+
+<StorefrontLayout title="Authorized Brands | Symeno" description="Our network of verified hardware suppliers.">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 relative">
+    
+    <div class="absolute inset-0 opacity-[0.02] pointer-events-none" style="background-image: linear-gradient(#dae5e6 1px, transparent 1px), linear-gradient(90deg, #dae5e6 1px, transparent 1px); background-size: 32px 32px;"></div>
+
+    <nav class="flex text-[10px] font-mono text-[#dae5e6]/40 uppercase tracking-widest mb-8 relative z-10">
+      <a href="/" class="hover:text-white transition-colors focus:outline-none">Base</a>
+      <span class="mx-2">/</span>
+      <span class="text-[#36f4a4]">Directory</span>
+    </nav>
+
+    <div class="border-b border-[#dae5e6]/10 pb-8 mb-12 relative z-10">
+      <h1 class="text-4xl md:text-6xl font-bold tracking-tighter text-white uppercase mb-4">Supplier <span class="text-[#36f4a4]">Nodes.</span></h1>
+      <p class="text-sm text-[#dae5e6]/60 font-mono max-w-xl">
+        We only interface with tier-1 manufacturers. Every brand listed here is cryptographically verified and subject to our zero-markup wholesale guarantee.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
+      {brands.map(brand => (
+        <a href={`/brands/${brand.slug}`} class="group flex items-center justify-between bg-[#0b1516] border border-[#dae5e6]/10 p-6 hover:border-[#36f4a4]/50 transition-colors focus:outline-none">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-[#131d1e] border border-[#dae5e6]/5 flex items-center justify-center text-[8px] font-mono text-[#dae5e6]/30 group-hover:text-[#36f4a4] transition-colors">LOGO</div>
+            <div>
+              <h2 class="text-lg font-bold text-white uppercase tracking-tight group-hover:text-[#36f4a4] transition-colors">{brand.name}</h2>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="w-1.5 h-1.5 bg-[#36f4a4]"></span>
+                <span class="text-[10px] font-mono uppercase tracking-widest text-[#dae5e6]/50">{brand.status}</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col items-end">
+            <span class="text-xs font-mono font-bold text-white">{brand.nodes} SKUs</span>
+            <span class="text-[10px] font-mono uppercase tracking-widest text-[#dae5e6]/30 group-hover:text-white transition-colors mt-1">Access &rarr;</span>
+          </div>
+        </a>
+      ))}
+    </div>
+
+  </div>
+</StorefrontLayout>

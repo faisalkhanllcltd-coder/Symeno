@@ -1,0 +1,32 @@
+---
+// src/components/storefront/Newsletter.astro
+---
+<section class="w-full py-24 bg-[#070d0e] border-t border-[#dae5e6]/10 relative overflow-hidden">
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#36f4a4] opacity-[0.02] blur-[80px] rounded-full pointer-events-none z-0"></div>
+  
+  <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
+    <h2 class="text-3xl md:text-4xl font-bold text-white tracking-tight mb-4">Get First Access.</h2>
+    <p class="text-[#dae5e6]/60 text-lg mb-10 font-light max-w-2xl mx-auto">
+      Our deepest deals often sell out in under 60 minutes. Join the priority list for early access and subscriber-only inventory.
+    </p>
+
+    <form class="flex flex-col sm:flex-row gap-0 max-w-lg mx-auto group">
+      <input 
+        type="email" 
+        placeholder="Enter email address" 
+        required 
+        class="flex-grow bg-[#131d1e] border border-[#dae5e6]/15 text-white px-6 py-4 rounded-none focus:outline-none focus:border-[#36f4a4]/50 focus:ring-1 focus:ring-[#36f4a4]/50 transition-all placeholder:text-[#dae5e6]/30 font-mono text-sm"
+      />
+      <button 
+        type="submit" 
+        class="bg-[#36f4a4] text-[#003822] px-8 py-4 rounded-none font-bold text-sm uppercase tracking-wider hover:bg-[#36f4a4]/90 transition-all duration-300 shadow-[0_0_15px_rgba(54,244,164,0.1)] hover:shadow-[0_0_25px_rgba(54,244,164,0.2)]"
+      >
+        Send Me Deals
+      </button>
+    </form>
+    
+    <p class="mt-6 text-[10px] font-mono text-[#dae5e6]/40 uppercase tracking-[0.2em]">
+      Zero Spam &middot; Encrypted Data &middot; Unsubscribe Anytime
+    </p>
+  </div>
+</section>

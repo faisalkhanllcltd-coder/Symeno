@@ -1,0 +1,33 @@
+﻿---
+import StorefrontLayout from '../layouts/Storefront.astro';
+---
+
+<StorefrontLayout title="404: Node Not Found | Symeno" description="System error. The requested hardware node does not exist.">
+  <div class="min-h-[70vh] flex flex-col items-center justify-center px-4 relative overflow-hidden bg-base transition-colors duration-300">
+
+    <div class="absolute inset-0 opacity-[0.05] pointer-events-none bg-[linear-gradient(var(--color-content)_1px,transparent_1px),linear-gradient(90deg,var(--color-content)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+
+    <div class="text-center relative z-10 max-w-2xl mx-auto">
+      <div class="inline-block bg-brand-alert/10 border border-brand-alert/30 text-brand-alert text-[10px] font-bold uppercase tracking-widest px-3 py-1 mb-8 shadow-[0_0_15px_var(--color-brand-alert)]">
+        Error Code: 404
+      </div>
+      
+      <h1 class="text-6xl md:text-8xl font-bold tracking-tighter text-content uppercase mb-4 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+        Dead <span class="text-brand-alert">End.</span>    
+      </h1>
+
+      <p class="text-base md:text-lg text-content-muted font-mono mb-10 leading-relaxed">
+        The requested logistics node cannot be located. The hardware shipment may have been re-routed, or the URL parameters are invalid.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="/deals" class="w-full sm:w-auto bg-brand text-brand-dark px-8 py-4 text-xs font-bold uppercase tracking-widest hover:opacity-80 transition-all duration-300 shadow-[0_0_15px_var(--color-brand)] focus:outline-none">
+          Scan Live Deals &rarr;
+        </a>
+        <a href="/shop" class="w-full sm:w-auto bg-transparent border border-outline text-content px-8 py-4 text-xs font-bold uppercase tracking-widest hover:border-brand hover:text-brand transition-all duration-300 focus:outline-none">
+          Return to Catalog
+        </a>
+      </div>
+    </div>
+  </div>
+</StorefrontLayout>

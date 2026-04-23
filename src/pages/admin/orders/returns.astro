@@ -1,0 +1,44 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { env } from 'cloudflare:workers';
+
+if (!Astro.locals.user || (Astro.locals.user.role !== 'admin' && Astro.locals.user.role !== 'staff')) {
+  return Astro.redirect('/auth/login');
+}
+
+let RMAs = [];
+if (env.DB) {
+  try {
+    const { results } = await env.DB.prepare("SELECT * FROM orders WHERE status = 'RETURN_REQUESTED'").all();
+    RMAs = results || [];
+  } catch (e) {}
+}
+---
+
+<AdminLayout title="RMA Management" subtitle="Return Merchandise Authorizations" currentPath="/admin/orders">
+  <div class="bg-[#111318] border border-white/10 overflow-hidden">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-[#0a0b0e] border-b border-white/10 text-[10px] font-mono uppercase tracking-widest text-white/40">
+          <th class="p-4 font-normal">Order ID</th>
+          <th class="p-4 font-normal">Customer</th>
+          <th class="p-4 font-normal text-right">Value</th>
+          <th class="p-4 font-normal text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-white/[0.04]">
+        {RMAs.map(rma => (
+          <tr class="hover:bg-white/[0.02] transition-colors">
+            <td class="p-4 text-xs font-mono text-[#36f4a4]"><a href={`/admin/orders/${rma.id}`}>{rma.id}</a></td>
+            <td class="p-4 text-xs font-mono text-white/70">{rma.customer_email}</td>
+            <td class="p-4 text-xs font-mono text-white text-right">${rma.total}</td>
+            <td class="p-4 text-center">
+              <a href={`/admin/orders/${rma.id}`} class="text-[10px] border border-white/10 px-3 py-1 font-mono uppercase tracking-widest hover:bg-white/10 text-white">Review</a>
+            </td>
+          </tr>
+        ))}
+        {RMAs.length === 0 && <tr><td colspan="4" class="p-8 text-center text-xs font-mono text-white/30 uppercase">No active return requests.</td></tr>}
+      </tbody>
+    </table>
+  </div>
+</AdminLayout>

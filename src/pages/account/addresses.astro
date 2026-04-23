@@ -1,0 +1,31 @@
+---
+import AccountLayout from '../../layouts/Account.astro';
+import AddressManager from '../../components/storefront/account/AddressManager.svelte';
+import { env } from 'cloudflare:workers';
+
+const user = Astro.locals.user;
+if (!user) return Astro.redirect('/auth/login');
+
+let savedAddresses = [];
+if (env.DB) {
+  try {
+    const { results } = await env.DB.prepare(`
+      SELECT * FROM addresses 
+      WHERE customer_id = ?1 
+      ORDER BY is_default DESC, created_at DESC
+    `).bind(user.id).all();
+    savedAddresses = results || [];
+  } catch (e) {}
+}
+---
+
+<AccountLayout title="Saved Addresses" currentPath="/account/addresses">
+  <div class="max-w-5xl mx-auto space-y-6">
+    <div class="border-b border-white/10 pb-4">
+      <h1 class="text-xl font-bold text-white uppercase tracking-widest">Logistics Hub</h1>
+      <p class="text-xs text-white/50 font-mono mt-1">Manage delivery vectors and dispatch locations.</p>
+    </div>
+    
+    <AddressManager client:load initialAddresses={savedAddresses} />
+  </div>
+</AccountLayout>
