@@ -1,12 +1,23 @@
 ﻿---
 import Storefront from '../layouts/Storefront.astro';
 ---
+
 <Storefront title="Press & Media">
-  <div class="max-w-4xl mx-auto py-20 px-4 sm:px-6 lg:px-8 text-center">
-    <h1 class="text-5xl font-bold tracking-tighter uppercase mb-6">Press Deck</h1>
-    <p class="text-content-muted text-lg max-w-2xl mx-auto mb-12">Official statements, brand assets, and media contact directives.</p>
-    <div class="bg-surface border border-outline rounded-xl p-12 shadow-ambient">
-      <a href="/contact" class="text-brand font-mono uppercase tracking-widest text-xs hover:underline decoration-brand underline-offset-4">Direct all media inquiries to communications channel &rarr;</a>
+  <div class="mx-auto max-w-4xl px-4 py-20 text-center sm:px-6 lg:px-8">
+    <h1 class="mb-6 text-5xl font-bold tracking-tighter uppercase">
+      Press Deck
+    </h1>
+    <p class="text-content-muted mx-auto mb-12 max-w-2xl text-lg">
+      Official statements, brand assets, and media contact directives.
+    </p>
+    <div
+      class="bg-surface border-outline shadow-ambient rounded-xl border p-12"
+    >
+      <a
+        href="/contact"
+        class="text-brand decoration-brand font-mono text-xs tracking-widest uppercase underline-offset-4 hover:underline"
+        >Direct all media inquiries to communications channel &rarr;</a
+      >
     </div>
   </div>
 </Storefront>

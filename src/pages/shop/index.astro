@@ -3,12 +3,12 @@ import StorefrontLayout from '../../layouts/Storefront.astro';
 import type { Product } from '../../types/storefront';
 import FilterSidebar from '../../components/storefront/catalog/FilterSidebar.svelte';
 import ProductGrid from '../../components/storefront/catalog/ProductGrid.svelte';
-import { env } from "cloudflare:workers";
+import { env } from 'cloudflare:workers';
 
 // 1. EXTRACT DATABASE BINDING
 const db = (env as any).DB;
 // Restored strict typing
-let liveProducts: Product[] | any[] = []; 
+let liveProducts: Product[] | any[] = [];
 
 // 2. EXTRACT URL PARAMETERS FOR EDGE SEARCH
 const url = new URL(Astro.request.url);
@@ -39,8 +39,11 @@ if (db) {
 
     query += ` LIMIT 50`;
 
-    const { results } = await db.prepare(query).bind(...params).all();
-    
+    const { results } = await db
+      .prepare(query)
+      .bind(...params)
+      .all();
+
     // Mapped safely to satisfy both your existing Product type and the Svelte Component
     liveProducts = (results || []).map((p: any) => ({
       id: p.id,
@@ -60,61 +63,93 @@ if (db) {
 }
 ---
 
-<StorefrontLayout title="The Catalog" description="Verified inventory. Real-time pricing. Browse the Symeno master catalog.">
-  
+<StorefrontLayout
+  title="The Catalog"
+  description="Verified inventory. Real-time pricing. Browse the Symeno master catalog."
+>
   <div class="bg-base min-h-screen pt-8 pb-24 transition-colors duration-300">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      <div class="pb-8 mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-outline">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div
+        class="border-outline mb-8 flex flex-col justify-between gap-4 border-b pb-8 md:flex-row md:items-end"
+      >
         <div>
-          <h1 class="text-4xl md:text-5xl font-bold text-content tracking-tighter mb-2 font-sans transition-colors duration-300">
-             {q ? `Results for "${q}"` : 'The Catalog.'}
+          <h1
+            class="text-content mb-2 font-sans text-4xl font-bold tracking-tighter transition-colors duration-300 md:text-5xl"
+          >
+            {q ? `Results for "${q}"` : 'The Catalog.'}
           </h1>
-          <p class="text-content-muted font-light transition-colors duration-300">
-            {q ? `Acquired ${liveProducts.length} verified hardware matches.` : 'Verified inventory. Real-time pricing.'}
+          <p
+            class="text-content-muted font-light transition-colors duration-300"
+          >
+            {
+              q
+                ? `Acquired ${liveProducts.length} verified hardware matches.`
+                : 'Verified inventory. Real-time pricing.'
+            }
           </p>
         </div>
-        
-        <form action="/shop" method="GET" class="flex items-center gap-4 text-sm font-mono text-content-muted transition-colors duration-300">
+
+        <form
+          action="/shop"
+          method="GET"
+          class="text-content-muted flex items-center gap-4 font-mono text-sm transition-colors duration-300"
+        >
           {q && <input type="hidden" name="q" value={q} />}
           {brand && <input type="hidden" name="brand" value={brand} />}
-          
+
           <span>Sort by:</span>
-          <select name="sort" onchange="this.form.submit()" class="bg-surface-hover text-content px-4 py-2 focus:outline-none focus:ring-1 focus:ring-brand rounded-md transition-colors duration-300 cursor-pointer shadow-ambient">
-            <option value="newest" selected={sort === 'newest'}>Newest Arrivals</option>
-            <option value="price_asc" selected={sort === 'price_asc'}>Price: Low to High</option>
-            <option value="price_desc" selected={sort === 'price_desc'}>Price: High to Low</option>
+          <select
+            name="sort"
+            onchange="this.form.submit()"
+            class="bg-surface-hover text-content focus:ring-brand shadow-ambient cursor-pointer rounded-md px-4 py-2 transition-colors duration-300 focus:ring-1 focus:outline-none"
+          >
+            <option value="newest" selected={sort === 'newest'}
+              >Newest Arrivals</option
+            >
+            <option value="price_asc" selected={sort === 'price_asc'}
+              >Price: Low to High</option
+            >
+            <option value="price_desc" selected={sort === 'price_desc'}
+              >Price: High to Low</option
+            >
           </select>
         </form>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
-        
-        <aside class="hidden lg:block space-y-8">
+      <div class="grid grid-cols-1 gap-12 lg:grid-cols-4">
+        <aside class="hidden space-y-8 lg:block">
           <div>
-            <h3 class="text-xs font-bold text-content uppercase tracking-widest mb-4 transition-colors duration-300">Status</h3>
-            <ul class="space-y-4 text-sm text-content-muted">
-              <li class="flex justify-between items-center group">
-                <span class="group-hover:text-brand transition-colors cursor-pointer">In Stock</span> 
-                <span class="font-mono text-brand bg-brand/10 px-2 py-0.5 rounded text-xs border border-brand/20">{liveProducts.length}</span>
+            <h3
+              class="text-content mb-4 text-xs font-bold tracking-widest uppercase transition-colors duration-300"
+            >
+              Status
+            </h3>
+            <ul class="text-content-muted space-y-4 text-sm">
+              <li class="group flex items-center justify-between">
+                <span
+                  class="group-hover:text-brand cursor-pointer transition-colors"
+                  >In Stock</span
+                >
+                <span
+                  class="text-brand bg-brand/10 border-brand/20 rounded border px-2 py-0.5 font-mono text-xs"
+                  >{liveProducts.length}</span
+                >
               </li>
             </ul>
           </div>
 
-          <FilterSidebar 
-            activeBrand={brand} 
-            activeSort={sort} 
-            currentQuery={q} 
-            client:load 
+          <FilterSidebar
+            activeBrand={brand}
+            activeSort={sort}
+            currentQuery={q}
+            client:load
           />
         </aside>
 
         <div class="lg:col-span-3">
           <ProductGrid products={liveProducts} client:load />
         </div>
-        
       </div>
-
     </div>
   </div>
 </StorefrontLayout>

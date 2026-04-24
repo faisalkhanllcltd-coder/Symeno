@@ -38,7 +38,7 @@ jobs:
         env:
           # Injects public variables strictly for the staging environment build
           PUBLIC_STRIPE_KEY: ${{ vars.PUBLIC_STRIPE_KEY_STAGING }}
-          PUBLIC_SITE_URL: "https://staging.symeno.com"
+          PUBLIC_SITE_URL: 'https://staging.symeno.com'
 
       - name: Deploy to Cloudflare Edge (Preview Branch)
         uses: cloudflare/wrangler-action@v3

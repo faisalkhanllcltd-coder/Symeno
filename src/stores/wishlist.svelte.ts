@@ -1,4 +1,3 @@
-
 const STORAGE_KEY = 'symeno_wishlist_cache';
 
 export function createWishlistStore() {
@@ -15,17 +14,24 @@ export function createWishlistStore() {
   }
 
   return {
-    get items() { load(); return items; },
+    get items() {
+      load();
+      return items;
+    },
     toggle: (productId: string) => {
       load();
       if (items.includes(productId)) {
-        items = items.filter(id => id !== productId);
+        items = items.filter((id) => id !== productId);
       } else {
         items = [...items, productId];
       }
-      if (typeof window !== 'undefined') localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      if (typeof window !== 'undefined')
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     },
-    has: (productId: string) => { load(); return items.includes(productId); }
+    has: (productId: string) => {
+      load();
+      return items.includes(productId);
+    },
   };
 }
 export const wishlist = createWishlistStore();

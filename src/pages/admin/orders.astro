@@ -1,6 +1,6 @@
 ---
 // src/pages/admin/orders.astro
-import AdminLayout from '../../layouts/Admin.astro';
+import AdminLayout from '../../layouts/AdminLayout.astro';
 import OrderDataTable from '../../components/admin/orders/OrderDataTable.svelte';
 
 if (!Astro.locals.user) {
@@ -9,29 +9,56 @@ if (!Astro.locals.user) {
 
 // MOCK DATA: Ready for D1 Database replacement
 const orders = [
-  { id: "SYM-8842", customer: "operator@symeno.com", total: "$142.50", status: "PENDING_DISPATCH", date: "Oct 12, 2025" },
-  { id: "SYM-7190", customer: "client@external.net", total: "$89.00", status: "FULFILLED", date: "Sep 04, 2025" },
-  { id: "SYM-6631", customer: "wholesale@corp.com", total: "$1,240.00", status: "PAYMENT_FAILED", date: "Aug 22, 2025" }
+  {
+    id: 'SYM-8842',
+    customer: 'operator@symeno.com',
+    total: '$142.50',
+    status: 'PENDING_DISPATCH',
+    date: 'Oct 12, 2025',
+  },
+  {
+    id: 'SYM-7190',
+    customer: 'client@external.net',
+    total: '$89.00',
+    status: 'FULFILLED',
+    date: 'Sep 04, 2025',
+  },
+  {
+    id: 'SYM-6631',
+    customer: 'wholesale@corp.com',
+    total: '$1,240.00',
+    status: 'PAYMENT_FAILED',
+    date: 'Aug 22, 2025',
+  },
 ];
 ---
 
-<AdminLayout 
-  title="Order Matrix" 
+<AdminLayout
+  title="Order Matrix"
   subtitle="Fulfillment and Dispatch Ledger"
   currentPath="/admin/orders"
 >
-  <div class="bg-[#111318] border border-white/10 overflow-hidden flex flex-col h-full">
-    
-    <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
-      <input type="text" placeholder="Search orders by ID or email..." class="bg-[#1A1D23] border border-white/10 text-white px-3 py-1.5 text-xs focus:outline-none focus:border-[#36f4a4]/50 font-mono w-64 placeholder:text-white/30" />
+  <div
+    class="flex h-full flex-col overflow-hidden border border-white/10 bg-[#111318]"
+  >
+    <div
+      class="flex items-center justify-between border-b border-white/10 bg-white/[0.02] p-4"
+    >
+      <input
+        type="text"
+        placeholder="Search orders by ID or email..."
+        class="w-64 border border-white/10 bg-[#1A1D23] px-3 py-1.5 font-mono text-xs text-white placeholder:text-white/30 focus:border-[#36f4a4]/50 focus:outline-none"
+      />
       <div class="flex gap-2">
-        <button class="border border-white/10 text-white/60 hover:text-white px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest transition-colors focus:outline-none">Export CSV</button>
+        <button
+          class="border border-white/10 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white/60 uppercase transition-colors hover:text-white focus:outline-none"
+          >Export CSV</button
+        >
       </div>
     </div>
 
-    <div class="overflow-x-auto flex-1">
+    <div class="flex-1 overflow-x-auto">
       <OrderDataTable client:load orders={orders} />
     </div>
-
   </div>
 </AdminLayout>

@@ -2,39 +2,73 @@
 import StorefrontLayout from '../../layouts/Storefront.astro';
 
 // In a real application, this would verify the secure session/order ID
-const orderNumber = "SYM-" + Math.floor(100000 + Math.random() * 900000);
+const orderNumber = 'SYM-' + Math.floor(100000 + Math.random() * 900000);
 ---
 
-<StorefrontLayout title="Acquisition Confirmed | Symeno" description="Your hardware order has been secured.">
-  <div class="min-h-[70vh] flex flex-col items-center justify-center px-4 relative overflow-hidden bg-[#070d0e]">
-    
-    <div class="absolute inset-0 opacity-[0.02] pointer-events-none" style="background-image: linear-gradient(#dae5e6 1px, transparent 1px), linear-gradient(90deg, #dae5e6 1px, transparent 1px); background-size: 32px 32px;"></div>
+<StorefrontLayout
+  title="Acquisition Confirmed | Symeno"
+  description="Your hardware order has been secured."
+>
+  <div
+    class="relative flex min-h-[70vh] flex-col items-center justify-center overflow-hidden bg-[#070d0e] px-4"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 opacity-[0.02]"
+      style="background-image: linear-gradient(#dae5e6 1px, transparent 1px), linear-gradient(90deg, #dae5e6 1px, transparent 1px); background-size: 32px 32px;"
+    >
+    </div>
 
-    <div class="text-center relative z-10 max-w-2xl mx-auto border border-[#dae5e6]/10 bg-[#0b1516] p-8 md:p-12 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
-      
-      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#36f4a4]/10 border border-[#36f4a4]/30 text-[#36f4a4] mb-8 shadow-[0_0_15px_rgba(54,244,164,0.2)]">
-        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+    <div
+      class="relative z-10 mx-auto max-w-2xl border border-[#dae5e6]/10 bg-[#0b1516] p-8 text-center shadow-[0_0_40px_rgba(0,0,0,0.5)] md:p-12"
+    >
+      <div
+        class="mb-8 inline-flex h-16 w-16 items-center justify-center rounded-full border border-[#36f4a4]/30 bg-[#36f4a4]/10 text-[#36f4a4] shadow-[0_0_15px_rgba(54,244,164,0.2)]"
+      >
+        <svg
+          class="h-8 w-8"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          ><path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 13l4 4L19 7"></path></svg
+        >
       </div>
-      
-      <h1 class="text-3xl md:text-5xl font-bold tracking-tighter text-white uppercase mb-4">
+
+      <h1
+        class="mb-4 text-3xl font-bold tracking-tighter text-white uppercase md:text-5xl"
+      >
         Deployment <span class="text-[#36f4a4]">Secured.</span>
       </h1>
-      
-      <p class="text-sm text-[#dae5e6]/60 font-mono mb-2">Order Reference: <span class="text-white">{orderNumber}</span></p>
-      
-      <p class="text-sm text-[#dae5e6]/60 font-mono mb-10 leading-relaxed max-w-md mx-auto">
-        Your acquisition has been logged in the master ledger. Logistics will dispatch within 24 hours. A secure receipt has been transmitted to your terminal.
+
+      <p class="mb-2 font-mono text-sm text-[#dae5e6]/60">
+        Order Reference: <span class="text-white">{orderNumber}</span>
       </p>
-      
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a href="/account/orders" class="w-full sm:w-auto bg-[#36f4a4] text-[#003822] px-8 py-4 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(54,244,164,0.15)] hover:shadow-[0_0_25px_rgba(255,255,255,0.3)] focus:outline-none">
+
+      <p
+        class="mx-auto mb-10 max-w-md font-mono text-sm leading-relaxed text-[#dae5e6]/60"
+      >
+        Your acquisition has been logged in the master ledger. Logistics will
+        dispatch within 24 hours. A secure receipt has been transmitted to your
+        terminal.
+      </p>
+
+      <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <a
+          href="/account/orders"
+          class="w-full bg-[#36f4a4] px-8 py-4 text-xs font-bold tracking-widest text-[#003822] uppercase shadow-[0_0_15px_rgba(54,244,164,0.15)] transition-all duration-300 hover:bg-white hover:text-black hover:shadow-[0_0_25px_rgba(255,255,255,0.3)] focus:outline-none sm:w-auto"
+        >
           Track Shipment &rarr;
         </a>
-        <a href="/deals" class="w-full sm:w-auto bg-transparent border border-[#dae5e6]/20 text-white px-8 py-4 text-xs font-bold uppercase tracking-widest hover:border-[#36f4a4] hover:text-[#36f4a4] transition-all duration-300 focus:outline-none">
+        <a
+          href="/deals"
+          class="w-full border border-[#dae5e6]/20 bg-transparent px-8 py-4 text-xs font-bold tracking-widest text-white uppercase transition-all duration-300 hover:border-[#36f4a4] hover:text-[#36f4a4] focus:outline-none sm:w-auto"
+        >
           Return to Catalog
         </a>
       </div>
-
     </div>
   </div>
 </StorefrontLayout>

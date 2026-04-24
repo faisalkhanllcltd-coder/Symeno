@@ -5,7 +5,9 @@ export const GET: APIRoute = async ({ locals }) => {
   try {
     // 1. Strict Perimeter Defense
     if (!locals.user || locals.user.role !== 'admin') {
-      return new Response(JSON.stringify({ error: 'UNAUTHORIZED_ACCESS' }), { status: 403 });
+      return new Response(JSON.stringify({ error: 'UNAUTHORIZED_ACCESS' }), {
+        status: 403,
+      });
     }
 
     const db = env.DB;
@@ -29,20 +31,22 @@ export const GET: APIRoute = async ({ locals }) => {
       region: (env as any).CF_RAY?.split('-')[1] || 'EDGE_NODE', // Extracts Cloudflare datacenter location if available
       metrics: {
         database_latency_ms: dbLatency,
-        environment: import.meta.env.MODE || 'production'
-      }
+        environment: import.meta.env.MODE || 'production',
+      },
     };
 
-    return new Response(JSON.stringify(telemetry), { 
+    return new Response(JSON.stringify(telemetry), {
       status: dbStatus === 'healthy' ? 200 : 503,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     });
-
   } catch (e: any) {
     // Failsafe catch for catastrophic edge failure
-    return new Response(JSON.stringify({ 
-      status: 'CRITICAL_FAILURE', 
-      timestamp: new Date().toISOString() 
-    }), { status: 500 });
+    return new Response(
+      JSON.stringify({
+        status: 'CRITICAL_FAILURE',
+        timestamp: new Date().toISOString(),
+      }),
+      { status: 500 }
+    );
   }
 };

@@ -1,6 +1,6 @@
 ---
 // src/pages/admin/inventory/index.astro
-import AdminLayout from '../../../layouts/Admin.astro';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
 // FIX 1: Import path corrected to the new domain-driven architecture
 import InventoryTable from '../../../components/admin/inventory/InventoryTable.svelte';
 // FIX 2: Secure Cloudflare Edge Bindings (dropping legacy getDb)
@@ -13,29 +13,33 @@ let inventoryData: any[] = [];
 
 if (db) {
   try {
-    const { results } = await db.prepare(`
+    const { results } = await db
+      .prepare(
+        `
       SELECT 
         p.id, p.title, p.is_active, v.sku, v.stock_quantity, v.wholesale_cost, v.retail_price
       FROM products p
       LEFT JOIN product_variants v ON p.id = v.product_id
       ORDER BY p.id DESC
-    `).all();
+    `
+      )
+      .all();
     inventoryData = results || [];
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.error("[DB_ERROR] Failed to fetch inventory:", error.message);
+      console.error('[DB_ERROR] Failed to fetch inventory:', error.message);
     }
   }
 }
 ---
 
-<AdminLayout 
-  title="Inventory Matrix" 
+<AdminLayout
+  title="Inventory Matrix"
   subtitle="Live cross-reference with D1 Edge"
   currentPath="/admin/inventory"
-  primaryAction={{ label: "New Product", url: "/admin/inventory/new" }}
+  primaryAction={{ label: 'New Product', url: '/admin/inventory/new' }}
 >
-  <div class="bg-[#111318] border border-white/10">
+  <div class="border border-white/10 bg-[#111318]">
     <InventoryTable client:load inventory={inventoryData} />
   </div>
 </AdminLayout>

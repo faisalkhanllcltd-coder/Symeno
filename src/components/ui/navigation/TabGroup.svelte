@@ -1,23 +1,47 @@
-<script lang="ts">
-  export let tabs: string[] = [];
-  export let activeTab: string = tabs[0];
-  
-  import { createEventDispatcher } from 'svelte';
-  const dispatch = createEventDispatcher();
-  
+﻿<script lang="ts">
+  let {
+    tabs = [],
+    activeTab = $bindable(),
+    onchange
+  } = $props<{
+    tabs?: string[];
+    activeTab?: string;
+    onchange?: (tab: string) => void;
+  }>();
+
+  // Initialize active tab safely
+  if (!activeTab && tabs.length > 0) {
+    activeTab = tabs[0];
+  }
+
   function selectTab(tab: string) {
     activeTab = tab;
-    dispatch('change', { tab });
+    if (onchange) onchange(tab);
   }
 </script>
 
-<div class="border-b border-gray-200 flex space-x-6 no-scrollbar overflow-x-auto">
+<div
+  class="no-scrollbar flex space-x-6 overflow-x-auto border-b border-outline"
+>
   {#each tabs as tab}
-    <button 
-      on:click={() => selectTab(tab)}
-      class="py-3 text-xs font-bold uppercase tracking-widest transition-colors border-b-2 whitespace-nowrap focus:outline-none {activeTab === tab ? 'border-black text-black' : 'border-transparent text-gray-400 hover:text-black'}"
+    <button
+      onclick={() => selectTab(tab)}
+      class="border-b-2 py-3 text-xs font-bold tracking-widest whitespace-nowrap uppercase transition-colors focus-visible:outline-none focus-visible:text-brand {activeTab ===
+      tab
+        ? 'border-brand text-brand'
+        : 'border-transparent text-content-muted hover:text-content hover:border-outline'}"
     >
       {tab}
     </button>
   {/each}
 </div>
+
+<style>
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>

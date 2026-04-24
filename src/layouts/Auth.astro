@@ -15,24 +15,44 @@ const currentYear = new Date().getFullYear();
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title} | Symeno</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
-  <body class="bg-[#F9FAFB] text-gray-900 font-sans antialiased min-h-screen flex flex-col selection:bg-[#10b981]/20 selection:text-black">
-    
-    <header class="w-full py-8 flex justify-center items-center shrink-0">
-      <a href="/" class="text-3xl font-bold tracking-tighter text-black uppercase focus:outline-none">Symeno<span class="text-[#10b981]">.</span></a>
+  <body
+    class="flex min-h-screen flex-col bg-[#F9FAFB] font-sans text-gray-900 antialiased selection:bg-[#10b981]/20 selection:text-black"
+  >
+    <header class="flex w-full shrink-0 items-center justify-center py-8">
+      <a
+        href="/"
+        class="text-3xl font-bold tracking-tighter text-black uppercase focus:outline-none"
+        >Symeno<span class="text-[#10b981]">.</span></a
+      >
     </header>
 
-    <main class="flex-1 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <main
+      class="flex w-full flex-1 flex-col items-center justify-center px-4 py-8 sm:px-6 lg:px-8"
+    >
       <slot />
     </main>
 
-    <footer class="w-full py-8 shrink-0">
-      <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-center items-center gap-6 text-[10px] font-mono uppercase tracking-widest text-gray-400">
+    <footer class="w-full shrink-0 py-8">
+      <div
+        class="mx-auto flex max-w-7xl flex-col items-center justify-center gap-6 px-4 font-mono text-[10px] tracking-widest text-gray-400 uppercase md:flex-row"
+      >
         <p>&copy; {currentYear} Symeno LLC.</p>
         <nav class="flex gap-6">
-          <a href="/policies/privacy" class="hover:text-black transition-colors focus:outline-none">Privacy</a>
-          <a href="/policies/terms" class="hover:text-black transition-colors focus:outline-none">Terms</a>
+          <a
+            href="/policies/privacy"
+            class="transition-colors hover:text-black focus:outline-none"
+            >Privacy</a
+          >
+          <a
+            href="/policies/terms"
+            class="transition-colors hover:text-black focus:outline-none"
+            >Terms</a
+          >
         </nav>
       </div>
     </footer>

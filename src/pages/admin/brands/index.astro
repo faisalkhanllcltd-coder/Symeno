@@ -1,5 +1,5 @@
 ---
-import AdminLayout from '../../../layouts/Admin.astro';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
 
 if (!Astro.locals.user) return Astro.redirect('/auth/login');
 
@@ -8,41 +8,53 @@ const breadcrumbs = [{ label: 'Brands' }];
 // Mock Data
 const brands = [
   { id: 'BRD-01', name: 'Sony', status: 'Active', skuCount: 14 },
-  { id: 'BRD-02', name: 'LG', status: 'Active', skuCount: 8 }
+  { id: 'BRD-02', name: 'LG', status: 'Active', skuCount: 8 },
 ];
 ---
 
-<AdminLayout 
-  title="Brand Matrix" 
-  subtitle="Supplier authorization controls" 
-  breadcrumbs={breadcrumbs} 
-  currentPath="/admin/brands" 
-  primaryAction={{ label: "Add Brand", url: "/admin/brands/new" }}
+<AdminLayout
+  title="Brand Matrix"
+  subtitle="Supplier authorization controls"
+  breadcrumbs={breadcrumbs}
+  currentPath="/admin/brands"
+  primaryAction={{ label: 'Add Brand', url: '/admin/brands/new' }}
 >
-  <div class="bg-[#111318] border border-white/10 overflow-hidden flex flex-col h-full">
-    <div class="overflow-x-auto flex-1">
-      <table class="w-full text-left border-collapse whitespace-nowrap">
+  <div
+    class="flex h-full flex-col overflow-hidden border border-white/10 bg-[#111318]"
+  >
+    <div class="flex-1 overflow-x-auto">
+      <table class="w-full border-collapse text-left whitespace-nowrap">
         <thead>
-          <tr class="bg-black/40 border-b border-white/10 text-[10px] uppercase tracking-widest text-white/40 font-mono">
+          <tr
+            class="border-b border-white/10 bg-black/40 font-mono text-[10px] tracking-widest text-white/40 uppercase"
+          >
             <th class="px-4 py-4 font-normal">Brand ID</th>
             <th class="px-4 py-4 font-normal">Name</th>
             <th class="px-4 py-4 font-normal">Active SKUs</th>
-            <th class="px-4 py-4 font-normal text-right">Status</th>
+            <th class="px-4 py-4 text-right font-normal">Status</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-white/[0.04]">
-          {brands.map(brand => (
-            <tr class="hover:bg-white/[0.02] transition-colors group">
-              <td class="px-4 py-3 font-mono text-white/60 text-xs">{brand.id}</td>
-              <td class="px-4 py-3 font-bold text-white text-xs group-hover:text-[#36f4a4] transition-colors">{brand.name}</td>
-              <td class="px-4 py-3 font-mono text-white text-xs">{brand.skuCount}</td>
-              <td class="px-4 py-3 text-right">
-                <span class="inline-block bg-[#36f4a4]/10 text-[#36f4a4] border border-[#36f4a4]/30 px-2 py-1 text-[9px] font-bold uppercase tracking-widest">
-                  {brand.status}
-                </span>
-              </td>
-            </tr>
-          ))}
+          {
+            brands.map((brand) => (
+              <tr class="group transition-colors hover:bg-white/[0.02]">
+                <td class="px-4 py-3 font-mono text-xs text-white/60">
+                  {brand.id}
+                </td>
+                <td class="px-4 py-3 text-xs font-bold text-white transition-colors group-hover:text-[#36f4a4]">
+                  {brand.name}
+                </td>
+                <td class="px-4 py-3 font-mono text-xs text-white">
+                  {brand.skuCount}
+                </td>
+                <td class="px-4 py-3 text-right">
+                  <span class="inline-block border border-[#36f4a4]/30 bg-[#36f4a4]/10 px-2 py-1 text-[9px] font-bold tracking-widest text-[#36f4a4] uppercase">
+                    {brand.status}
+                  </span>
+                </td>
+              </tr>
+            ))
+          }
         </tbody>
       </table>
     </div>

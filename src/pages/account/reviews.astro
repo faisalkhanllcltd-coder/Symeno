@@ -8,54 +8,88 @@ if (!user) return Astro.redirect('/auth/login');
 let myReviews = [];
 if (env.DB) {
   try {
-    const { results } = await env.DB.prepare(`
+    const { results } = await env.DB.prepare(
+      `
       SELECT r.id, r.rating, r.title, r.status, r.created_at, p.title as product_title, p.slug
       FROM reviews r
       JOIN products p ON r.product_id = p.id
       WHERE r.customer_id = ?1
       ORDER BY r.created_at DESC
-    `).bind(user.id).all();
+    `
+    )
+      .bind(user.id)
+      .all();
     myReviews = results || [];
   } catch (e) {}
 }
 
-const renderStars = (rating: number) => '★'.repeat(rating) + '☆'.repeat(5 - rating);
+const renderStars = (rating: number) =>
+  '★'.repeat(rating) + '☆'.repeat(5 - rating);
 ---
 
 <AccountLayout title="My Field Reports" currentPath="/account/reviews">
-  <div class="max-w-4xl mx-auto space-y-6">
+  <div class="mx-auto max-w-4xl space-y-6">
     <div class="border-b border-white/10 pb-4">
-      <h1 class="text-xl font-bold text-white uppercase tracking-widest">Submitted Reports</h1>
-      <p class="text-xs text-white/50 font-mono mt-1">Manage your product evaluations.</p>
+      <h1 class="text-xl font-bold tracking-widest text-white uppercase">
+        Submitted Reports
+      </h1>
+      <p class="mt-1 font-mono text-xs text-white/50">
+        Manage your product evaluations.
+      </p>
     </div>
 
     <div class="space-y-4">
-      {myReviews.map(review => (
-        <div class="bg-[#111318] border border-white/10 p-6 flex flex-col sm:flex-row justify-between gap-6 hover:border-white/30 transition-colors">
-          <div class="flex-1">
-            <div class="flex items-center gap-3 mb-2">
-              <span class="text-amber-400 text-sm tracking-widest">{renderStars(review.rating)}</span>
-              {review.status === 'APPROVED' ? 
-                <span class="text-[9px] px-2 py-0.5 border border-[#36f4a4]/30 text-[#36f4a4] bg-[#36f4a4]/10 uppercase tracking-widest">Published</span> :
-              review.status === 'REJECTED' ? 
-                <span class="text-[9px] px-2 py-0.5 border border-rose-500/30 text-rose-400 bg-rose-500/10 uppercase tracking-widest">Rejected</span> :
-                <span class="text-[9px] px-2 py-0.5 border border-amber-500/30 text-amber-400 bg-amber-500/10 uppercase tracking-widest">Pending Review</span>
-              }
+      {
+        myReviews.map((review) => (
+          <div class="flex flex-col justify-between gap-6 border border-white/10 bg-[#111318] p-6 transition-colors hover:border-white/30 sm:flex-row">
+            <div class="flex-1">
+              <div class="mb-2 flex items-center gap-3">
+                <span class="text-sm tracking-widest text-amber-400">
+                  {renderStars(review.rating)}
+                </span>
+                {review.status === 'APPROVED' ? (
+                  <span class="border border-[#36f4a4]/30 bg-[#36f4a4]/10 px-2 py-0.5 text-[9px] tracking-widest text-[#36f4a4] uppercase">
+                    Published
+                  </span>
+                ) : review.status === 'REJECTED' ? (
+                  <span class="border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[9px] tracking-widest text-rose-400 uppercase">
+                    Rejected
+                  </span>
+                ) : (
+                  <span class="border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[9px] tracking-widest text-amber-400 uppercase">
+                    Pending Review
+                  </span>
+                )}
+              </div>
+              <h3 class="mb-1 text-sm font-bold text-white">{review.title}</h3>
+              <p class="mb-2 font-mono text-[10px] text-white/50">
+                For:{' '}
+                <a
+                  href={`/shop/product/${review.slug}`}
+                  class="text-[#36f4a4] hover:underline"
+                >
+                  {review.product_title}
+                </a>
+              </p>
             </div>
-            <h3 class="text-sm font-bold text-white mb-1">{review.title}</h3>
-            <p class="text-[10px] font-mono text-white/50 mb-2">For: <a href={`/shop/product/${review.slug}`} class="text-[#36f4a4] hover:underline">{review.product_title}</a></p>
+            <div class="flex flex-col items-end justify-between text-right">
+              <span class="font-mono text-[10px] text-white/30">
+                {new Date(review.created_at).toLocaleDateString()}
+              </span>
+            </div>
           </div>
-          <div class="text-right flex flex-col justify-between items-end">
-            <span class="text-[10px] font-mono text-white/30">{new Date(review.created_at).toLocaleDateString()}</span>
+        ))
+      }
+
+      {
+        myReviews.length === 0 && (
+          <div class="border border-white/10 bg-[#111318] p-12 text-center">
+            <p class="font-mono text-xs text-white/40 uppercase">
+              No field reports submitted.
+            </p>
           </div>
-        </div>
-      ))}
-      
-      {myReviews.length === 0 && (
-        <div class="p-12 border border-white/10 text-center bg-[#111318]">
-          <p class="text-xs font-mono text-white/40 uppercase">No field reports submitted.</p>
-        </div>
-      )}
+        )
+      }
     </div>
   </div>
 </AccountLayout>

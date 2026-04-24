@@ -7,22 +7,18 @@
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "esModuleInterop": true,
     "noEmit": true,
+    "skipLibCheck": true,
     "jsx": "preserve",
     "jsxImportSource": "svelte",
     "strict": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["src/*"]
     },
-    "types": [
-      "@cloudflare/workers-types"
-    ]
+    "types": ["@cloudflare/workers-types", "astro/client"]
   },
-  "include": [
-    "src",
-    "env.d.ts",
-    ".astro/types.d.ts"
-  ]
+  "include": ["src/**/*", "env.d.ts", ".astro/types.d.ts"],
+  "exclude": ["node_modules", "dist"]
 }

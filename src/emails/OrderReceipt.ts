@@ -1,6 +1,8 @@
 // Edge-native HTML generator for Resend (Zero Node.js dependency)
 export function generateOrderReceiptHTML(order: any, items: any[]): string {
-  const itemRows = items.map(i => `
+  const itemRows = items
+    .map(
+      (i) => `
     <tr>
       <td style="padding: 12px; border-bottom: 1px solid #333;">
         <p style="margin:0; font-weight: bold; color: #fff;">${i.title}</p>
@@ -9,7 +11,9 @@ export function generateOrderReceiptHTML(order: any, items: any[]): string {
       <td style="padding: 12px; border-bottom: 1px solid #333; text-align: center; color: #fff;">${i.quantity}</td>
       <td style="padding: 12px; border-bottom: 1px solid #333; text-align: right; color: #36f4a4;">$${(i.price * i.quantity).toFixed(2)}</td>
     </tr>
-  `).join('');
+  `
+    )
+    .join('');
 
   return `
     <div style="font-family: 'Courier New', Courier, monospace; color: #fff; background-color: #000; max-width: 600px; margin: 0 auto; border: 1px solid #333; padding: 30px;">

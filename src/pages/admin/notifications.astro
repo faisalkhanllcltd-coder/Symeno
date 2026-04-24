@@ -3,22 +3,32 @@ import AdminLayout from '../layouts/AdminLayout.astro';
 import AlertCenter from '../components/admin/notifications/AlertCenter.svelte';
 import { env } from 'cloudflare:workers';
 
-if (!Astro.locals.user || (Astro.locals.user.role !== 'admin' && Astro.locals.user.role !== 'staff')) {
+if (
+  !Astro.locals.user ||
+  (Astro.locals.user.role !== 'admin' && Astro.locals.user.role !== 'staff')
+) {
   return Astro.redirect('/auth/login');
 }
 
 let alerts = [];
 if (env.DB) {
   try {
-    const { results } = await env.DB.prepare(`
+    const { results } = await env.DB.prepare(
+      `
       SELECT * FROM admin_alerts ORDER BY is_read ASC, created_at DESC LIMIT 50
-    `).all();
+    `
+    ).all();
     alerts = results || [];
   } catch (e) {}
 }
 ---
-<AdminLayout title="Global Alert Center" subtitle="System & Operations Telemetry" currentPath="/admin/notifications">
-  <div class="max-w-4xl h-[600px]">
+
+<AdminLayout
+  title="Global Alert Center"
+  subtitle="System & Operations Telemetry"
+  currentPath="/admin/notifications"
+>
+  <div class="h-[600px] max-w-4xl">
     <AlertCenter client:load initialAlerts={alerts} />
   </div>
 </AdminLayout>

@@ -1,6 +1,6 @@
 ---
 // src/pages/admin/customers/index.astro
-import AdminLayout from '../../../layouts/Admin.astro';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
 import CustomerCRMCard from '../../../components/admin/customers/CustomerCRMCard.svelte';
 import { env } from 'cloudflare:workers';
 
@@ -11,54 +11,67 @@ let customers: any[] = [];
 
 if (db) {
   try {
-    const { results } = await db.prepare(`SELECT * FROM customers ORDER BY created_at DESC LIMIT 50`).all();
+    const { results } = await db
+      .prepare(`SELECT * FROM customers ORDER BY created_at DESC LIMIT 50`)
+      .all();
     // Map DB row to exactly what the Svelte 5 component expects
     customers = (results || []).map((c: any) => ({
       name: `${c.first_name || 'Unknown'} ${c.last_name || ''}`.trim(),
       email: c.email,
       totalSpent: c.total_spent || 0,
       orderCount: c.order_count || 0,
-      status: c.status || 'active'
+      status: c.status || 'active',
     }));
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.error("[DB_ERROR] Failed to fetch customer ledger:", error.message);
+      console.error(
+        '[DB_ERROR] Failed to fetch customer ledger:',
+        error.message
+      );
     }
   }
 }
 ---
 
-<AdminLayout 
-  title="Customer Directory" 
-  subtitle="Registered identities and acquisition data" 
+<AdminLayout
+  title="Customer Directory"
+  subtitle="Registered identities and acquisition data"
   currentPath="/admin/customers"
 >
-  <div class="bg-[#111318] border border-white/10 overflow-hidden flex flex-col h-full">
-    
-    <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
-      <input type="text" placeholder="Search email or ID..." class="bg-[#1A1D23] border border-white/10 text-white px-3 py-1.5 text-xs focus:outline-none focus:border-[#36f4a4]/50 font-mono w-64 placeholder:text-white/30" />
+  <div
+    class="flex h-full flex-col overflow-hidden border border-white/10 bg-[#111318]"
+  >
+    <div
+      class="flex items-center justify-between border-b border-white/10 bg-white/[0.02] p-4"
+    >
+      <input
+        type="text"
+        placeholder="Search email or ID..."
+        class="w-64 border border-white/10 bg-[#1A1D23] px-3 py-1.5 font-mono text-xs text-white placeholder:text-white/30 focus:border-[#36f4a4]/50 focus:outline-none"
+      />
     </div>
 
     <div class="flex-1 overflow-y-auto p-4">
-      {customers.length === 0 ? (
-        <div class="py-12 text-center text-[10px] font-mono text-white/30 uppercase tracking-widest">
-          No customers found.
-        </div>
-      ) : (
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {customers.map((c) => (
-            <CustomerCRMCard 
-              client:load 
-              name={c.name} 
-              email={c.email} 
-              totalSpent={c.totalSpent} 
-              orderCount={c.orderCount} 
-              status={c.status} 
-            />
-          ))}
-        </div>
-      )}
+      {
+        customers.length === 0 ? (
+          <div class="py-12 text-center font-mono text-[10px] tracking-widest text-white/30 uppercase">
+            No customers found.
+          </div>
+        ) : (
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {customers.map((c) => (
+              <CustomerCRMCard
+                client:load
+                name={c.name}
+                email={c.email}
+                totalSpent={c.totalSpent}
+                orderCount={c.orderCount}
+                status={c.status}
+              />
+            ))}
+          </div>
+        )
+      }
     </div>
-    
   </div>
 </AdminLayout>

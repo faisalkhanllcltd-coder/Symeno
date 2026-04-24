@@ -3,16 +3,36 @@
 </script>
 
 {#if isVisible}
-  <div class="bg-[#36f4a4] text-[#003822] px-4 py-2 flex justify-between items-center z-50 relative animate-fade-in">
-    <div class="flex-1 flex justify-center items-center gap-3">
-      <span class="w-1.5 h-1.5 bg-[#003822] rounded-full animate-pulse shadow-[0_0_8px_rgba(0,56,34,0.5)]"></span>
-      <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate">
+  <div
+    class="animate-fade-in relative z-50 flex items-center justify-between bg-[#36f4a4] px-4 py-2 text-[#003822]"
+  >
+    <div class="flex flex-1 items-center justify-center gap-3">
+      <span
+        class="h-1.5 w-1.5 animate-pulse rounded-full bg-[#003822] shadow-[0_0_8px_rgba(0,56,34,0.5)]"
+      ></span>
+      <span
+        class="truncate text-[10px] font-bold tracking-widest uppercase sm:text-xs"
+      >
         Global Operations Active: Free logistics on UAE drops over $500 AED
       </span>
     </div>
-    <button onclick={() => isVisible = false} class="ml-4 opacity-70 hover:opacity-100 transition-opacity focus:outline-none" aria-label="Dismiss">
-      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    <button
+      onclick={() => (isVisible = false)}
+      class="ml-4 opacity-70 transition-opacity hover:opacity-100 focus:outline-none"
+      aria-label="Dismiss"
+    >
+      <svg
+        class="h-4 w-4"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        />
       </svg>
     </button>
   </div>

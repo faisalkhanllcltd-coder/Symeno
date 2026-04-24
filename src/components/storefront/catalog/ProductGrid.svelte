@@ -3,45 +3,93 @@
 </script>
 
 {#if products.length === 0}
-  <div class="bg-[#111318] border border-white/10 p-12 text-center flex flex-col items-center justify-center min-h-[400px]">
-    <div class="w-12 h-12 border border-white/10 flex items-center justify-center mb-4 opacity-50">
-      <span class="text-[10px] font-mono text-white uppercase tracking-widest">NULL</span>
+  <div
+    class="flex min-h-[400px] flex-col items-center justify-center border border-outline bg-surface p-12 text-center transition-colors"
+  >
+    <div
+      class="mb-4 flex h-12 w-12 items-center justify-center border border-outline opacity-50"
+    >
+      <span class="font-mono text-[10px] tracking-widest text-content uppercase"
+        >NULL</span
+      >
     </div>
-    <h3 class="text-sm font-bold text-white uppercase tracking-widest font-mono mb-2">No Hardware Acquired</h3>
-    <p class="text-[10px] font-mono text-white/50 max-w-sm mx-auto">Your exact query yielded zero results in the current D1 database snapshot.</p>
+    <h3
+      class="mb-2 font-mono text-sm font-bold tracking-widest text-content uppercase"
+    >
+      No Hardware Acquired
+    </h3>
+    <p class="mx-auto max-w-sm font-mono text-[10px] text-content-muted">
+      Your exact query yielded zero results in the current D1 database snapshot.
+    </p>
   </div>
 {:else}
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
     {#each products as product}
-      <a href={`/shop/product/${product.slug}`} class="group bg-[#111318] border border-white/10 hover:border-[#36f4a4]/50 transition-colors flex flex-col h-full relative overflow-hidden">
-        
-        <div class="absolute inset-0 bg-gradient-to-t from-[#36f4a4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-        
-        <div class="aspect-square bg-[#1A1D23] border-b border-white/10 flex items-center justify-center relative">
-          <span class="text-[10px] font-mono text-white/20 uppercase tracking-widest">Image Matrix</span>
-          
+      <a
+        href={`/shop/product/${product.slug}`}
+        class="group relative flex h-full flex-col overflow-hidden border border-outline bg-surface transition-colors hover:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+      >
+        <div
+          class="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        ></div>
+
+        <div
+          class="relative flex aspect-square items-center justify-center border-b border-outline bg-base transition-colors" 
+        >
+          <span
+            class="font-mono text-[10px] tracking-widest text-content-muted/50 uppercase"
+            >Image Matrix</span
+          >
+
           {#if product.retail_price > product.base_price}
-            <div class="absolute top-4 right-4 bg-brand-alert text-black px-2 py-1 text-[9px] font-bold uppercase tracking-widest z-10">
+            <div
+              class="bg-brand-alert absolute top-4 right-4 z-10 px-2 py-1 text-[9px] font-bold tracking-widest text-black uppercase"
+            >
               Deal
             </div>
           {/if}
         </div>
 
-        <div class="p-5 flex flex-col flex-grow">
-          <span class="text-[9px] font-mono text-white/40 uppercase tracking-widest mb-2 block">{product.brand}</span>
-          <h3 class="text-sm font-bold text-white group-hover:text-[#36f4a4] transition-colors leading-snug mb-4 line-clamp-2">{product.title}</h3>
-          
+        <div class="flex flex-grow flex-col p-5">
+          <span
+            class="mb-2 block font-mono text-[9px] tracking-widest text-content-muted uppercase"
+            >{product.brand}</span
+          >
+          <h3
+            class="mb-4 line-clamp-2 text-sm leading-snug font-bold text-content transition-colors group-hover:text-brand"
+          >
+            {product.title}
+          </h3>
+
           <div class="mt-auto flex items-end justify-between">
             <div>
-              <span class="text-lg font-mono font-bold text-white block">${product.base_price.toFixed(2)}</span>
+              <span class="block font-mono text-lg font-bold text-content transition-colors group-hover:text-brand"
+                >${product.base_price.toFixed(2)}</span 
+              >
               {#if product.retail_price > product.base_price}
-                <span class="text-[10px] font-mono text-white/40 line-through">MSRP: ${product.retail_price.toFixed(2)}</span>
+                <span class="font-mono text-[10px] text-content-muted line-through"
+                  >MSRP: ${product.retail_price.toFixed(2)}</span
+                >
               {/if}
             </div>
-            
-            <button class="w-8 h-8 border border-white/10 flex items-center justify-center group-hover:bg-[#36f4a4] group-hover:text-black group-hover:border-[#36f4a4] transition-all text-white/50" aria-label="Quick Add">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+
+            <button
+              class="flex h-8 w-8 items-center justify-center border border-outline text-content-muted transition-all group-hover:border-brand group-hover:bg-brand group-hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              aria-label="Quick Add"
+              onclick={(e) => e.preventDefault()}
+            >
+              <svg
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4v16m8-8H4"
+                />
               </svg>
             </button>
           </div>

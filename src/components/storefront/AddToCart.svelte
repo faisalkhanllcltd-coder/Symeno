@@ -1,29 +1,30 @@
-<script>
-  import { cart } from '../../stores/cart.svelte.ts';
+<script lang="ts">
+  import { cart } from '../../stores/cart.svelte';
 
-  // The product data passed down from the Astro server
-  export let product = {};
-
-  let status = 'idle'; // 'idle', 'adding', 'success'
+  // Svelte 5 Runes API for incoming props
+  let { product } = $props<{ product: any }>();
+  
+  let status = $state<'idle' | 'adding' | 'success'>('idle');
 
   function handleAdd() {
     if (product.stock <= 0) return;
-    
-    status = 'adding';
-    
-    // Push the item to our global Svelte 5 Rune store
-    cart.addItem({
-      id: product.id,
-      productId: product.productId,
-      brand: product.brand,
-      name: product.name,
-      price: product.price,
-      was: product.was,
-      stock: product.stock,
-      image: product.image
-    }, 1);
 
-    // Provide high-end visual feedback
+    status = 'adding';
+
+    cart.addItem(
+      {
+        id: product.id,
+        productId: product.productId,
+        brand: product.brand,
+        name: product.name,
+        price: product.price,
+        was: product.was,
+        stock: product.stock,
+        image: product.image,
+      },
+      1
+    );
+
     setTimeout(() => {
       status = 'success';
       setTimeout(() => {
@@ -33,12 +34,14 @@
   }
 </script>
 
-<button 
-  on:click={handleAdd}
+<button
+  onclick={handleAdd}
   disabled={product.stock <= 0 || status !== 'idle'}
-  class="w-full py-4 font-bold text-sm uppercase tracking-widest transition-all duration-300 shadow-[0_10px_20px_-10px_rgba(54,244,164,0.3)] 
-    {status === 'success' ? 'bg-white text-[#003822] shadow-[0_0_20px_rgba(255,255,255,0.4)]' : 'bg-[#36f4a4] text-[#003822] hover:bg-white'} 
-    disabled:opacity-50 disabled:cursor-not-allowed"
+  class="w-full py-4 text-sm font-bold tracking-widest uppercase shadow-[0_10px_20px_-10px_var(--color-brand)] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand
+    {status === 'success'
+    ? 'bg-content text-base shadow-[0_0_20px_var(--color-content)]'
+    : 'bg-brand text-brand-dark hover:opacity-80'}
+    disabled:cursor-not-allowed disabled:opacity-50"
 >
   {#if status === 'success'}
     Added to Secure Cart &check;

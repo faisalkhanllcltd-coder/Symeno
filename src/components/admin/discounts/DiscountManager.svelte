@@ -2,7 +2,11 @@
   let { discounts = [] } = $props<{ discounts: any[] }>();
   let searchQuery = $state('');
 
-  let filtered = $derived(discounts.filter(d => d.code?.toLowerCase().includes(searchQuery.toLowerCase())));
+  let filtered = $derived(
+    discounts.filter((d) =>
+      d.code?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
 
   const isActive = (d: any) => {
     if (!d.is_active) return false;
@@ -13,49 +17,86 @@
 </script>
 
 <div class="space-y-4">
-  <div class="bg-[#111318] p-4 border border-white/10 flex justify-between items-center">
-    <input type="text" bind:value={searchQuery} placeholder="Search promo codes..." class="w-72 bg-[#1A1D23] border border-white/10 text-white px-3 py-2 text-sm focus:outline-none focus:border-[#36f4a4]/50 font-mono" />
-    <a href="/admin/discounts/new" class="bg-[#36f4a4] text-black px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-colors block">Create Campaign</a>
+  <div
+    class="flex items-center justify-between border border-white/10 bg-[#111318] p-4"
+  >
+    <input
+      type="text"
+      bind:value={searchQuery}
+      placeholder="Search promo codes..."
+      class="w-72 border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+    />
+    <a
+      href="/admin/discounts/new"
+      class="block bg-[#36f4a4] px-4 py-2 text-[10px] font-bold tracking-widest text-black uppercase transition-colors hover:bg-white"
+      >Create Campaign</a
+    >
   </div>
 
-  <div class="bg-[#111318] border border-white/10 overflow-x-auto">
-    <table class="w-full text-left border-collapse whitespace-nowrap">
+  <div class="overflow-x-auto border border-white/10 bg-[#111318]">
+    <table class="w-full border-collapse text-left whitespace-nowrap">
       <thead>
-        <tr class="bg-[#0a0b0e] border-b border-white/10 text-[10px] font-mono uppercase tracking-widest text-white/40">
+        <tr
+          class="border-b border-white/10 bg-[#0a0b0e] font-mono text-[10px] tracking-widest text-white/40 uppercase"
+        >
           <th class="p-4 font-normal">Promo Code</th>
           <th class="p-4 font-normal">Rules</th>
-          <th class="p-4 font-normal text-right">Usage</th>
-          <th class="p-4 font-normal text-right">Status</th>
+          <th class="p-4 text-right font-normal">Usage</th>
+          <th class="p-4 text-right font-normal">Status</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-white/[0.04]">
         {#each filtered as d}
-          <tr class="hover:bg-white/[0.02] transition-colors">
+          <tr class="transition-colors hover:bg-white/[0.02]">
             <td class="p-4">
-              <span class="text-xs font-mono font-bold {isActive(d) ? 'text-[#36f4a4]' : 'text-white/40'}">{d.code}</span>
+              <span
+                class="font-mono text-xs font-bold {isActive(d)
+                  ? 'text-[#36f4a4]'
+                  : 'text-white/40'}">{d.code}</span
+              >
               {#if d.stackable}
-                <span class="block text-[9px] text-amber-400 mt-1 uppercase tracking-widest">Stackable</span>
+                <span
+                  class="mt-1 block text-[9px] tracking-widest text-amber-400 uppercase"
+                  >Stackable</span
+                >
               {/if}
             </td>
-            <td class="p-4 text-[10px] font-mono text-white/70 space-y-1">
+            <td class="space-y-1 p-4 font-mono text-[10px] text-white/70">
               <div>Type: {d.type.replace('_', ' ')}</div>
-              <div>Value: {d.type === 'PERCENTAGE' ? `${d.value}%` : `$${d.value}`}</div>
-              {#if d.minimum_order > 0}<div>Min Spend: ${d.minimum_order}</div>{/if}
+              <div>
+                Value: {d.type === 'PERCENTAGE' ? `${d.value}%` : `$${d.value}`}
+              </div>
+              {#if d.minimum_order > 0}<div>
+                  Min Spend: ${d.minimum_order}
+                </div>{/if}
             </td>
             <td class="p-4 text-right">
-              <div class="text-xs font-mono text-white">{d.current_usage}</div>
+              <div class="font-mono text-xs text-white">{d.current_usage}</div>
               {#if d.usage_limit}
-                <div class="text-[9px] text-white/40 font-mono">Limit: {d.usage_limit}</div>
-                <div class="w-full bg-white/5 h-1 mt-1 rounded-full overflow-hidden max-w-[100px] ml-auto">
-                  <div class="bg-[#36f4a4] h-full" style="width: {(d.current_usage / d.usage_limit) * 100}%"></div>
+                <div class="font-mono text-[9px] text-white/40">
+                  Limit: {d.usage_limit}
+                </div>
+                <div
+                  class="mt-1 ml-auto h-1 w-full max-w-[100px] overflow-hidden rounded-full bg-white/5"
+                >
+                  <div
+                    class="h-full bg-[#36f4a4]"
+                    style="width: {(d.current_usage / d.usage_limit) * 100}%"
+                  ></div>
                 </div>
               {/if}
             </td>
             <td class="p-4 text-right">
               {#if isActive(d)}
-                <span class="text-[9px] px-2 py-1 uppercase tracking-widest border border-[#36f4a4]/30 text-[#36f4a4] bg-[#36f4a4]/10">Active</span>
+                <span
+                  class="border border-[#36f4a4]/30 bg-[#36f4a4]/10 px-2 py-1 text-[9px] tracking-widest text-[#36f4a4] uppercase"
+                  >Active</span
+                >
               {:else}
-                <span class="text-[9px] px-2 py-1 uppercase tracking-widest border border-rose-500/30 text-rose-400 bg-rose-500/10">Expired</span>
+                <span
+                  class="border border-rose-500/30 bg-rose-500/10 px-2 py-1 text-[9px] tracking-widest text-rose-400 uppercase"
+                  >Expired</span
+                >
               {/if}
             </td>
           </tr>

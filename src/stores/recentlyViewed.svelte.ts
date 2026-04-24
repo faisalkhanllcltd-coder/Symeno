@@ -30,20 +30,20 @@ export function createRecentStore() {
     if (typeof window === 'undefined') return;
     load();
     // Remove if exists to push to front
-    const filtered = items.filter(i => i.id !== item.id);
+    const filtered = items.filter((i) => i.id !== item.id);
     filtered.unshift(item);
     if (filtered.length > MAX_ITEMS) filtered.pop();
-    
+
     items = filtered;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }
 
   return {
-    get items() { 
-      load(); 
-      return items; 
+    get items() {
+      load();
+      return items;
     },
-    add
+    add,
   };
 }
 

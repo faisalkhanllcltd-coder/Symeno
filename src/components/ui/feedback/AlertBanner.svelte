@@ -1,15 +1,17 @@
-<script lang="ts">
-  export let type: 'info' | 'warning' | 'error' | 'success' = 'info';
-  export let message: string;
+﻿<script lang="ts">
+  let { type = 'info', message } = $props<{
+    type?: 'info' | 'warning' | 'error' | 'success';
+    message: string;
+  }>();
 
   const styles = {
-    info: 'bg-gray-50 border-gray-200 text-gray-600',
-    warning: 'bg-amber-50 border-amber-200 text-amber-800',
-    error: 'bg-rose-50 border-rose-200 text-rose-800',
-    success: 'bg-[#10b981]/10 border-[#10b981]/30 text-[#059669]'
+    info: 'bg-blue-500/10 border-blue-500/30 text-blue-400',   
+    warning: 'bg-amber-500/10 border-amber-500/30 text-amber-400',
+    error: 'bg-brand-alert/10 border-brand-alert/30 text-brand-alert',  
+    success: 'bg-brand/10 border-brand/30 text-brand',
   };
 </script>
 
-<div class="p-4 border text-xs font-mono tracking-wide {styles[type]}">
+<div class="border p-4 font-mono text-xs tracking-wide transition-colors {styles[type]}">
   {message}
 </div>

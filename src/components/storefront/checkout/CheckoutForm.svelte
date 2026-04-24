@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  // Make sure STRIPE_PUBLIC_KEY is provided in your astro build config
+  // Svelte 5 Runes for incoming props
   let { publicKey = '' } = $props<{ publicKey: string }>();
 
   let stripe: any = null;
@@ -11,8 +11,8 @@
   let errorMessage = $state('');
 
   onMount(async () => {
-    const { cart } = await import('../../../stores/cart.svelte');
-    
+    const { cart } = await import('../../../stores/cart.svelte');      
+
     if (cart.items.length === 0) {
       window.location.href = '/shop';
       return;
@@ -20,33 +20,36 @@
 
     try {
       // 1. Fetch Client Secret from our Edge API
-      const res = await fetch('/api/checkout/create-intent', {
+      const res = await fetch('/api/checkout/create-intent', {        
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: cart.items })
+        body: JSON.stringify({ items: cart.items }),
       });
-      
+
       const { clientSecret, error } = await res.json();
       if (error) throw new Error(error);
 
       // 2. Initialize Stripe
       // @ts-ignore
       stripe = window.Stripe(publicKey);
-      
+
+      // Kept explicit hex values here because Stripe's external iframe is notoriously 
+      // strict about dynamic CSS variable parsing during initial load.
       const appearance = {
         theme: 'night',
         variables: {
-          fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+          fontFamily:
+            'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
           colorPrimary: '#36f4a4',
           colorBackground: '#1A1D23',
           colorText: '#ffffff',
           colorDanger: '#fb7185',
           spacingUnit: '4px',
-          borderRadius: '0px'
-        }
+          borderRadius: '0px',
+        },
       };
 
-      elements = stripe.elements({ clientSecret, appearance });
+      elements = stripe.elements({ clientSecret, appearance });        
 
       // Mount Address Element
       const addressElement = elements.create('address', {
@@ -56,7 +59,9 @@
       addressElement.mount('#address-element');
 
       // Mount Payment Element
-      const paymentElement = elements.create('payment', { layout: 'accordion' });
+      const paymentElement = elements.create('payment', {
+        layout: 'accordion',
+      });
       paymentElement.mount('#payment-element');
 
       isLoading = false;
@@ -76,7 +81,7 @@
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/checkout/success`,
+        return_url: `${window.location.origin}/checkout/success`,      
       },
     });
 
@@ -87,38 +92,67 @@
   }
 </script>
 
-<div class="bg-[#111318] border border-white/10 p-6 sm:p-8 relative min-h-[400px]">
-  <h2 class="text-sm font-bold text-white uppercase tracking-widest font-mono border-b border-white/10 pb-4 mb-8">Secure Payment Gateway</h2>
+<div
+  class="relative min-h-[400px] border border-outline bg-surface p-6 sm:p-8 transition-colors duration-300"
+>
+  <h2
+    class="mb-8 border-b border-outline pb-4 font-mono text-sm font-bold tracking-widest text-content uppercase"
+  >
+    Secure Payment Gateway
+  </h2>
 
   {#if isLoading}
-    <div class="absolute inset-0 flex flex-col items-center justify-center bg-[#111318]/80 backdrop-blur-sm z-10">
-      <div class="w-8 h-8 border-2 border-[#36f4a4]/20 border-t-[#36f4a4] rounded-full animate-spin mb-4"></div>
-      <p class="text-[10px] text-[#36f4a4] font-mono uppercase tracking-widest animate-pulse">Establishing encrypted link...</p>
+    <div
+      class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-base/80 backdrop-blur-sm"
+    >
+      <div
+        class="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-brand/20 border-t-brand"
+      ></div>
+      <p
+        class="animate-pulse font-mono text-[10px] tracking-widest text-brand uppercase"
+      >
+        Establishing encrypted link...
+      </p>
     </div>
   {/if}
 
   {#if errorMessage}
-    <div class="mb-6 bg-rose-500/10 border border-rose-500/30 p-4 text-rose-400 text-xs font-mono uppercase tracking-widest">
+    <div
+      class="mb-6 border border-brand-alert/30 bg-brand-alert/10 p-4 font-mono text-xs tracking-widest text-brand-alert uppercase"
+    >
       {errorMessage}
     </div>
   {/if}
 
-  <form onsubmit={handleSubmit} id="payment-form" class="space-y-8 {isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-500'}">
-    
+  <form
+    onsubmit={handleSubmit}
+    id="payment-form"
+    class="space-y-8 {isLoading
+      ? 'opacity-0'
+      : 'opacity-100 transition-opacity duration-500'}"
+  >
     <div>
-      <h3 class="text-[10px] font-bold uppercase tracking-widest text-white/50 font-mono mb-4">1. Logistics Destination</h3>
+      <h3
+        class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
+      >
+        1. Logistics Destination
+      </h3>
       <div id="address-element" class="min-h-[200px]"></div>
     </div>
 
     <div>
-      <h3 class="text-[10px] font-bold uppercase tracking-widest text-white/50 font-mono mb-4">2. Financial Authorization</h3>
+      <h3
+        class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
+      >
+        2. Financial Authorization
+      </h3>
       <div id="payment-element" class="min-h-[200px]"></div>
     </div>
 
-    <button 
-      type="submit" 
+    <button
+      type="submit"
       disabled={isProcessing || isLoading}
-      class="w-full bg-[#36f4a4] text-[#003822] px-4 py-4 text-xs font-bold uppercase tracking-widest hover:bg-white transition-colors disabled:opacity-50 shadow-[0_0_15px_rgba(54,244,164,0.15)]"
+      class="w-full bg-brand px-4 py-4 text-xs font-bold tracking-widest text-brand-dark uppercase shadow-[0_0_15px_var(--color-brand)] transition-colors hover:opacity-80 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark"
     >
       {isProcessing ? 'Processing Transaction...' : 'Authorize Payload'}
     </button>

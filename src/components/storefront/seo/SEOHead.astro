@@ -9,10 +9,10 @@ interface Props {
 
 const {
   title,
-  description = "Symeno - Premium Wholesale Arbitrage and Electronics Distribution.",
-  image = "/og-image.jpg",
+  description = 'Symeno - Premium Wholesale Arbitrage and Electronics Distribution.',
+  image = '/og-image.jpg',
   canonicalUrl = Astro.url,
-  type = "website"
+  type = 'website',
 } = Astro.props;
 ---
 
@@ -26,10 +26,16 @@ const {
 <meta property="og:url" content={canonicalUrl} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image, Astro.site || Astro.url.origin)} />
+<meta
+  property="og:image"
+  content={new URL(image, Astro.site || Astro.url.origin)}
+/>
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:url" content={canonicalUrl} />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
-<meta name="twitter:image" content={new URL(image, Astro.site || Astro.url.origin)} />
+<meta
+  name="twitter:image"
+  content={new URL(image, Astro.site || Astro.url.origin)}
+/>

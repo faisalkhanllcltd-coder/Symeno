@@ -8,10 +8,10 @@
       const res = await fetch('/api/admin/reviews', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status })
+        body: JSON.stringify({ id, status }),
       });
       if (res.ok) {
-        const index = reviews.findIndex(r => r.id === id);
+        const index = reviews.findIndex((r) => r.id === id);
         if (index !== -1) reviews[index].status = status;
       }
     } finally {
@@ -19,53 +19,93 @@
     }
   }
 
-  const renderStars = (rating: number) => '★'.repeat(rating) + '☆'.repeat(5 - rating);
+  const renderStars = (rating: number) =>
+    '★'.repeat(rating) + '☆'.repeat(5 - rating);
 </script>
 
-<div class="bg-[#111318] border border-white/10 overflow-x-auto">
-  <table class="w-full text-left border-collapse">
+<div class="overflow-x-auto border border-white/10 bg-[#111318]">
+  <table class="w-full border-collapse text-left">
     <thead>
-      <tr class="bg-[#0a0b0e] border-b border-white/10 text-[10px] font-mono uppercase tracking-widest text-white/40">
+      <tr
+        class="border-b border-white/10 bg-[#0a0b0e] font-mono text-[10px] tracking-widest text-white/40 uppercase"
+      >
         <th class="p-4 font-normal">Rating / Product</th>
         <th class="p-4 font-normal">Customer Review</th>
-        <th class="p-4 font-normal text-center">Status</th>
-        <th class="p-4 font-normal text-right">Moderation</th>
+        <th class="p-4 text-center font-normal">Status</th>
+        <th class="p-4 text-right font-normal">Moderation</th>
       </tr>
     </thead>
     <tbody class="divide-y divide-white/[0.04]">
       {#each reviews as review}
-        <tr class="hover:bg-white/[0.02] transition-colors">
+        <tr class="transition-colors hover:bg-white/[0.02]">
           <td class="p-4">
-            <div class="text-amber-400 text-sm tracking-widest">{renderStars(review.rating)}</div>
-            <div class="text-[10px] font-mono text-white/50 mt-1">{review.product_title}</div>
+            <div class="text-sm tracking-widest text-amber-400">
+              {renderStars(review.rating)}
+            </div>
+            <div class="mt-1 font-mono text-[10px] text-white/50">
+              {review.product_title}
+            </div>
           </td>
-          <td class="p-4 max-w-md">
-            <div class="text-xs font-bold text-white mb-1">{review.title || 'No Title'}</div>
-            <div class="text-[10px] font-mono text-white/70 line-clamp-2">{review.comment}</div>
-            <div class="text-[9px] font-mono text-white/30 mt-1">{review.customer_email || 'Guest'}</div>
+          <td class="max-w-md p-4">
+            <div class="mb-1 text-xs font-bold text-white">
+              {review.title || 'No Title'}
+            </div>
+            <div class="line-clamp-2 font-mono text-[10px] text-white/70">
+              {review.comment}
+            </div>
+            <div class="mt-1 font-mono text-[9px] text-white/30">
+              {review.customer_email || 'Guest'}
+            </div>
           </td>
           <td class="p-4 text-center">
             {#if review.status === 'APPROVED'}
-              <span class="text-[9px] px-2 py-1 uppercase tracking-widest border border-[#36f4a4]/30 text-[#36f4a4] bg-[#36f4a4]/10">Approved</span>
+              <span
+                class="border border-[#36f4a4]/30 bg-[#36f4a4]/10 px-2 py-1 text-[9px] tracking-widest text-[#36f4a4] uppercase"
+                >Approved</span
+              >
             {:else if review.status === 'REJECTED'}
-              <span class="text-[9px] px-2 py-1 uppercase tracking-widest border border-rose-500/30 text-rose-400 bg-rose-500/10">Rejected</span>
+              <span
+                class="border border-rose-500/30 bg-rose-500/10 px-2 py-1 text-[9px] tracking-widest text-rose-400 uppercase"
+                >Rejected</span
+              >
             {:else}
-              <span class="text-[9px] px-2 py-1 uppercase tracking-widest border border-amber-500/30 text-amber-400 bg-amber-500/10">Pending</span>
+              <span
+                class="border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-[9px] tracking-widest text-amber-400 uppercase"
+                >Pending</span
+              >
             {/if}
           </td>
           <td class="p-4 text-right">
             {#if review.status === 'PENDING'}
               <div class="flex justify-end gap-2">
-                <button onclick={() => updateStatus(review.id, 'APPROVED')} disabled={isProcessing} class="text-[10px] font-mono uppercase tracking-widest border border-[#36f4a4]/30 px-2 py-1 text-[#36f4a4] hover:bg-[#36f4a4]/10 transition-colors">Approve</button>
-                <button onclick={() => updateStatus(review.id, 'REJECTED')} disabled={isProcessing} class="text-[10px] font-mono uppercase tracking-widest border border-rose-500/30 px-2 py-1 text-rose-400 hover:bg-rose-500/10 transition-colors">Reject</button>
+                <button
+                  onclick={() => updateStatus(review.id, 'APPROVED')}
+                  disabled={isProcessing}
+                  class="border border-[#36f4a4]/30 px-2 py-1 font-mono text-[10px] tracking-widest text-[#36f4a4] uppercase transition-colors hover:bg-[#36f4a4]/10"
+                  >Approve</button
+                >
+                <button
+                  onclick={() => updateStatus(review.id, 'REJECTED')}
+                  disabled={isProcessing}
+                  class="border border-rose-500/30 px-2 py-1 font-mono text-[10px] tracking-widest text-rose-400 uppercase transition-colors hover:bg-rose-500/10"
+                  >Reject</button
+                >
               </div>
             {:else}
-              <span class="text-[9px] font-mono text-white/30 uppercase">Moderated</span>
+              <span class="font-mono text-[9px] text-white/30 uppercase"
+                >Moderated</span
+              >
             {/if}
           </td>
         </tr>
       {:else}
-        <tr><td colspan="4" class="p-8 text-center text-xs font-mono text-white/30 uppercase">No reviews in queue.</td></tr>
+        <tr
+          ><td
+            colspan="4"
+            class="p-8 text-center text-xs font-mono text-white/30 uppercase"
+            >No reviews in queue.</td
+          ></tr
+        >
       {/each}
     </tbody>
   </table>

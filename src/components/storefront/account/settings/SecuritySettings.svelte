@@ -1,9 +1,9 @@
-<script lang="ts">
-  import SessionManager from './SessionManager.svelte';
-  
-  let email = "operator@symeno.com"; // Passed in production
+﻿<script lang="ts">
+  import SessionManager from './SessionManager.svelte'; 
+
+  let email = 'operator@symeno.com'; // Passed in production
   let twoFactorEnabled = $state(false);
-  
+
   // 2FA Setup State
   let isSettingUp = $state(false);
   let setupUri = $state('');
@@ -32,7 +32,7 @@
       const res = await fetch('/api/account/2fa/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: verificationCode })
+        body: JSON.stringify({ code: verificationCode }),
       });
       if (res.ok) {
         twoFactorEnabled = true;
@@ -40,7 +40,7 @@
         alert('2FA Matrix Secured.');
       } else {
         const err = await res.json();
-        alert(`Verification failed: ${err.error}`);
+        alert(`Verification failed: ${err.error}`);     
       }
     } finally {
       isProcessing = false;
@@ -48,49 +48,113 @@
   }
 </script>
 
-<div class="space-y-12 animate-fade-in">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 border-b border-white/10 pb-8">
-    
+<div class="animate-fade-in space-y-12 transition-colors duration-300">
+  <div
+    class="grid grid-cols-1 gap-8 border-b border-outline pb-8 md:grid-cols-2"
+  >
     <div>
-      <h3 class="text-xs font-bold uppercase tracking-widest text-white font-mono mb-2">Access Credentials</h3>
-      <p class="text-[10px] text-white/50 font-mono mb-6 max-w-sm">Manage your primary authentication vectors.</p>
+      <h3
+        class="mb-2 font-mono text-xs font-bold tracking-widest text-content uppercase"
+      >
+        Access Credentials
+      </h3>
+      <p class="mb-6 max-w-sm font-mono text-[10px] text-content-muted">
+        Manage your primary authentication vectors.      
+      </p>
       <div class="space-y-4">
         <div>
-          <label class="block text-[10px] font-bold uppercase tracking-widest text-white/50 font-mono mb-2">Registered Email</label>
-          <input type="email" value={email} disabled class="w-full bg-black/50 border border-white/10 text-white/50 px-3 py-2 text-sm font-mono" />
+          <label
+            class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
+            >Registered Email</label
+          >
+          <input
+            type="email"
+            value={email}
+            disabled
+            class="w-full border border-outline bg-base/50 px-3 py-2 font-mono text-sm text-content-muted"
+          />
         </div>
       </div>
     </div>
 
     <div>
-      <h3 class="text-xs font-bold uppercase tracking-widest text-white font-mono mb-2">Multi-Factor Auth (TOTP)</h3>
-      <p class="text-[10px] text-white/50 font-mono mb-6 max-w-sm">Secure your account using an authenticator app.</p>
-      
+      <h3
+        class="mb-2 font-mono text-xs font-bold tracking-widest text-content uppercase"
+      >
+        Multi-Factor Auth (TOTP)
+      </h3>
+      <p class="mb-6 max-w-sm font-mono text-[10px] text-content-muted">
+        Secure your account using an authenticator app. 
+      </p>
+
       {#if !isSettingUp}
-        <div class="p-4 border {twoFactorEnabled ? 'border-[#36f4a4]/30 bg-[#36f4a4]/5' : 'border-white/10 bg-[#1A1D23]'} flex justify-between items-center transition-colors">
+        <div
+          class="border p-4 {twoFactorEnabled
+            ? 'border-brand/30 bg-brand/5'      
+            : 'border-outline bg-base'} flex items-center justify-between transition-colors"
+        >
           <div>
-            <h4 class="text-xs font-bold text-white mb-1">2FA Status</h4>
-            <p class="text-[10px] font-mono {twoFactorEnabled ? 'text-[#36f4a4]' : 'text-white/50'}">{twoFactorEnabled ? 'Active & Enforced' : 'Currently Disabled'}</p>
+            <h4 class="mb-1 text-xs font-bold text-content">2FA Status</h4>
+            <p
+              class="font-mono text-[10px] {twoFactorEnabled
+                ? 'text-brand'
+                : 'text-content-muted'}"
+            >
+              {twoFactorEnabled ? 'Active & Enforced' : 'Currently Disabled'}
+            </p>
           </div>
-          <button onclick={start2FASetup} disabled={twoFactorEnabled || isProcessing} class="{twoFactorEnabled ? 'hidden' : 'bg-[#36f4a4] text-black'} px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-colors disabled:opacity-50">
+          <button
+            onclick={start2FASetup}
+            disabled={twoFactorEnabled || isProcessing} 
+            class="{twoFactorEnabled
+              ? 'hidden'
+              : 'bg-brand text-brand-dark'} px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-colors hover:opacity-80 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+          >
             {isProcessing ? 'Initializing...' : 'Setup 2FA'}
           </button>
         </div>
       {:else}
-        <div class="p-4 border border-[#36f4a4]/50 bg-[#36f4a4]/5 space-y-4 animate-fade-in">
-          <h4 class="text-xs font-bold text-[#36f4a4] uppercase tracking-widest">Configuration Protocol</h4>
-          <p class="text-[10px] font-mono text-white/70">1. Enter this secret key into your Authenticator App (Google Authenticator, Authy):</p>
-          <div class="bg-black/50 p-2 text-center text-xs font-mono text-white tracking-widest break-all select-all border border-white/10">
+        <div
+          class="animate-fade-in space-y-4 border border-brand/50 bg-brand/5 p-4"
+        >
+          <h4
+            class="text-xs font-bold tracking-widest text-brand uppercase"
+          >
+            Configuration Protocol
+          </h4>
+          <p class="font-mono text-[10px] text-content-muted">
+            1. Enter this secret key into your Authenticator App (Google
+            Authenticator, Authy):
+          </p>
+          <div
+            class="border border-outline bg-base/50 p-2 text-center font-mono text-xs tracking-widest break-all text-content select-all"
+          >
             {setupSecret}
           </div>
-          <p class="text-[10px] font-mono text-white/70 mt-4">2. Enter the 6-digit code generated by your app:</p>
+          <p class="mt-4 font-mono text-[10px] text-content-muted">
+            2. Enter the 6-digit code generated by your app:
+          </p>
           <div class="flex gap-2">
-            <input type="text" bind:value={verificationCode} maxlength="6" placeholder="000000" class="w-full bg-[#111318] border border-white/10 text-white px-3 py-2 text-center text-lg tracking-[0.5em] focus:outline-none focus:border-[#36f4a4]/50 font-mono" />
-            <button onclick={verifyAndEnable2FA} disabled={verificationCode.length !== 6 || isProcessing} class="bg-[#36f4a4] text-black px-6 text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-colors disabled:opacity-50">
+            <input
+              type="text"
+              bind:value={verificationCode}
+              maxlength="6"
+              placeholder="000000"
+              class="w-full border border-outline bg-surface px-3 py-2 text-center font-mono text-lg tracking-[0.5em] text-content focus:border-brand/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand transition-colors"
+            />
+            <button
+              onclick={verifyAndEnable2FA}
+              disabled={verificationCode.length !== 6 || isProcessing}
+              class="bg-brand px-6 text-[10px] font-bold tracking-widest text-brand-dark uppercase transition-colors hover:opacity-80 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+            >
               Verify
             </button>
           </div>
-          <button onclick={() => isSettingUp = false} class="text-[9px] text-white/40 hover:text-white uppercase font-mono tracking-widest transition-colors w-full mt-2">Cancel Setup</button>
+          <button
+            onclick={() => (isSettingUp = false)}       
+            class="mt-2 w-full font-mono text-[9px] tracking-widest text-content-muted uppercase transition-colors hover:text-content focus-visible:outline-none focus-visible:underline"
+            >Cancel Setup</button
+          >
         </div>
       {/if}
     </div>

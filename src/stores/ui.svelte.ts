@@ -29,7 +29,7 @@ class UIStore {
   }
 
   removeToast(id: string) {
-    this.toasts = this.toasts.filter(t => t.id !== id);
+    this.toasts = this.toasts.filter((t) => t.id !== id);
   }
 }
 

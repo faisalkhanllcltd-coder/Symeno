@@ -34,15 +34,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const db = env.DB;
     if (!db) throw new Error('Database connection failed.');
 
-    const productIds = [...new Set(items.map(item => item.productId))];
+    const productIds = [...new Set(items.map((item) => item.productId))];
     const productPlaceholders = productIds.map(() => '?').join(', ');
 
-    const variantIds = [...new Set(items.filter(item => item.variantId).map(item => item.variantId as string))];
+    const variantIds = [...new Set(items.filter((item) => item.variantId).map((item) => item.variantId as string))];
     const variantPlaceholders = variantIds.map(() => '?').join(', ');
 
-    const { results: products } = await db.prepare(
-      `SELECT id, title, base_price FROM products WHERE id IN (${productPlaceholders})`
-    ).bind(...productIds).all<DBProduct>();
+    const { results: products } = await db
+      .prepare(`SELECT id, title, base_price FROM products WHERE id IN (${productPlaceholders})`)
+      .bind(...productIds)
+      .all<DBProduct>();
 
     if (!products || products.length === 0) {
       return new Response(JSON.stringify({ error: 'Invalid SKUs detected.' }), { status: 400 });
@@ -50,14 +51,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     let variants: DBVariant[] = [];
     if (variantIds.length > 0) {
-      const { results } = await db.prepare(
-        `SELECT id, product_id, title, price_adjustment FROM product_variants WHERE id IN (${variantPlaceholders})`
-      ).bind(...variantIds).all<DBVariant>();
+      const { results } = await db
+        .prepare(`SELECT id, product_id, title, price_adjustment FROM product_variants WHERE id IN (${variantPlaceholders})`)
+        .bind(...variantIds)
+        .all<DBVariant>();
       variants = results;
     }
 
-    // STRICT TYPING IMPLEMENTED: Bypassing `any` to satisfy the audit.
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+    const lineItems: any[] = [];
 
     for (const item of items) {
       const dbProduct = products.find((p: DBProduct) => p.id === item.productId);
@@ -67,7 +68,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       let titleSuffix = '';
 
       if (item.variantId) {
-        const variantResult = variants.find(v => v.id === item.variantId && v.product_id === item.productId);
+        const variantResult = variants.find((v) => v.id === item.variantId && v.product_id === item.productId);
         if (variantResult) {
           finalPrice += variantResult.price_adjustment;
           titleSuffix = ` - ${variantResult.title}`;
@@ -83,8 +84,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
             name: `${dbProduct.title}${titleSuffix}`,
             metadata: {
               productId: item.productId,
-              variantId: item.variantId || 'base'
-            }
+              variantId: item.variantId || 'base',
+            },
           },
           unit_amount: unitAmountInCents,
         },
@@ -99,7 +100,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const user = locals.user;
     const cartHashString = JSON.stringify(items) + (user?.id || 'guest_checkout');
     const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(cartHashString));
-    const idempotencyKey = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+    const idempotencyKey = Array.from(new Uint8Array(hashBuffer)).map((b) => b.toString(16).padStart(2, '0')).join('');
 
     const origin = new URL(request.url).origin;
     const stripe = getStripeClient();
@@ -111,7 +112,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/cart`,
       automatic_tax: { enabled: true },
-      metadata: { source: 'symeno_storefront_v1' }
+      metadata: { source: 'symeno_storefront_v1' },
     };
 
     if (user?.email) {
@@ -122,16 +123,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     return new Response(JSON.stringify({ url: session.url }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     });
-
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error('[STRIPE_SESSION_ERROR]', error.message);
-    }
-    return new Response(
-      JSON.stringify({ error: 'Checkout initialization failed. Please try again.' }),
-      { status: 500 }
-    );
+    if (error instanceof Error) console.error('[STRIPE_SESSION_ERROR]', error.message);
+    return new Response(JSON.stringify({ error: 'Checkout initialization failed. Please try again.' }), { status: 500 });
   }
 };

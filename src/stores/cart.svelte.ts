@@ -39,16 +39,25 @@ function createCartStore() {
         fetch('/api/cart', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ items })
-        }).catch(err => logger.warn('[EDGE_SYNC_WARNING] Cart failed to sync with KV. Local fallback active.', err));
+          body: JSON.stringify({ items }),
+        }).catch((err) =>
+          logger.warn(
+            '[EDGE_SYNC_WARNING] Cart failed to sync with KV. Local fallback active.',
+            err
+          )
+        );
       }, 1000);
     }
   }
 
   return {
     // 3. Expose Reactive Getters
-    get items() { return items; },
-    get isOpen() { return isOpen; },
+    get items() {
+      return items;
+    },
+    get isOpen() {
+      return isOpen;
+    },
 
     get totalItems() {
       return items.reduce((total, item) => total + item.quantity, 0);
@@ -69,7 +78,7 @@ function createCartStore() {
 
     addItem(productId: string, variantId?: string, quantity: number = 1) {
       const id = variantId ? `${productId}_${variantId}` : productId;
-      const existingItem = items.find(i => i.id === id);
+      const existingItem = items.find((i) => i.id === id);
 
       if (existingItem) {
         existingItem.quantity += quantity;
@@ -81,7 +90,7 @@ function createCartStore() {
     },
 
     updateQuantity(id: string, quantity: number) {
-      const item = items.find(i => i.id === id);
+      const item = items.find((i) => i.id === id);
       if (item) {
         item.quantity = Math.max(1, quantity);
         sync();
@@ -89,14 +98,14 @@ function createCartStore() {
     },
 
     removeItem(id: string) {
-      items = items.filter(i => i.id !== id);
+      items = items.filter((i) => i.id !== id);
       sync();
     },
 
     clearCart() {
       items = [];
       sync();
-    }
+    },
   };
 }
 

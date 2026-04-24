@@ -2,67 +2,132 @@
 import StorefrontLayout from '../layouts/Storefront.astro';
 ---
 
-<StorefrontLayout title="Contact Operations" description="Get in touch with Symeno support or B2B sourcing.">
-  <div class="bg-[#0b1516] min-h-screen py-12 md:py-24">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      <div class="max-w-2xl mb-16">
-        <h1 class="text-4xl md:text-5xl font-bold text-white tracking-tighter mb-4">Operations & Support.</h1>
-        <p class="text-[#dae5e6]/60 font-light text-lg">We maintain strict SLA times. Expect a response within 4 hours during business operations.</p>
+<StorefrontLayout
+  title="Contact Operations"
+  description="Get in touch with Symeno support or B2B sourcing."
+>
+  <div class="min-h-screen bg-[#0b1516] py-12 md:py-24">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mb-16 max-w-2xl">
+        <h1
+          class="mb-4 text-4xl font-bold tracking-tighter text-white md:text-5xl"
+        >
+          Operations & Support.
+        </h1>
+        <p class="text-lg font-light text-[#dae5e6]/60">
+          We maintain strict SLA times. Expect a response within 4 hours during
+          business operations.
+        </p>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
-        
+      <div class="grid grid-cols-1 gap-16 lg:grid-cols-12">
         <div class="lg:col-span-7">
-          <form class="space-y-6 bg-[#070d0e] border border-[#dae5e6]/10 p-6 md:p-8">
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <form
+            class="space-y-6 border border-[#dae5e6]/10 bg-[#070d0e] p-6 md:p-8"
+          >
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
-                <label class="block text-[10px] font-mono text-[#dae5e6]/60 uppercase tracking-widest mb-2">Name</label>
-                <input type="text" required class="w-full bg-[#131d1e] border border-[#dae5e6]/15 text-white px-4 py-3.5 focus:outline-none focus:border-[#36f4a4]/50 rounded-none transition-colors text-sm font-mono" />
+                <label
+                  class="mb-2 block font-mono text-[10px] tracking-widest text-[#dae5e6]/60 uppercase"
+                  >Name</label
+                >
+                <input
+                  type="text"
+                  required
+                  class="w-full rounded-none border border-[#dae5e6]/15 bg-[#131d1e] px-4 py-3.5 font-mono text-sm text-white transition-colors focus:border-[#36f4a4]/50 focus:outline-none"
+                />
               </div>
               <div>
-                <label class="block text-[10px] font-mono text-[#dae5e6]/60 uppercase tracking-widest mb-2">Email Address</label>
-                <input type="email" required class="w-full bg-[#131d1e] border border-[#dae5e6]/15 text-white px-4 py-3.5 focus:outline-none focus:border-[#36f4a4]/50 rounded-none transition-colors text-sm font-mono" />
+                <label
+                  class="mb-2 block font-mono text-[10px] tracking-widest text-[#dae5e6]/60 uppercase"
+                  >Email Address</label
+                >
+                <input
+                  type="email"
+                  required
+                  class="w-full rounded-none border border-[#dae5e6]/15 bg-[#131d1e] px-4 py-3.5 font-mono text-sm text-white transition-colors focus:border-[#36f4a4]/50 focus:outline-none"
+                />
               </div>
             </div>
 
             <div>
-              <label class="block text-[10px] font-mono text-[#dae5e6]/60 uppercase tracking-widest mb-2">Order Number (Optional)</label>
-              <input type="text" class="w-full bg-[#131d1e] border border-[#dae5e6]/15 text-white px-4 py-3.5 focus:outline-none focus:border-[#36f4a4]/50 rounded-none transition-colors text-sm font-mono placeholder:text-[#dae5e6]/20" placeholder="e.g. SYM-A8F29" />
+              <label
+                class="mb-2 block font-mono text-[10px] tracking-widest text-[#dae5e6]/60 uppercase"
+                >Order Number (Optional)</label
+              >
+              <input
+                type="text"
+                class="w-full rounded-none border border-[#dae5e6]/15 bg-[#131d1e] px-4 py-3.5 font-mono text-sm text-white transition-colors placeholder:text-[#dae5e6]/20 focus:border-[#36f4a4]/50 focus:outline-none"
+                placeholder="e.g. SYM-A8F29"
+              />
             </div>
 
             <div>
-              <label class="block text-[10px] font-mono text-[#dae5e6]/60 uppercase tracking-widest mb-2">Message</label>
-              <textarea required rows="5" class="w-full bg-[#131d1e] border border-[#dae5e6]/15 text-white px-4 py-3.5 focus:outline-none focus:border-[#36f4a4]/50 rounded-none transition-colors text-sm font-mono"></textarea>
+              <label
+                class="mb-2 block font-mono text-[10px] tracking-widest text-[#dae5e6]/60 uppercase"
+                >Message</label
+              >
+              <textarea
+                required
+                rows="5"
+                class="w-full rounded-none border border-[#dae5e6]/15 bg-[#131d1e] px-4 py-3.5 font-mono text-sm text-white transition-colors focus:border-[#36f4a4]/50 focus:outline-none"
+              ></textarea>
             </div>
 
-            <button type="button" class="w-full bg-[#36f4a4] text-[#003822] py-4 font-bold text-sm uppercase tracking-widest hover:bg-white transition-colors duration-300 shadow-none">
+            <button
+              type="button"
+              class="w-full bg-[#36f4a4] py-4 text-sm font-bold tracking-widest text-[#003822] uppercase shadow-none transition-colors duration-300 hover:bg-white"
+            >
               Transmit Message
             </button>
-            <p class="text-[10px] text-[#dae5e6]/40 font-mono text-center uppercase tracking-widest">Secured via 256-bit TLS</p>
+            <p
+              class="text-center font-mono text-[10px] tracking-widest text-[#dae5e6]/40 uppercase"
+            >
+              Secured via 256-bit TLS
+            </p>
           </form>
         </div>
 
-        <div class="lg:col-span-5 space-y-12">
-          
+        <div class="space-y-12 lg:col-span-5">
           <div>
-            <h3 class="text-sm font-bold text-white uppercase tracking-widest mb-4 border-b border-[#dae5e6]/10 pb-2">Direct Channels</h3>
-            <ul class="space-y-4 text-sm font-mono">
+            <h3
+              class="mb-4 border-b border-[#dae5e6]/10 pb-2 text-sm font-bold tracking-widest text-white uppercase"
+            >
+              Direct Channels
+            </h3>
+            <ul class="space-y-4 font-mono text-sm">
               <li class="flex flex-col">
-                <span class="text-[#dae5e6]/50 uppercase text-[10px] tracking-wider mb-1">Customer Support</span>
-                <a href="mailto:support@symeno.com" class="text-white hover:text-[#36f4a4] transition-colors">support@symeno.com</a>
+                <span
+                  class="mb-1 text-[10px] tracking-wider text-[#dae5e6]/50 uppercase"
+                  >Customer Support</span
+                >
+                <a
+                  href="mailto:support@symeno.com"
+                  class="text-white transition-colors hover:text-[#36f4a4]"
+                  >support@symeno.com</a
+                >
               </li>
               <li class="flex flex-col">
-                <span class="text-[#dae5e6]/50 uppercase text-[10px] tracking-wider mb-1">B2B Volume & Procurement</span>
-                <a href="mailto:wholesale@symeno.com" class="text-white hover:text-[#36f4a4] transition-colors">wholesale@symeno.com</a>
+                <span
+                  class="mb-1 text-[10px] tracking-wider text-[#dae5e6]/50 uppercase"
+                  >B2B Volume & Procurement</span
+                >
+                <a
+                  href="mailto:wholesale@symeno.com"
+                  class="text-white transition-colors hover:text-[#36f4a4]"
+                  >wholesale@symeno.com</a
+                >
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 class="text-sm font-bold text-white uppercase tracking-widest mb-4 border-b border-[#dae5e6]/10 pb-2">Operating Hours</h3>
-            <ul class="space-y-2 text-sm font-mono text-[#dae5e6]/80">
+            <h3
+              class="mb-4 border-b border-[#dae5e6]/10 pb-2 text-sm font-bold tracking-widest text-white uppercase"
+            >
+              Operating Hours
+            </h3>
+            <ul class="space-y-2 font-mono text-sm text-[#dae5e6]/80">
               <li class="flex justify-between">
                 <span>Mon - Fri:</span>
                 <span class="text-white">09:00 - 18:00 (EST)</span>
@@ -77,9 +142,7 @@ import StorefrontLayout from '../layouts/Storefront.astro';
               </li>
             </ul>
           </div>
-
         </div>
-
       </div>
     </div>
   </div>

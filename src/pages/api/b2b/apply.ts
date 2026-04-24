@@ -3,8 +3,8 @@ import { env } from 'cloudflare:workers';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const data = await request.json() as any;
-    
+    const data = (await request.json()) as any;
+
     if (!data.company_name || !data.trade_license || !data.contact_email) {
       throw new Error('Missing critical corporate telemetry.');
     }
@@ -12,10 +12,21 @@ export const POST: APIRoute = async ({ request }) => {
     const db = env.DB;
     const id = crypto.randomUUID();
 
-    await db.prepare(`
+    await db
+      .prepare(
+        `
       INSERT INTO b2b_applications (id, company_name, trade_license, tax_id, contact_email)
       VALUES (?1, ?2, ?3, ?4, ?5)
-    `).bind(id, data.company_name, data.trade_license, data.tax_id || null, data.contact_email).run();
+    `
+      )
+      .bind(
+        id,
+        data.company_name,
+        data.trade_license,
+        data.tax_id || null,
+        data.contact_email
+      )
+      .run();
 
     return new Response(JSON.stringify({ success: true, id }), { status: 201 });
   } catch (e: any) {

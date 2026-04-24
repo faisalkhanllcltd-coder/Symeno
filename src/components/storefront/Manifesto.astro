@@ -1,52 +1,89 @@
 ---
 // src/components/storefront/Manifesto.astro
 ---
-<section class="relative w-full py-24 md:py-32 bg-[#0b1516] border-t border-[#dae5e6]/5 overflow-hidden">
-  
-  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center pointer-events-none select-none flex justify-center items-center z-0">
-    <span class="text-[12rem] md:text-[20rem] font-black tracking-tighter text-[#dae5e6]/[0.02] whitespace-nowrap">
+
+<section
+  class="relative w-full overflow-hidden border-t border-[#dae5e6]/5 bg-[#0b1516] py-24 md:py-32"
+>
+  <div
+    class="pointer-events-none absolute top-1/2 left-1/2 z-0 flex w-full -translate-x-1/2 -translate-y-1/2 items-center justify-center text-center select-none"
+  >
+    <span
+      class="text-[12rem] font-black tracking-tighter whitespace-nowrap text-[#dae5e6]/[0.02] md:text-[20rem]"
+    >
       NO GAMES.
     </span>
   </div>
 
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    
-    <div class="max-w-3xl mb-20">
-      <h2 class="text-4xl md:text-5xl font-bold text-white tracking-tighter mb-6 leading-tight">
+  <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="mb-20 max-w-3xl">
+      <h2
+        class="mb-6 text-4xl leading-tight font-bold tracking-tighter text-white md:text-5xl"
+      >
         We buy more <br class="hidden md:block" />
         <span class="text-[#dae5e6]/40">so you pay less.</span>
       </h2>
-      <p class="text-lg text-[#dae5e6]/70 leading-relaxed font-light">
-        The traditional retail model is broken. Middlemen mark up prices to cover expensive storefronts and bloated marketing budgets. We stripped the system down to the math.
+      <p class="text-lg leading-relaxed font-light text-[#dae5e6]/70">
+        The traditional retail model is broken. Middlemen mark up prices to
+        cover expensive storefronts and bloated marketing budgets. We stripped
+        the system down to the math.
       </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
-      
-      <div class="relative pl-6 border-l border-[#dae5e6]/10 hover:border-[#36f4a4]/50 transition-colors duration-500 group">
-        <span class="text-[10px] font-mono text-[#36f4a4] tracking-widest mb-2 block opacity-80 group-hover:opacity-100">01</span>
-        <h3 class="text-white font-semibold tracking-wide mb-3 uppercase text-sm">Direct Sourcing</h3>
-        <p class="text-[#dae5e6]/60 text-sm leading-relaxed font-light">
-          We negotiate bulk contracts directly with verified distributors and brand partners. No unauthorized gray market goods. Ever.
-        </p>
-      </div>
-      
-      <div class="relative pl-6 border-l border-[#dae5e6]/10 hover:border-[#36f4a4]/50 transition-colors duration-500 group">
-        <span class="text-[10px] font-mono text-[#36f4a4] tracking-widest mb-2 block opacity-80 group-hover:opacity-100">02</span>
-        <h3 class="text-white font-semibold tracking-wide mb-3 uppercase text-sm">Margin Compression</h3>
-        <p class="text-[#dae5e6]/60 text-sm leading-relaxed font-light">
-          Instead of taking a 50% retail margin to fund a bloated operation, we take a fraction of that. The remaining delta stays in your pocket.
-        </p>
-      </div>
-      
-      <div class="relative pl-6 border-l border-[#dae5e6]/10 hover:border-[#36f4a4]/50 transition-colors duration-500 group">
-        <span class="text-[10px] font-mono text-[#36f4a4] tracking-widest mb-2 block opacity-80 group-hover:opacity-100">03</span>
-        <h3 class="text-white font-semibold tracking-wide mb-3 uppercase text-sm">The Price Promise</h3>
-        <p class="text-[#dae5e6]/60 text-sm leading-relaxed font-light">
-          If you find a lower price on an identical item from an authorized retailer within 14 days, we match it. Zero friction.
+    <div class="grid grid-cols-1 gap-12 md:grid-cols-3 lg:gap-16">
+      <div
+        class="group relative border-l border-[#dae5e6]/10 pl-6 transition-colors duration-500 hover:border-[#36f4a4]/50"
+      >
+        <span
+          class="mb-2 block font-mono text-[10px] tracking-widest text-[#36f4a4] opacity-80 group-hover:opacity-100"
+          >01</span
+        >
+        <h3
+          class="mb-3 text-sm font-semibold tracking-wide text-white uppercase"
+        >
+          Direct Sourcing
+        </h3>
+        <p class="text-sm leading-relaxed font-light text-[#dae5e6]/60">
+          We negotiate bulk contracts directly with verified distributors and
+          brand partners. No unauthorized gray market goods. Ever.
         </p>
       </div>
 
+      <div
+        class="group relative border-l border-[#dae5e6]/10 pl-6 transition-colors duration-500 hover:border-[#36f4a4]/50"
+      >
+        <span
+          class="mb-2 block font-mono text-[10px] tracking-widest text-[#36f4a4] opacity-80 group-hover:opacity-100"
+          >02</span
+        >
+        <h3
+          class="mb-3 text-sm font-semibold tracking-wide text-white uppercase"
+        >
+          Margin Compression
+        </h3>
+        <p class="text-sm leading-relaxed font-light text-[#dae5e6]/60">
+          Instead of taking a 50% retail margin to fund a bloated operation, we
+          take a fraction of that. The remaining delta stays in your pocket.
+        </p>
+      </div>
+
+      <div
+        class="group relative border-l border-[#dae5e6]/10 pl-6 transition-colors duration-500 hover:border-[#36f4a4]/50"
+      >
+        <span
+          class="mb-2 block font-mono text-[10px] tracking-widest text-[#36f4a4] opacity-80 group-hover:opacity-100"
+          >03</span
+        >
+        <h3
+          class="mb-3 text-sm font-semibold tracking-wide text-white uppercase"
+        >
+          The Price Promise
+        </h3>
+        <p class="text-sm leading-relaxed font-light text-[#dae5e6]/60">
+          If you find a lower price on an identical item from an authorized
+          retailer within 14 days, we match it. Zero friction.
+        </p>
+      </div>
     </div>
   </div>
 </section>

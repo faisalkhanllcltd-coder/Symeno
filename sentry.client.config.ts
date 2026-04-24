@@ -1,4 +1,4 @@
-﻿import * as Sentry from "@sentry/astro";
+﻿import * as Sentry from '@sentry/astro';
 
 Sentry.init({
   // Use PUBLIC_ prefix so it is safely exposed to the browser

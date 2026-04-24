@@ -33,13 +33,18 @@ export const GET: APIRoute = async ({ request }) => {
     query += ` LIMIT 50`;
 
     const db = env.DB;
-    const { results } = await db.prepare(query).bind(...params).all();
+    const { results } = await db
+      .prepare(query)
+      .bind(...params)
+      .all();
 
-    return new Response(JSON.stringify(results), { 
-      status: 200, 
-      headers: { 'Content-Type': 'application/json' } 
+    return new Response(JSON.stringify(results), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: 'Search telemetry failed.' }), { status: 500 });
+    return new Response(JSON.stringify({ error: 'Search telemetry failed.' }), {
+      status: 500,
+    });
   }
 };

@@ -1,23 +1,45 @@
-<script lang="ts">
-  let { products = [], title = "Recommended for you" } = $props<{ products: any[], title?: string }>();
+﻿<script lang="ts">
+  let { products = [], title = 'Recommended for you' } = $props<{
+    products?: any[];
+    title?: string;
+  }>();
 </script>
 
 {#if products.length > 0}
-  <div class="mt-8">
-    <h3 class="text-xs font-bold uppercase tracking-widest text-white font-mono mb-4">{title}</h3>
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+  <div class="mt-8 transition-colors duration-300">
+    <h3
+      class="mb-4 font-mono text-xs font-bold tracking-widest text-content uppercase"
+    >
+      {title}
+    </h3>
+    <div class="grid grid-cols-2 gap-4 md:grid-cols-3"> 
       {#each products as product}
-        <a href={`/shop/product/${product.slug}`} class="group bg-[#111318] border border-white/10 hover:border-[#36f4a4]/50 transition-colors block">
-          <div class="aspect-square bg-[#0a0b0e] relative overflow-hidden">
+        <a
+          href={`/shop/product/${product.slug}`}        
+          class="group block border border-outline bg-surface transition-colors hover:border-brand/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"   
+        >
+          <div class="relative aspect-square overflow-hidden bg-base">
             {#if product.image_url}
-              <img src={product.image_url} alt={product.title} class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />
+              <img
+                src={product.image_url}
+                alt={product.title}
+                class="h-full w-full object-cover opacity-80 transition-all duration-500 group-hover:scale-105 group-hover:opacity-100"
+              />
             {:else}
-              <div class="w-full h-full flex items-center justify-center text-white/10">No Image</div>
+              <div
+                class="flex h-full w-full items-center justify-center text-content-muted opacity-50"
+              >
+                No Image
+              </div>
             {/if}
           </div>
-          <div class="p-3 border-t border-white/10">
-            <h4 class="text-[10px] font-bold text-white font-mono truncate">{product.title}</h4>
-            <p class="text-[10px] text-[#36f4a4] font-mono mt-1">${product.base_price?.toFixed(2)}</p>
+          <div class="border-t border-outline p-3">   
+            <h4 class="truncate font-mono text-[10px] font-bold text-content">
+              {product.title}
+            </h4>
+            <p class="mt-1 font-mono text-[10px] text-brand">
+              ${product.base_price?.toFixed(2)}
+            </p>
           </div>
         </a>
       {/each}

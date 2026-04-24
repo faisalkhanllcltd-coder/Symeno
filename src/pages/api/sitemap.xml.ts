@@ -4,11 +4,17 @@ import type { APIRoute } from 'astro';
 export const GET: APIRoute = async ({ request }) => {
   // Production Note: In a real environment, you would query your D1 Database here
   // to get all active product slugs, categories, and brands.
-  
+
   const siteUrl = 'https://www.symeno.com';
-  
+
   // Mock Database Query Results
-  const products = ['sony-xm5', 'apple-airpods-max', 'lg-ultragear', 'logitech-mx', 'keychron-k8'];
+  const products = [
+    'sony-xm5',
+    'apple-airpods-max',
+    'lg-ultragear',
+    'logitech-mx',
+    'keychron-k8',
+  ];
   const categories = ['audio', 'displays', 'peripherals', 'components'];
   const brands = ['sony', 'apple', 'lg', 'logitech', 'keychron'];
 
@@ -21,7 +27,7 @@ export const GET: APIRoute = async ({ request }) => {
     '/brands',
     '/about',
     '/faq',
-    '/contact'
+    '/contact',
   ];
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
@@ -52,7 +58,7 @@ export const GET: APIRoute = async ({ request }) => {
   return new Response(xml, {
     status: 200,
     headers: {
-      'Content-Type': 'application/xml'
-    }
+      'Content-Type': 'application/xml',
+    },
   });
 };

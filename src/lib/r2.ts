@@ -1,4 +1,8 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { env } from 'cloudflare:workers';
 
@@ -12,7 +16,9 @@ function getR2Client() {
   const secretAccessKey = (env as any).R2_SECRET_ACCESS_KEY;
 
   if (!accountId || !accessKeyId || !secretAccessKey) {
-    console.warn('[WARN] Cloudflare R2 credentials missing. Image operations will fail.');
+    console.warn(
+      '[WARN] Cloudflare R2 credentials missing. Image operations will fail.'
+    );
   }
 
   return new S3Client({
@@ -33,7 +39,10 @@ function getBucketName() {
  * Generates a temporary, secure URL allowing the frontend to upload a file directly to R2.
  * Time-to-Live (TTL) is strictly 5 minutes.
  */
-export async function generateUploadUrl(key: string, contentType: string): Promise<string> {
+export async function generateUploadUrl(
+  key: string,
+  contentType: string
+): Promise<string> {
   const command = new PutObjectCommand({
     Bucket: getBucketName(),
     Key: key,
@@ -57,11 +66,15 @@ export async function deleteAsset(key: string): Promise<void> {
 }
 
 /**
- * EDGE OPTIMIZATION UPGRADE: Cloudflare Image Pipeline 
+ * EDGE OPTIMIZATION UPGRADE: Cloudflare Image Pipeline
  * Formats the raw R2 key into a `/cdn-cgi/image/` request to serve AVIF/WebP automatically.
  * Use this in your frontend UI to render product photos instead of raw URLs.
  */
-export function getOptimizedImageUrl(key: string, width = 800, quality = 85): string {
+export function getOptimizedImageUrl(
+  key: string,
+  width = 800,
+  quality = 85
+): string {
   if (!key) return '';
   return `/cdn-cgi/image/width=${width},quality=${quality},format=auto/${key}`;
 }

@@ -2,7 +2,18 @@
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import { env } from 'cloudflare:workers';
 ---
-import StoreSettingsForm from '../../components/admin/settings/StoreSettingsForm.svelte';
-<AdminLayout title=Global Settings subtitle=Core Storefront Configuration currentPath=/admin/settings/store>
-  <div class=max-w-4xl><StoreSettingsForm client:load initialSettings={{}} /></div>
+
+import StoreSettingsForm from
+'../../components/admin/settings/StoreSettingsForm.svelte';
+<AdminLayout
+  title="Global"
+  Settings
+  subtitle="Core"
+  Storefront
+  Configuration
+  currentPath="/admin/settings/store"
+>
+  <div class="max-w-4xl">
+    <StoreSettingsForm client:load initialSettings={{}} />
+  </div>
 </AdminLayout>

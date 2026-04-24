@@ -17,6 +17,9 @@
   { "name": "Bathroom Organization", "slug": "bathroom-organization" },
   { "name": "Pet Walking Gear", "slug": "pet-walking-gear" },
   { "name": "Pet Travel", "slug": "pet-travel" },
-  { "name": "Tabletop & Puzzle Accessories", "slug": "tabletop-puzzle-accessories" },
+  {
+    "name": "Tabletop & Puzzle Accessories",
+    "slug": "tabletop-puzzle-accessories"
+  },
   { "name": "Photography & Tech Care", "slug": "photography-tech-care" }
 ]

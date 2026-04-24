@@ -1,40 +1,77 @@
-<script lang="ts">
-  export let id: string;
-  export let label: string = '';
-  export let value: string = '';
-  export let options: { value: string, label: string }[] = [];
-  export let required: boolean = false;
-  export let error: string = '';
+﻿<script lang="ts">
+  let {
+    id,
+    label = '',
+    value = $bindable(''),
+    options = [],
+    required = false,
+    error = '',
+    onchange
+  } = $props<{
+    id: string;
+    label?: string;
+    value?: string;
+    options?: { value: string; label: string }[];
+    required?: boolean;
+    error?: string;
+    onchange?: (value: string) => void;
+  }>();
+
+  function handleChange() {
+    if (onchange) onchange(value);
+  }
 </script>
 
-<div class="flex flex-col gap-1.5 w-full">
+<div class="flex w-full flex-col gap-1.5">
   {#if label}
-    <label for={id} class="text-[10px] font-mono text-white/50 uppercase tracking-widest">
-      {label} {#if required}<span class="text-rose-500">*</span>{/if}
+    <label
+      for={id}
+      class="font-mono text-[10px] tracking-widest text-content-muted uppercase"
+    >
+      {label}
+      {#if required}<span class="text-brand-alert ml-1">*</span>{/if}
     </label>
   {/if}
-  
+
   <div class="relative">
     <select
       {id}
       bind:value
+      onchange={handleChange}
       {required}
-      class="w-full bg-[#1A1D23] border {error ? 'border-rose-500' : 'border-white/10'} text-white px-3 py-2 text-sm focus:outline-none focus:border-[#36f4a4]/50 transition-colors rounded-none appearance-none cursor-pointer"
+      class="w-full border bg-surface {error
+        ? 'border-brand-alert text-brand-alert'
+        : 'border-outline text-content'} cursor-pointer appearance-none rounded-none px-3 py-2 text-sm transition-colors focus:border-brand focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand"   
     >
-      <option value="" disabled selected>Select an option...</option>
+      <option value="" disabled>Select an option...</option>
       {#each options as option}
         <option value={option.value}>{option.label}</option>
       {/each}
     </select>
-    
-    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-white/40">
-      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+
+    <div
+      class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-content-muted"
+    >
+      <svg
+        class="h-4 w-4"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M19 9l-7 7-7-7"
+        />
       </svg>
     </div>
   </div>
-  
+
   {#if error}
-    <span class="text-[10px] font-mono text-rose-500 mt-0.5 uppercase tracking-wide">{error}</span>
+    <span
+      class="mt-0.5 font-mono text-[10px] tracking-wide text-brand-alert uppercase"
+      >{error}</span
+    >
   {/if}
 </div>

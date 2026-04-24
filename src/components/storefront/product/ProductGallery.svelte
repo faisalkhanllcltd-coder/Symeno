@@ -1,27 +1,46 @@
-<script lang="ts">
-  export let images: string[] = [];
-  export let alt: string = "Product Image";
-  
-  let activeIndex = 0;
+﻿<script lang="ts">
+  let { images = [], alt = 'Product Image' } = $props<{
+    images?: string[];
+    alt?: string;
+  }>();
+
+  let activeIndex = $state(0);
 </script>
 
-<div class="flex flex-col md:flex-row-reverse gap-4">
-  <div class="flex-1 bg-[#F9FAFB] border border-gray-200 aspect-square flex items-center justify-center relative overflow-hidden group">
+<div class="flex flex-col gap-4 md:flex-row-reverse">   
+  <div
+    class="group relative flex aspect-square flex-1 items-center justify-center overflow-hidden border border-outline bg-base transition-colors duration-300"
+  >
     {#if images.length > 0}
-      <img src={images[activeIndex]} {alt} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+      <img
+        src={images[activeIndex]}
+        {alt}
+        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+      />
     {:else}
-      <span class="text-xs font-mono text-gray-400 uppercase tracking-widest">Image Unavailable</span>
+      <span class="font-mono text-xs tracking-widest text-content-muted uppercase"
+        >Image Unavailable</span
+      >
     {/if}
   </div>
 
   {#if images.length > 1}
-    <div class="flex md:flex-col gap-4 overflow-x-auto md:w-24 shrink-0 no-scrollbar">
+    <div
+      class="no-scrollbar flex shrink-0 gap-4 overflow-x-auto md:w-24 md:flex-col"
+    >
       {#each images as img, i}
-        <button 
-          on:click={() => activeIndex = i}
-          class="w-20 h-20 md:w-full md:h-24 bg-[#F9FAFB] border transition-colors focus:outline-none shrink-0 {activeIndex === i ? 'border-black' : 'border-gray-200 hover:border-gray-400'}"
+        <button
+          onclick={() => (activeIndex = i)}
+          class="h-20 w-20 shrink-0 border bg-base transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand md:h-24 md:w-full {activeIndex ===
+          i
+            ? 'border-brand'
+            : 'border-outline hover:border-content-muted'}" 
         >
-          <img src={img} {alt} class="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" />
+          <img
+            src={img}
+            {alt}
+            class="h-full w-full object-cover opacity-80 transition-opacity hover:opacity-100"
+          />
         </button>
       {/each}
     </div>
@@ -29,6 +48,11 @@
 </div>
 
 <style>
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 </style>

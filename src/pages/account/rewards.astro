@@ -6,21 +6,32 @@ import { env } from 'cloudflare:workers';
 const user = Astro.locals.user;
 if (!user) return Astro.redirect('/auth/login');
 
-let rewardsData = { stats: { current_balance: 0, lifetime_earned: 0 }, history: [] };
+let rewardsData = {
+  stats: { current_balance: 0, lifetime_earned: 0 },
+  history: [],
+};
 
 if (env.DB) {
   try {
     const db = env.DB;
     const [balanceReq, historyReq] = await db.batch([
-      db.prepare(`
+      db
+        .prepare(
+          `
         SELECT 
           COALESCE(SUM(points), 0) as current_balance,
           COALESCE(SUM(CASE WHEN points > 0 THEN points ELSE 0 END), 0) as lifetime_earned
         FROM points_ledger WHERE user_id = ?1
-      `).bind(user.id),
-      db.prepare("SELECT * FROM points_ledger WHERE user_id = ?1 ORDER BY created_at DESC LIMIT 20").bind(user.id)
+      `
+        )
+        .bind(user.id),
+      db
+        .prepare(
+          'SELECT * FROM points_ledger WHERE user_id = ?1 ORDER BY created_at DESC LIMIT 20'
+        )
+        .bind(user.id),
     ]);
-    
+
     rewardsData.stats = balanceReq.results[0] || rewardsData.stats;
     rewardsData.history = historyReq.results || [];
   } catch (e) {}
@@ -28,12 +39,16 @@ if (env.DB) {
 ---
 
 <AccountLayout title="Loyalty Matrix" currentPath="/account/rewards">
-  <div class="max-w-5xl mx-auto space-y-6">
+  <div class="mx-auto max-w-5xl space-y-6">
     <div class="border-b border-white/10 pb-4">
-      <h1 class="text-xl font-bold text-white uppercase tracking-widest">Operator Loyalty</h1>
-      <p class="text-xs text-white/50 font-mono mt-1">Acquire and deploy operational points.</p>
+      <h1 class="text-xl font-bold tracking-widest text-white uppercase">
+        Operator Loyalty
+      </h1>
+      <p class="mt-1 font-mono text-xs text-white/50">
+        Acquire and deploy operational points.
+      </p>
     </div>
-    
+
     <RewardsOrchestrator client:load initialData={rewardsData} />
   </div>
 </AccountLayout>

@@ -10,6 +10,6 @@ export function generateCSV(data: any[]): string {
   return Papa.unparse(data, {
     quotes: true, // Forces quotes around fields to prevent injection
     escapeChar: '"',
-    header: true
+    header: true,
   });
 }

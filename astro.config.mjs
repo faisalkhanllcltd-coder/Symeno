@@ -12,7 +12,7 @@ export default defineConfig({
   integrations: [
     svelte(),
     // APM UPGRADE: Sentry for full-stack edge observability
-    sentry()
+    sentry(),
   ],
 
   vite: {
@@ -23,9 +23,9 @@ export default defineConfig({
   adapter: cloudflare({
     // This allows us to access D1, KV, and R2 locally during development
     platformProxy: {
-      enabled: true
+      enabled: true,
     },
     // Routes image requests through Cloudflare's native optimization engine
-    imageService: 'cloudflare'
-  })
+    imageService: 'cloudflare',
+  }),
 });

@@ -1,43 +1,76 @@
 ---
 import StorefrontLayout from '../../layouts/Storefront.astro';
 ---
+
 <StorefrontLayout title="Shipping Operations">
-  <div class="bg-[#0b1516] min-h-screen py-16 md:py-24">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      
+  <div class="min-h-screen bg-[#0b1516] py-16 md:py-24">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
       <div class="mb-12">
-        <h1 class="text-4xl md:text-5xl font-bold text-white tracking-tighter mb-4">Shipping Operations.</h1>
-        <p class="text-xs font-mono text-[#36f4a4] uppercase tracking-widest">Last Updated: October 15, 2025</p>
+        <h1
+          class="mb-4 text-4xl font-bold tracking-tighter text-white md:text-5xl"
+        >
+          Shipping Operations.
+        </h1>
+        <p class="font-mono text-xs tracking-widest text-[#36f4a4] uppercase">
+          Last Updated: October 15, 2025
+        </p>
       </div>
 
-      <div class="space-y-12 text-[#dae5e6]/70 font-light leading-relaxed">
-        
+      <div class="space-y-12 leading-relaxed font-light text-[#dae5e6]/70">
         <section>
-          <h2 class="text-white font-bold text-xl mb-4 border-b border-[#dae5e6]/10 pb-2">Dispatch Timelines</h2>
-          <p class="mb-4">Operational efficiency is core to our model. Orders placed before 14:00 EST Monday-Friday are dispatched to our logistics carriers on the same day. Orders placed after the cutoff, or on weekends/holidays, are processed the next business operational day.</p>
+          <h2
+            class="mb-4 border-b border-[#dae5e6]/10 pb-2 text-xl font-bold text-white"
+          >
+            Dispatch Timelines
+          </h2>
+          <p class="mb-4">
+            Operational efficiency is core to our model. Orders placed before
+            14:00 EST Monday-Friday are dispatched to our logistics carriers on
+            the same day. Orders placed after the cutoff, or on
+            weekends/holidays, are processed the next business operational day.
+          </p>
         </section>
 
         <section>
-          <h2 class="text-white font-bold text-xl mb-4 border-b border-[#dae5e6]/10 pb-2">Transit Methods & Costs</h2>
-          <div class="bg-[#131d1e] border border-[#dae5e6]/10 p-6 rounded-sm mt-6">
+          <h2
+            class="mb-4 border-b border-[#dae5e6]/10 pb-2 text-xl font-bold text-white"
+          >
+            Transit Methods & Costs
+          </h2>
+          <div
+            class="mt-6 rounded-sm border border-[#dae5e6]/10 bg-[#131d1e] p-6"
+          >
             <ul class="space-y-4 font-mono text-sm">
               <li class="flex justify-between border-b border-[#dae5e6]/5 pb-4">
                 <span class="text-white">Priority Insured (2-4 Days)</span>
                 <span class="text-[#dae5e6]/50">Calculated at Checkout</span>
               </li>
               <li class="flex justify-between pt-2">
-                <span class="text-white flex items-center gap-2">Standard (5-7 Days) <span class="bg-[#36f4a4]/10 text-[#36f4a4] px-2 py-0.5 text-[10px]">Over $150</span></span>
-                <span class="text-[#36f4a4] font-bold uppercase">Free</span>
+                <span class="flex items-center gap-2 text-white"
+                  >Standard (5-7 Days) <span
+                    class="bg-[#36f4a4]/10 px-2 py-0.5 text-[10px] text-[#36f4a4]"
+                    >Over $150</span
+                  ></span
+                >
+                <span class="font-bold text-[#36f4a4] uppercase">Free</span>
               </li>
             </ul>
           </div>
         </section>
 
         <section>
-          <h2 class="text-white font-bold text-xl mb-4 border-b border-[#dae5e6]/10 pb-2">High-Value Order Verification</h2>
-          <p class="mb-4">Due to the high-value nature of electronics, orders exceeding $1,000 USD may require secondary identity verification and a mandatory signature upon delivery. We will not instruct carriers to leave high-value inventory unattended on porches under any circumstances.</p>
+          <h2
+            class="mb-4 border-b border-[#dae5e6]/10 pb-2 text-xl font-bold text-white"
+          >
+            High-Value Order Verification
+          </h2>
+          <p class="mb-4">
+            Due to the high-value nature of electronics, orders exceeding $1,000
+            USD may require secondary identity verification and a mandatory
+            signature upon delivery. We will not instruct carriers to leave
+            high-value inventory unattended on porches under any circumstances.
+          </p>
         </section>
-
       </div>
     </div>
   </div>

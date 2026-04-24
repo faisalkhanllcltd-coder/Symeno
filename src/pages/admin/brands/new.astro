@@ -1,23 +1,23 @@
 ---
-import AdminLayout from '../../../layouts/Admin.astro';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
 import BrandManager from '../../../components/admin/brands/BrandManager.svelte';
 
 if (!Astro.locals.user) return Astro.redirect('/auth/login');
 
 const breadcrumbs = [
   { label: 'Brands', url: '/admin/brands' },
-  { label: 'New Brand' }
+  { label: 'New Brand' },
 ];
 ---
 
-<AdminLayout 
-  title="Authorize Supplier" 
-  subtitle="Inject new brand into logistics matrix" 
-  breadcrumbs={breadcrumbs} 
+<AdminLayout
+  title="Authorize Supplier"
+  subtitle="Inject new brand into logistics matrix"
+  breadcrumbs={breadcrumbs}
   currentPath="/admin/brands"
 >
   <div class="max-w-[1200px]">
-    <div class="bg-[#111318] border border-white/10 p-6">
+    <div class="border border-white/10 bg-[#111318] p-6">
       <BrandManager client:load />
     </div>
   </div>

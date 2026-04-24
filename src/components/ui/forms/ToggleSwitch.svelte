@@ -1,25 +1,47 @@
-<script lang="ts">
-  export let checked: boolean = false;
-  export let label: string = "";
-  export let id: string = Math.random().toString(36).substring(2, 9);
-  
-  import { createEventDispatcher } from 'svelte';
-  const dispatch = createEventDispatcher();
-  
-  function toggle() {
-    checked = !checked;
-    dispatch('change', { checked });
+﻿<script lang="ts">
+  let {
+    checked = $bindable(false),
+    label = '',
+    id = 'toggle-' + Math.random().toString(36).substring(2, 9),
+    onchange
+  } = $props<{
+    checked?: boolean;
+    label?: string;
+    id?: string;
+    onchange?: (checked: boolean) => void;
+  }>();
+
+  function handleChange() {
+    if (onchange) onchange(checked);
   }
 </script>
 
-<label for={id} class="flex items-center cursor-pointer group">
+<label for={id} class="group flex cursor-pointer items-center">
   <div class="relative">
-    <input type="checkbox" {id} class="sr-only" bind:checked on:change={toggle} />
-    <div class="block w-10 h-5 bg-[#1A1D23] border border-white/20 transition-colors {checked ? 'bg-[#36f4a4]/20 border-[#36f4a4]' : ''}"></div>
-    <div class="dot absolute left-1 top-1 bg-white/60 w-3 h-3 transition-transform duration-200 ease-in-out {checked ? 'transform translate-x-5 bg-[#36f4a4]' : ''}"></div>
+    <input
+      type="checkbox"
+      {id}
+      class="sr-only"
+      bind:checked
+      onchange={handleChange}
+    />
+    <div
+      class="block h-5 w-10 border border-outline bg-base transition-colors duration-300 {checked
+        ? 'border-brand bg-brand/20'
+        : 'group-hover:border-content-muted'}"
+    ></div>
+    <div
+      class="dot absolute top-1 left-1 h-3 w-3 bg-content-muted transition-transform duration-200 ease-in-out {checked
+        ? 'translate-x-5 transform bg-brand'        
+        : 'group-hover:bg-content'}"
+    ></div>
   </div>
   {#if label}
-    <div class="ml-3 text-[10px] font-mono uppercase tracking-widest {checked ? 'text-white' : 'text-white/50'} transition-colors">
+    <div
+      class="ml-3 font-mono text-[10px] tracking-widest uppercase {checked
+        ? 'text-content'
+        : 'text-content-muted'} transition-colors duration-300 group-hover:text-content"
+    >
       {label}
     </div>
   {/if}

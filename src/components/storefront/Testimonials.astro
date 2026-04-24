@@ -1,48 +1,102 @@
 ---
 // src/components/storefront/Testimonials.astro
 const testimonials = [
-  { name: "Marcus T.", city: "London", text: "I was skeptical about the price of the Sony headphones, but they arrived in two days, fully sealed. Saved $102 compared to the high street.", savings: "102", product: "Sony WH-1000XM5" },
-  { name: "Sarah J.", city: "New York", text: "Finally a store that doesn't hide fees until checkout. The price you see is the price you pay. Exceptional service.", savings: "45", product: "Dyson V15" },
-  { name: "David L.", city: "Singapore", text: "The shipping speed is insane for a volume-based model. Received my monitor in 48 hours. Absolute professional operation.", savings: "310", product: "Samsung Odyssey G9" }
+  {
+    name: 'Marcus T.',
+    city: 'London',
+    text: 'I was skeptical about the price of the Sony headphones, but they arrived in two days, fully sealed. Saved $102 compared to the high street.',
+    savings: '102',
+    product: 'Sony WH-1000XM5',
+  },
+  {
+    name: 'Sarah J.',
+    city: 'New York',
+    text: "Finally a store that doesn't hide fees until checkout. The price you see is the price you pay. Exceptional service.",
+    savings: '45',
+    product: 'Dyson V15',
+  },
+  {
+    name: 'David L.',
+    city: 'Singapore',
+    text: 'The shipping speed is insane for a volume-based model. Received my monitor in 48 hours. Absolute professional operation.',
+    savings: '310',
+    product: 'Samsung Odyssey G9',
+  },
 ];
 ---
-<section class="w-full py-24 bg-[#0b1516]">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    
-    <div class="flex flex-col items-center text-center mb-20">
-      <div class="inline-flex items-center justify-center bg-[#131d1e] border border-[#dae5e6]/15 px-6 py-3 rounded-full mb-6 shadow-[0_10px_30px_-10px_rgba(54,244,164,0.05)]">
-        <span class="text-3xl md:text-4xl font-bold text-white font-mono mr-3 tracking-tighter">4.8</span>
+
+<section class="w-full bg-[#0b1516] py-24">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="mb-20 flex flex-col items-center text-center">
+      <div
+        class="mb-6 inline-flex items-center justify-center rounded-full border border-[#dae5e6]/15 bg-[#131d1e] px-6 py-3 shadow-[0_10px_30px_-10px_rgba(54,244,164,0.05)]"
+      >
+        <span
+          class="mr-3 font-mono text-3xl font-bold tracking-tighter text-white md:text-4xl"
+          >4.8</span
+        >
         <div class="flex flex-col items-start">
           <div class="flex text-[#36f4a4]">
-            {[1, 2, 3, 4, 5].map(() => (
-              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-            ))}
+            {
+              [1, 2, 3, 4, 5].map(() => (
+                <svg class="h-4 w-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
+              ))
+            }
           </div>
-          <span class="text-[10px] uppercase tracking-widest text-[#dae5e6]/50 font-bold font-mono mt-0.5">2,400+ Verified Purchases</span>
+          <span
+            class="mt-0.5 font-mono text-[10px] font-bold tracking-widest text-[#dae5e6]/50 uppercase"
+            >2,400+ Verified Purchases</span
+          >
         </div>
       </div>
-      <h2 class="text-3xl font-bold text-white tracking-tight">Trust is our only currency.</h2>
+      <h2 class="text-3xl font-bold tracking-tight text-white">
+        Trust is our only currency.
+      </h2>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {testimonials.map((t) => (
-        <div class="bg-[#131d1e] p-8 rounded-none border border-[#dae5e6]/10 relative group hover:border-[#dae5e6]/30 hover:-translate-y-1 transition-all duration-300 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_40px_-15px_rgba(54,244,164,0.05)] flex flex-col">
-          <div class="text-[#36f4a4] font-mono text-sm font-bold mb-5 flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-            Saved ${t.savings} vs. Retail
-          </div>
-          
-          <p class="text-[#dae5e6]/80 text-sm leading-relaxed mb-8 font-light flex-grow">"{t.text}"</p>
-          
-          <div class="pt-6 border-t border-[#dae5e6]/10 flex justify-between items-end">
-            <div>
-              <span class="block text-white text-xs font-bold uppercase tracking-wider">{t.name}</span>
-              <span class="block text-[10px] font-mono text-[#dae5e6]/40 uppercase tracking-widest mt-1">{t.city}</span>
+    <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+      {
+        testimonials.map((t) => (
+          <div class="group relative flex flex-col rounded-none border border-[#dae5e6]/10 bg-[#131d1e] p-8 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1 hover:border-[#dae5e6]/30 hover:shadow-[0_20px_40px_-15px_rgba(54,244,164,0.05)]">
+            <div class="mb-5 flex items-center gap-2 font-mono text-sm font-bold text-[#36f4a4]">
+              <svg
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                />
+              </svg>
+              Saved ${t.savings} vs. Retail
             </div>
-            <span class="text-[10px] font-mono text-[#dae5e6]/30 uppercase text-right max-w-[100px] leading-tight">{t.product}</span>
+
+            <p class="mb-8 flex-grow text-sm leading-relaxed font-light text-[#dae5e6]/80">
+              "{t.text}"
+            </p>
+
+            <div class="flex items-end justify-between border-t border-[#dae5e6]/10 pt-6">
+              <div>
+                <span class="block text-xs font-bold tracking-wider text-white uppercase">
+                  {t.name}
+                </span>
+                <span class="mt-1 block font-mono text-[10px] tracking-widest text-[#dae5e6]/40 uppercase">
+                  {t.city}
+                </span>
+              </div>
+              <span class="max-w-[100px] text-right font-mono text-[10px] leading-tight text-[#dae5e6]/30 uppercase">
+                {t.product}
+              </span>
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      }
     </div>
   </div>
 </section>

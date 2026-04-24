@@ -1,4 +1,4 @@
-﻿import * as Sentry from "@sentry/astro";
+﻿import * as Sentry from '@sentry/astro';
 
 Sentry.init({
   // Server-side only, kept secure at the Edge

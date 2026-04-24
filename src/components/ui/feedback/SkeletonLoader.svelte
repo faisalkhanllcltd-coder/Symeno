@@ -1,18 +1,24 @@
-<script lang="ts">
-  export let type: 'card' | 'text' | 'image' = 'text';
-  export let count: number = 1;
+﻿<script lang="ts">
+  let { type = 'text', count = 1 } = $props<{
+    type?: 'card' | 'text' | 'image';
+    count?: number;
+  }>();
 </script>
 
-<div class="space-y-4 w-full">
+<div class="w-full space-y-4">
   {#each Array(count) as _}
     {#if type === 'card'}
-      <div class="w-full h-32 bg-gray-100 animate-pulse border border-gray-200"></div>
+      <div
+        class="h-32 w-full animate-pulse border border-outline bg-surface"
+      ></div>
     {:else if type === 'image'}
-      <div class="w-full aspect-square bg-gray-100 animate-pulse border border-gray-200"></div>
+      <div
+        class="aspect-square w-full animate-pulse border border-outline bg-surface"
+      ></div>
     {:else}
       <div class="space-y-2">
-        <div class="h-4 bg-gray-100 animate-pulse w-3/4"></div>
-        <div class="h-4 bg-gray-100 animate-pulse w-1/2"></div>
+        <div class="h-4 w-3/4 animate-pulse bg-surface border border-outline"></div>
+        <div class="h-4 w-1/2 animate-pulse bg-surface border border-outline"></div>
       </div>
     {/if}
   {/each}

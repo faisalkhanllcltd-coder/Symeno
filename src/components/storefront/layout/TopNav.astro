@@ -1,43 +1,93 @@
 ---
 import MegaMenu from './MegaMenu.svelte';
-import MobileDrawer from './MobileDrawer.svelte';
-import CartBadge from '../cart/CartBadge.svelte';
+import MobileDrawer from './MobileDrawer.svelte';        
+import CartBadge from '../cart/CartBadge.svelte';        
 
 const user = Astro.locals.user;
 ---
 
-<header class="w-full bg-white border-b border-gray-200 sticky top-0 z-50">
-  <div class="bg-black text-white text-[10px] font-mono uppercase tracking-widest text-center py-2">
-    <p>Guaranteed Arbitrage Sourcing &middot; Free Global Shipping on Orders over $500</p>
+<header class="sticky top-0 z-50 w-full border-b border-outline bg-base transition-colors duration-300">
+  <div
+    class="bg-content py-2 text-center font-mono text-[10px] tracking-widest text-base uppercase transition-colors"
+  >
+    <p>
+      Guaranteed Arbitrage Sourcing &middot; Free Global Shipping on Orders over
+      $500
+    </p>
   </div>
-  
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center h-16">
-      
-      <div class="flex-shrink-0 flex items-center">
-        <a href="/" class="text-2xl font-bold tracking-tighter text-black uppercase">Symeno<span class="text-[#10b981]">.</span></a>
+
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">  
+    <div class="flex h-16 items-center justify-between">
+      <div class="flex flex-shrink-0 items-center">     
+        <a
+          href="/"
+          class="text-2xl font-bold tracking-tighter text-content uppercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+          >Symeno<span class="text-brand">.</span></a
+        >
       </div>
 
-      <div class="hidden md:flex flex-1 justify-center h-full">
+      <div class="hidden h-full flex-1 justify-center md:flex">
         <MegaMenu client:load />
       </div>
 
-      <div class="flex items-center space-x-5 text-gray-900">
-        <a href="/search" class="hover:text-[#10b981] transition-colors focus:outline-none" aria-label="Search">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+      <div class="flex items-center space-x-5 text-content">
+        <a
+          href="/search"
+          class="transition-colors text-content-muted hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+          aria-label="Search"
+        >
+          <svg
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+            ></path></svg
+          >
         </a>
-        
-        <a href={user ? "/account" : "/auth/login"} class="hidden sm:block hover:text-[#10b981] transition-colors focus:outline-none" aria-label="Account">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+
+        <a
+          href={user ? '/account' : '/auth/login'}      
+          class="hidden transition-colors text-content-muted hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm sm:block"
+          aria-label="Account"
+        >
+          <svg
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+            ></path></svg
+          >
         </a>
 
         <CartBadge client:load />
 
-        <button id="mobile-nav-trigger" class="md:hidden hover:text-[#10b981] transition-colors focus:outline-none ml-2">
-          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+        <button
+          id="mobile-nav-trigger"
+          class="ml-2 transition-colors text-content-muted hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm md:hidden p-1"
+        >
+          <svg
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path></svg
+          >
         </button>
       </div>
-      
     </div>
   </div>
 </header>

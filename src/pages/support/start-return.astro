@@ -5,7 +5,7 @@ import { env } from 'cloudflare:workers';
 
 const user = Astro.locals.user;
 if (!user) {
-  // Save return URL so they come back here after login 
+  // Save return URL so they come back here after login
   return Astro.redirect('/auth/login?redirect=/support/start-return');
 }
 
@@ -15,24 +15,36 @@ const db = (env as any).DB;
 if (db) {
   try {
     // Fetch orders from last 30 days that are delivered
-    const { results } = await db.prepare(`
+    const { results } = await db
+      .prepare(
+        `
       SELECT id, created_at, total, status
       FROM orders
       WHERE customer_id = ? AND status IN ('DELIVERED', 'SHIPPED')
       ORDER BY created_at DESC LIMIT 10
-    `).bind(user.id).all();
+    `
+      )
+      .bind(user.id)
+      .all();
     eligibleOrders = results || [];
-  } catch(e) {
+  } catch (e) {
     console.error('[RETURNS_DB_ERROR]', e);
   }
 }
 ---
 
-<StorefrontLayout title="Start a Return | Symeno">      
-  <main class="pt-32 pb-24 px-6">
-    <div class="max-w-3xl mx-auto mb-12 text-center">   
-      <h1 class="text-3xl md:text-5xl font-bold text-content uppercase tracking-tighter mb-4">Reverse Logistics</h1>
-      <p class="text-content-muted font-mono text-sm max-w-xl mx-auto">We engineer our products to perfection, but if something isn't right, our RMA protocol ensures a seamless resolution.</p>
+<StorefrontLayout title="Start a Return | Symeno">
+  <main class="px-6 pt-32 pb-24">
+    <div class="mx-auto mb-12 max-w-3xl text-center">
+      <h1
+        class="text-content mb-4 text-3xl font-bold tracking-tighter uppercase md:text-5xl"
+      >
+        Reverse Logistics
+      </h1>
+      <p class="text-content-muted mx-auto max-w-xl font-mono text-sm">
+        We engineer our products to perfection, but if something isn't right,
+        our RMA protocol ensures a seamless resolution.
+      </p>
     </div>
 
     <ReturnRequestForm client:load recentOrders={eligibleOrders} />

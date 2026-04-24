@@ -1,9 +1,22 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { env } from 'cloudflare:workers';
----
 import TeamManager from '../../components/admin/settings/TeamManager.svelte';
-const { results } = (env.DB) ? await env.DB.prepare(SELECT * FROM users WHERE role IN ('admin', 'staff')).all() : {results:[]};
-<AdminLayout title=Access Control subtitle=Staff & Operator Matrix currentPath=/admin/settings/team>
-  <div class=max-w-6xl><TeamManager client:load team={results} /></div>
+
+const db = Astro.locals.runtime?.env?.DB;
+let results = [];
+
+if (db) {
+  try {
+    const res = await db.prepare("SELECT * FROM users WHERE role IN ('admin', 'staff')").all();
+    results = res.results || [];
+  } catch (err) {
+    console.error("[TEAM_MATRIX_ERROR]", err);
+  }
+}
+---
+
+<AdminLayout title="Access Control" subtitle="Staff & Operator Matrix" currentPath="/admin/settings/team">
+  <div class="max-w-6xl">
+    <TeamManager client:load team={results} />
+  </div>
 </AdminLayout>

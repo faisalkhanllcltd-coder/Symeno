@@ -7,7 +7,10 @@ import ConversionFunnel from '../components/admin/analytics/ConversionFunnel.sve
 import ProductPerformance from '../components/admin/analytics/ProductPerformance.svelte';
 import { env } from 'cloudflare:workers';
 
-if (!Astro.locals.user || (Astro.locals.user.role !== 'admin' && Astro.locals.user.role !== 'staff')) {
+if (
+  !Astro.locals.user ||
+  (Astro.locals.user.role !== 'admin' && Astro.locals.user.role !== 'staff')
+) {
   return Astro.redirect('/auth/login');
 }
 
@@ -18,28 +21,39 @@ let analyticsData = { revenue: [], orders: [], products: [], customers: [] };
 if (db) {
   try {
     const [rev, ord, prod] = await db.batch([
-      db.prepare("SELECT DATE(created_at) as date, SUM(total) as amount FROM orders WHERE status != 'CANCELLED' GROUP BY DATE(created_at) ORDER BY date DESC LIMIT 30"),
-      db.prepare("SELECT status, COUNT(*) as count FROM orders GROUP BY status"),
-      db.prepare("SELECT title, base_price as revenue FROM products WHERE is_active = 1 ORDER BY base_price DESC LIMIT 5")
+      db.prepare(
+        "SELECT DATE(created_at) as date, SUM(total) as amount FROM orders WHERE status != 'CANCELLED' GROUP BY DATE(created_at) ORDER BY date DESC LIMIT 30"
+      ),
+      db.prepare(
+        'SELECT status, COUNT(*) as count FROM orders GROUP BY status'
+      ),
+      db.prepare(
+        'SELECT title, base_price as revenue FROM products WHERE is_active = 1 ORDER BY base_price DESC LIMIT 5'
+      ),
     ]);
     analyticsData.revenue = rev.results || [];
     analyticsData.orders = ord.results || [];
     analyticsData.products = prod.results || [];
-  } catch(e) {}
+  } catch (e) {}
 }
 ---
 
-<AdminLayout title="Analytics Studio" subtitle="Enterprise Platform Telemetry" currentPath="/admin/analytics">
+<AdminLayout
+  title="Analytics Studio"
+  subtitle="Enterprise Platform Telemetry"
+  currentPath="/admin/analytics"
+>
   <div class="max-w-7xl space-y-6">
-    
-    <div class="flex justify-between items-center">
+    <div class="flex items-center justify-between">
       <DateRangePicker client:load selectedRange="30d" />
-      <button class="border border-white/10 text-white/50 px-4 py-2 text-[10px] font-mono tracking-widest hover:text-white transition-colors">
+      <button
+        class="border border-white/10 px-4 py-2 font-mono text-[10px] tracking-widest text-white/50 transition-colors hover:text-white"
+      >
         Export Report PDF
       </button>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
       <div class="lg:col-span-2">
         <RevenueOverview client:load data={analyticsData.revenue} />
       </div>
@@ -48,10 +62,9 @@ if (db) {
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <ConversionFunnel client:load />
       <ProductPerformance client:load products={analyticsData.products} />
     </div>
-
   </div>
 </AdminLayout>

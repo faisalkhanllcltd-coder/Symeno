@@ -4,12 +4,16 @@ import { env } from 'cloudflare:workers';
 export const GET: APIRoute = async ({ params, locals }) => {
   try {
     if (!locals.user) throw new Error('UNAUTHENTICATED');
-    
+
     // Verify ownership
-    const order = await env.DB.prepare('SELECT id FROM orders WHERE id = ?1 AND customer_id = ?2').bind(params.id, locals.user.id).first();
+    const order = await env.DB.prepare(
+      'SELECT id FROM orders WHERE id = ?1 AND customer_id = ?2'
+    )
+      .bind(params.id, locals.user.id)
+      .first();
     if (!order) return new Response('Forbidden', { status: 403 });
 
-    // Edge PDF generation is complex. For Edge environments, the standard is to 
+    // Edge PDF generation is complex. For Edge environments, the standard is to
     // return a formatted HTML receipt with print styling, rather than a heavy PDF buffer.
     const html = `
       <html>
@@ -23,9 +27,9 @@ export const GET: APIRoute = async ({ params, locals }) => {
       </html>
     `;
 
-    return new Response(html, { 
+    return new Response(html, {
       status: 200,
-      headers: { 'Content-Type': 'text/html' }
+      headers: { 'Content-Type': 'text/html' },
     });
   } catch (e) {
     return new Response('Invoice Generation Failed', { status: 500 });

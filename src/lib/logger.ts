@@ -8,5 +8,5 @@
   },
   warn: (message: string, context?: any) => {
     console.warn(`[WARN] ${message}`, context ? JSON.stringify(context) : '');
-  }
+  },
 };

@@ -7,8 +7,9 @@ interface SeoConfig {
   ogImage?: string;
 }
 
-const DEFAULT_DESCRIPTION = "Operational efficiency applied to consumer electronics. Guaranteed Arbitrage Sourcing.";
-const SITE_NAME = "Symeno";
+const DEFAULT_DESCRIPTION =
+  'Operational efficiency applied to consumer electronics. Guaranteed Arbitrage Sourcing.';
+const SITE_NAME = 'Symeno';
 
 export function generateSeoMeta(config: SeoConfig) {
   const title = `${config.title} | ${SITE_NAME}`;
@@ -21,19 +22,19 @@ export function generateSeoMeta(config: SeoConfig) {
     openGraph: {
       basic: {
         title,
-        type: "website",
+        type: 'website',
         image,
       },
       optional: {
         description,
         siteName: SITE_NAME,
-      }
+      },
     },
     twitter: {
-      card: "summary_large_image",
+      card: 'summary_large_image',
       title,
       description,
       image,
-    }
+    },
   };
 }

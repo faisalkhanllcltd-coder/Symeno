@@ -1,26 +1,48 @@
-<script lang="ts">
-  export let id: string;
-  export let checked: boolean = false;
-  export let label: string;
-  export let required: boolean = false;
+﻿<script lang="ts">
+  import type { Snippet } from 'svelte';
+
+  let {
+    id,
+    checked = $bindable(false),
+    label,
+    required = false,
+    description,
+    onchange
+  } = $props<{
+    id: string;
+    checked?: boolean;
+    label: string;
+    required?: boolean;
+    description?: Snippet;
+    onchange?: (checked: boolean) => void;
+  }>();
+
+  function handleChange() {
+    if (onchange) onchange(checked);
+  }
 </script>
 
 <div class="flex items-start">
-  <div class="flex items-center h-5">
-    <input 
-      {id} 
-      type="checkbox" 
+  <div class="flex h-5 items-center">
+    <input
+      {id}
+      type="checkbox"
       bind:checked
+      onchange={handleChange}
       {required}
-      class="w-4 h-4 bg-[#1A1D23] border border-white/20 rounded-none checked:bg-[#36f4a4] checked:border-[#36f4a4] focus:ring-1 focus:ring-[#36f4a4]/50 focus:ring-offset-0 focus:outline-none transition-colors cursor-pointer appearance-none flex items-center justify-center relative before:content-[''] before:absolute before:w-2 before:h-2 before:bg-black before:scale-0 checked:before:scale-100 before:transition-transform" 
+      class="relative flex h-4 w-4 cursor-pointer appearance-none items-center justify-center rounded-none border border-outline bg-base transition-colors before:absolute before:h-2 before:w-2 before:scale-0 before:bg-brand-dark before:transition-transform before:content-[''] checked:border-brand checked:bg-brand checked:before:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
     />
   </div>
   <div class="ml-3 text-sm">
-    <label for={id} class="font-medium text-white/80 cursor-pointer select-none">
-      {label} {#if required}<span class="text-rose-500">*</span>{/if}
+    <label
+      for={id}
+      class="cursor-pointer font-medium text-content select-none"
+    >
+      {label}
+      {#if required}<span class="text-brand-alert ml-1">*</span>{/if}
     </label>
-    {#if $$slots.description}
-      <p class="text-gray-500 text-xs mt-1"><slot name="description" /></p>
+    {#if description}
+      <p class="mt-1 text-xs text-content-muted">{@render description()}</p>
     {/if}
   </div>
 </div>

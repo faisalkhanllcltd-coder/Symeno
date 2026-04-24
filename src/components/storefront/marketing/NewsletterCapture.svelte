@@ -6,17 +6,17 @@
   async function executeSubscription(e: Event) {
     e.preventDefault();
     if (!email) return;
-    
+
     status = 'loading';
     message = '';
-    
+
     try {
       const res = await fetch('/api/marketing/newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'footer_module' })
+        body: JSON.stringify({ email, source: 'footer_module' }),
       });
-      
+
       if (res.ok) {
         status = 'success';
         message = 'Signal acquired. You are on the grid.';
@@ -34,22 +34,29 @@
 </script>
 
 <div class="w-full max-w-md">
-  <h3 class="text-xs font-bold text-white uppercase tracking-widest font-mono mb-2">Secure Comm Channel</h3>
-  <p class="text-[10px] text-white/50 font-mono mb-4">Intercept logistics updates, wholesale price drops, and operational intelligence.</p>
-  
+  <h3
+    class="mb-2 font-mono text-xs font-bold tracking-widest text-white uppercase"
+  >
+    Secure Comm Channel
+  </h3>
+  <p class="mb-4 font-mono text-[10px] text-white/50">
+    Intercept logistics updates, wholesale price drops, and operational
+    intelligence.
+  </p>
+
   <form onsubmit={executeSubscription} class="relative flex">
-    <input 
-      type="email" 
-      bind:value={email} 
+    <input
+      type="email"
+      bind:value={email}
       disabled={status === 'loading' || status === 'success'}
-      placeholder="operator@domain.com" 
+      placeholder="operator@domain.com"
       required
-      class="w-full bg-[#111318] border border-white/10 text-white px-4 py-3 text-sm focus:outline-none focus:border-[#36f4a4]/50 font-mono transition-colors disabled:opacity-50" 
+      class="w-full border border-white/10 bg-[#111318] px-4 py-3 font-mono text-sm text-white transition-colors focus:border-[#36f4a4]/50 focus:outline-none disabled:opacity-50"
     />
-    <button 
-      type="submit" 
+    <button
+      type="submit"
       disabled={status === 'loading' || status === 'success'}
-      class="absolute right-1 top-1 bottom-1 bg-white/5 hover:bg-[#36f4a4]/20 text-[#36f4a4] px-6 text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50 border border-transparent hover:border-[#36f4a4]/30"
+      class="absolute top-1 right-1 bottom-1 border border-transparent bg-white/5 px-6 text-[10px] font-bold tracking-widest text-[#36f4a4] uppercase transition-colors hover:border-[#36f4a4]/30 hover:bg-[#36f4a4]/20 disabled:opacity-50"
     >
       {#if status === 'loading'}
         SYNC...
@@ -60,7 +67,12 @@
   </form>
 
   {#if message}
-    <p class="mt-3 text-[10px] font-mono uppercase tracking-widest animate-fade-in {status === 'success' ? 'text-[#36f4a4]' : 'text-rose-400'}">
+    <p
+      class="animate-fade-in mt-3 font-mono text-[10px] tracking-widest uppercase {status ===
+      'success'
+        ? 'text-[#36f4a4]'
+        : 'text-rose-400'}"
+    >
       > {message}
     </p>
   {/if}

@@ -5,7 +5,9 @@
   let cartItems = $state<any[]>([]);
   let isLoaded = $state(false);
 
-  let subtotal = $derived(cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0));
+  let subtotal = $derived(
+    cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
+  );
   let shipping = $derived(subtotal > 150 ? 0 : 15);
   let total = $derived(subtotal + shipping);
 
@@ -16,47 +18,74 @@
   });
 </script>
 
-<div class="bg-[#111318] border border-white/10 p-6 sm:p-8 sticky top-24">
-  <h2 class="text-sm font-bold text-white uppercase tracking-widest font-mono border-b border-white/10 pb-4 mb-6">Acquisition Summary</h2>
-  
+<div class="sticky top-24 border border-white/10 bg-[#111318] p-6 sm:p-8">
+  <h2
+    class="mb-6 border-b border-white/10 pb-4 font-mono text-sm font-bold tracking-widest text-white uppercase"
+  >
+    Acquisition Summary
+  </h2>
+
   {#if !isLoaded}
-    <div class="text-[10px] text-white/50 font-mono animate-pulse">Synchronizing cart telemetry...</div>
+    <div class="animate-pulse font-mono text-[10px] text-white/50">
+      Synchronizing cart telemetry...
+    </div>
   {:else if cartItems.length === 0}
-    <div class="text-[10px] text-white/50 font-mono uppercase tracking-widest text-center py-8">Cart is empty.</div>
+    <div
+      class="py-8 text-center font-mono text-[10px] tracking-widest text-white/50 uppercase"
+    >
+      Cart is empty.
+    </div>
   {:else}
-    <div class="space-y-4 mb-6 max-h-[40vh] overflow-y-auto pr-2">
+    <div class="mb-6 max-h-[40vh] space-y-4 overflow-y-auto pr-2">
       {#each cartItems as item}
-        <div class="flex items-start gap-4 group">
-          <div class="w-16 h-16 bg-[#1A1D23] border border-white/5 flex items-center justify-center shrink-0">
-            <span class="text-[8px] text-white/30 font-mono">IMG</span>
+        <div class="group flex items-start gap-4">
+          <div
+            class="flex h-16 w-16 shrink-0 items-center justify-center border border-white/5 bg-[#1A1D23]"
+          >
+            <span class="font-mono text-[8px] text-white/30">IMG</span>
           </div>
-          <div class="flex-1 min-w-0 pt-1">
-            <h4 class="text-xs font-bold text-white truncate">{item.title}</h4>
-            <div class="flex justify-between items-center mt-1">
-              <span class="text-[10px] font-mono text-white/50">Qty: {item.quantity}</span>
-              <span class="text-[10px] font-mono text-[#36f4a4]">${(item.price * item.quantity).toFixed(2)}</span>
+          <div class="min-w-0 flex-1 pt-1">
+            <h4 class="truncate text-xs font-bold text-white">{item.title}</h4>
+            <div class="mt-1 flex items-center justify-between">
+              <span class="font-mono text-[10px] text-white/50"
+                >Qty: {item.quantity}</span
+              >
+              <span class="font-mono text-[10px] text-[#36f4a4]"
+                >${(item.price * item.quantity).toFixed(2)}</span
+              >
             </div>
           </div>
         </div>
       {/each}
     </div>
 
-    <div class="space-y-3 pt-6 border-t border-white/10 text-[10px] font-mono uppercase tracking-widest">
+    <div
+      class="space-y-3 border-t border-white/10 pt-6 font-mono text-[10px] tracking-widest uppercase"
+    >
       <div class="flex justify-between text-white/50">
         <span>Subtotal</span>
         <span>${subtotal.toFixed(2)}</span>
       </div>
       <div class="flex justify-between text-white/50">
         <span>Secure Shipping</span>
-        <span>{shipping === 0 ? 'COMPLIMENTARY' : `$${shipping.toFixed(2)}`}</span>
+        <span
+          >{shipping === 0 ? 'COMPLIMENTARY' : `$${shipping.toFixed(2)}`}</span
+        >
       </div>
     </div>
 
-    <div class="flex justify-between items-end pt-6 mt-6 border-t border-white/10">
-      <span class="text-xs font-bold text-white uppercase tracking-widest font-mono">Total Due</span>
+    <div
+      class="mt-6 flex items-end justify-between border-t border-white/10 pt-6"
+    >
+      <span
+        class="font-mono text-xs font-bold tracking-widest text-white uppercase"
+        >Total Due</span
+      >
       <div class="text-right">
-        <span class="text-2xl font-bold text-[#36f4a4] font-mono">${total.toFixed(2)}</span>
-        <p class="text-[9px] text-white/30 mt-1 font-mono">Includes VAT</p>
+        <span class="font-mono text-2xl font-bold text-[#36f4a4]"
+          >${total.toFixed(2)}</span
+        >
+        <p class="mt-1 font-mono text-[9px] text-white/30">Includes VAT</p>
       </div>
     </div>
   {/if}

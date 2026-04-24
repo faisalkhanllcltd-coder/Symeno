@@ -1,16 +1,22 @@
-<script lang="ts">
-  export let status: 'success' | 'warning' | 'error' | 'neutral' | 'info' = 'neutral';
-  export let label: string;
+﻿<script lang="ts">
+  let { status = 'neutral', label } = $props<{
+    status?: 'success' | 'warning' | 'error' | 'neutral' | 'info';
+    label: string;
+  }>();
 
   const variants = {
-    success: 'bg-[#36f4a4]/10 text-[#36f4a4] border-[#36f4a4]/20',
+    success: 'bg-brand/10 text-brand border-brand/20',
     warning: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-    error: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+    error: 'bg-brand-alert/10 text-brand-alert border-brand-alert/20',
     info: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-    neutral: 'bg-white/5 text-white/60 border-white/10'
+    neutral: 'bg-base text-content-muted border-outline',
   };
 </script>
 
-<span class="inline-flex items-center justify-center px-2 py-0.5 border text-[9px] font-bold uppercase tracking-widest font-mono {variants[status]}">
+<span
+  class="inline-flex items-center justify-center border px-2 py-0.5 font-mono text-[9px] font-bold tracking-widest uppercase transition-colors {variants[
+    status
+  ]}"
+>
   {label}
 </span>

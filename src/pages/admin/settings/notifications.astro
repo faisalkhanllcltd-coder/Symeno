@@ -2,7 +2,15 @@
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import { env } from 'cloudflare:workers';
 ---
-import NotificationSettings from '../../components/admin/settings/NotificationSettings.svelte';
-<AdminLayout title=Communications subtitle=Automated Email Triggers currentPath=/admin/settings/notifications>
-  <div class=max-w-4xl><NotificationSettings client:load /></div>
+
+import NotificationSettings from
+'../../components/admin/settings/NotificationSettings.svelte';
+<AdminLayout
+  title="Communications"
+  subtitle="Automated"
+  Email
+  Triggers
+  currentPath="/admin/settings/notifications"
+>
+  <div class="max-w-4xl"><NotificationSettings client:load /></div>
 </AdminLayout>

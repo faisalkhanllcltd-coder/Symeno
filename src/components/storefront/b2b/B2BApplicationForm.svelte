@@ -3,7 +3,7 @@
   let tradeLicense = $state('');
   let taxId = $state('');
   let contactEmail = $state('');
-  
+
   let isSubmitting = $state(false);
   let status = $state<'idle' | 'success' | 'error'>('idle');
   let message = $state('');
@@ -21,14 +21,18 @@
           company_name: companyName,
           trade_license: tradeLicense,
           tax_id: taxId,
-          contact_email: contactEmail
-        })
+          contact_email: contactEmail,
+        }),
       });
 
       if (res.ok) {
         status = 'success';
-        message = 'Application received. Our verification team will contact you within 24 hours.';
-        companyName = ''; tradeLicense = ''; taxId = ''; contactEmail = '';
+        message =
+          'Application received. Our verification team will contact you within 24 hours.';
+        companyName = '';
+        tradeLicense = '';
+        taxId = '';
+        contactEmail = '';
       } else {
         const err = await res.json();
         status = 'error';
@@ -43,47 +47,95 @@
   }
 </script>
 
-<form onsubmit={submitApplication} class="bg-[#111318] border border-white/10 p-8 space-y-6">
-  <div class="border-b border-white/10 pb-4 mb-6">
-    <h2 class="text-sm font-bold text-white uppercase tracking-widest font-mono">Wholesale Authorization</h2>
-    <p class="text-[10px] text-white/50 font-mono mt-1">Submit corporate credentials to unlock Net-30 terms and Tier-1 pricing.</p>
+<form
+  onsubmit={submitApplication}
+  class="space-y-6 border border-white/10 bg-[#111318] p-8"
+>
+  <div class="mb-6 border-b border-white/10 pb-4">
+    <h2
+      class="font-mono text-sm font-bold tracking-widest text-white uppercase"
+    >
+      Wholesale Authorization
+    </h2>
+    <p class="mt-1 font-mono text-[10px] text-white/50">
+      Submit corporate credentials to unlock Net-30 terms and Tier-1 pricing.
+    </p>
   </div>
 
   {#if status === 'success'}
-    <div class="bg-[#36f4a4]/10 border border-[#36f4a4]/30 p-4 text-[#36f4a4] text-xs font-mono uppercase tracking-widest">
+    <div
+      class="border border-[#36f4a4]/30 bg-[#36f4a4]/10 p-4 font-mono text-xs tracking-widest text-[#36f4a4] uppercase"
+    >
       {message}
     </div>
   {:else}
     {#if status === 'error'}
-      <div class="bg-rose-500/10 border border-rose-500/30 p-4 text-rose-400 text-xs font-mono uppercase tracking-widest">
+      <div
+        class="border border-rose-500/30 bg-rose-500/10 p-4 font-mono text-xs tracking-widest text-rose-400 uppercase"
+      >
         {message}
       </div>
     {/if}
 
     <div class="space-y-4">
       <div class="space-y-1.5">
-        <label class="text-[10px] font-mono text-white/50 uppercase tracking-widest">Registered Company Name</label>
-        <input type="text" bind:value={companyName} required class="w-full bg-[#1A1D23] border border-white/10 text-white px-4 py-3 text-sm focus:outline-none focus:border-[#36f4a4]/50 transition-colors font-mono" />
+        <label
+          class="font-mono text-[10px] tracking-widest text-white/50 uppercase"
+          >Registered Company Name</label
+        >
+        <input
+          type="text"
+          bind:value={companyName}
+          required
+          class="w-full border border-white/10 bg-[#1A1D23] px-4 py-3 font-mono text-sm text-white transition-colors focus:border-[#36f4a4]/50 focus:outline-none"
+        />
       </div>
 
       <div class="space-y-1.5">
-        <label class="text-[10px] font-mono text-white/50 uppercase tracking-widest">Contact Email</label>
-        <input type="email" bind:value={contactEmail} required class="w-full bg-[#1A1D23] border border-white/10 text-white px-4 py-3 text-sm focus:outline-none focus:border-[#36f4a4]/50 transition-colors font-mono" />
+        <label
+          class="font-mono text-[10px] tracking-widest text-white/50 uppercase"
+          >Contact Email</label
+        >
+        <input
+          type="email"
+          bind:value={contactEmail}
+          required
+          class="w-full border border-white/10 bg-[#1A1D23] px-4 py-3 font-mono text-sm text-white transition-colors focus:border-[#36f4a4]/50 focus:outline-none"
+        />
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div class="space-y-1.5">
-          <label class="text-[10px] font-mono text-white/50 uppercase tracking-widest">Trade License Number</label>
-          <input type="text" bind:value={tradeLicense} required class="w-full bg-[#1A1D23] border border-white/10 text-white px-4 py-3 text-sm focus:outline-none focus:border-[#36f4a4]/50 transition-colors font-mono" />
+          <label
+            class="font-mono text-[10px] tracking-widest text-white/50 uppercase"
+            >Trade License Number</label
+          >
+          <input
+            type="text"
+            bind:value={tradeLicense}
+            required
+            class="w-full border border-white/10 bg-[#1A1D23] px-4 py-3 font-mono text-sm text-white transition-colors focus:border-[#36f4a4]/50 focus:outline-none"
+          />
         </div>
         <div class="space-y-1.5">
-          <label class="text-[10px] font-mono text-white/50 uppercase tracking-widest">Tax ID / VAT Number (Optional)</label>
-          <input type="text" bind:value={taxId} class="w-full bg-[#1A1D23] border border-white/10 text-white px-4 py-3 text-sm focus:outline-none focus:border-[#36f4a4]/50 transition-colors font-mono" />
+          <label
+            class="font-mono text-[10px] tracking-widest text-white/50 uppercase"
+            >Tax ID / VAT Number (Optional)</label
+          >
+          <input
+            type="text"
+            bind:value={taxId}
+            class="w-full border border-white/10 bg-[#1A1D23] px-4 py-3 font-mono text-sm text-white transition-colors focus:border-[#36f4a4]/50 focus:outline-none"
+          />
         </div>
       </div>
     </div>
 
-    <button type="submit" disabled={isSubmitting} class="w-full mt-8 bg-[#36f4a4] text-black px-6 py-4 text-xs font-bold uppercase tracking-widest hover:bg-white transition-colors disabled:opacity-50">
+    <button
+      type="submit"
+      disabled={isSubmitting}
+      class="mt-8 w-full bg-[#36f4a4] px-6 py-4 text-xs font-bold tracking-widest text-black uppercase transition-colors hover:bg-white disabled:opacity-50"
+    >
       {isSubmitting ? 'Transmitting...' : 'Request Access'}
     </button>
   {/if}

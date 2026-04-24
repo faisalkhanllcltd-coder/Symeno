@@ -8,9 +8,19 @@ export interface Props {
   type?: 'WebSite' | 'Product' | 'Article';
   price?: string;
 }
-const { title, description, image = '/og-image.jpg', type = 'WebSite', price } = Astro.props;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://symeno.com');
+const {
+  title,
+  description,
+  image = '/og-image.jpg',
+  type = 'WebSite',
+  price,
+} = Astro.props;
+const canonicalURL = new URL(
+  Astro.url.pathname,
+  Astro.site || 'https://symeno.com'
+);
 ---
+
 <meta name="description" content={description} />
 <link rel="canonical" href={canonicalURL} />
 <meta property="og:title" content={title} />
@@ -18,12 +28,18 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://symeno.c
 <meta property="og:url" content={canonicalURL} />
 <meta property="og:image" content={new URL(image, Astro.url)} />
 
-{type === 'Product' && price && (
-  <script type="application/ld+json" is:inline set:html={JSON.stringify({
-    "@context": "https://schema.org/",
-    "@type": "Product",
-    "name": title,
-    "description": description,
-    "offers": { "@type": "Offer", "price": price, "priceCurrency": "USD" }
-  })} />
-)}
+{
+  type === 'Product' && price && (
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org/',
+        '@type': 'Product',
+        name: title,
+        description: description,
+        offers: { '@type': 'Offer', price: price, priceCurrency: 'USD' },
+      })}
+    />
+  )
+}

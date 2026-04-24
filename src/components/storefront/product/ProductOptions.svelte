@@ -1,31 +1,42 @@
-<script lang="ts">
-  export let variants: { id: string, name: string, available: boolean }[] = [];
-  export let selectedId: string = "";
-  
-  import { createEventDispatcher } from 'svelte';
-  const dispatch = createEventDispatcher();
-  
+﻿<script lang="ts">
+  let {
+    variants = [],
+    selectedId = '',
+    onchange,
+  } = $props<{
+    variants?: { id: string; name: string; available: boolean }[];
+    selectedId?: string;
+    onchange?: (id: string) => void;
+  }>();
+
   function selectVariant(id: string, available: boolean) {
     if (!available) return;
-    selectedId = id;
-    dispatch('change', { id });
+    if (onchange) onchange(id);
   }
 </script>
 
 <div class="space-y-3">
-  <div class="flex justify-between items-center">
-    <span class="text-[10px] font-mono uppercase tracking-widest text-gray-500">Configuration</span>
-    <button class="text-[10px] font-mono text-black underline decoration-gray-300 hover:decoration-black transition-colors focus:outline-none">Size Guide</button>
+  <div class="flex items-center justify-between">       
+    <span class="font-mono text-[10px] tracking-widest text-content-muted uppercase"
+      >Configuration</span
+    >
+    <button
+      class="font-mono text-[10px] text-content underline decoration-outline transition-colors hover:decoration-content focus-visible:outline-none focus-visible:text-brand"
+      >Size Guide</button
+    >
   </div>
-  
+
   <div class="grid grid-cols-3 gap-3">
     {#each variants as variant}
-      <button 
+      <button
         type="button"
-        on:click={() => selectVariant(variant.id, variant.available)}
-        class="py-3 text-xs font-bold uppercase tracking-widest border transition-colors focus:outline-none 
-          {!variant.available ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed line-through' : 
-            selectedId === variant.id ? 'border-black bg-black text-white' : 'border-gray-200 bg-white text-gray-900 hover:border-black'}"
+        onclick={() => selectVariant(variant.id, variant.available)}
+        class="border py-3 text-xs font-bold tracking-widest uppercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand     
+          {!variant.available
+          ? 'cursor-not-allowed border-outline bg-surface text-content-muted line-through opacity-50'
+          : selectedId === variant.id
+            ? 'border-brand bg-brand text-brand-dark'        
+            : 'border-outline bg-base text-content hover:border-brand'}"
         disabled={!variant.available}
       >
         {variant.name}

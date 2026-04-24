@@ -1,31 +1,42 @@
 ---
 // src/components/storefront/Newsletter.astro
 ---
-<section class="w-full py-24 bg-[#070d0e] border-t border-[#dae5e6]/10 relative overflow-hidden">
-  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#36f4a4] opacity-[0.02] blur-[80px] rounded-full pointer-events-none z-0"></div>
-  
-  <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
-    <h2 class="text-3xl md:text-4xl font-bold text-white tracking-tight mb-4">Get First Access.</h2>
-    <p class="text-[#dae5e6]/60 text-lg mb-10 font-light max-w-2xl mx-auto">
-      Our deepest deals often sell out in under 60 minutes. Join the priority list for early access and subscriber-only inventory.
+
+<section
+  class="relative w-full overflow-hidden border-t border-[#dae5e6]/10 bg-[#070d0e] py-24"
+>
+  <div
+    class="pointer-events-none absolute top-1/2 left-1/2 z-0 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#36f4a4] opacity-[0.02] blur-[80px]"
+  >
+  </div>
+
+  <div class="relative z-10 mx-auto max-w-4xl px-4 text-center">
+    <h2 class="mb-4 text-3xl font-bold tracking-tight text-white md:text-4xl">
+      Get First Access.
+    </h2>
+    <p class="mx-auto mb-10 max-w-2xl text-lg font-light text-[#dae5e6]/60">
+      Our deepest deals often sell out in under 60 minutes. Join the priority
+      list for early access and subscriber-only inventory.
     </p>
 
-    <form class="flex flex-col sm:flex-row gap-0 max-w-lg mx-auto group">
-      <input 
-        type="email" 
-        placeholder="Enter email address" 
-        required 
-        class="flex-grow bg-[#131d1e] border border-[#dae5e6]/15 text-white px-6 py-4 rounded-none focus:outline-none focus:border-[#36f4a4]/50 focus:ring-1 focus:ring-[#36f4a4]/50 transition-all placeholder:text-[#dae5e6]/30 font-mono text-sm"
+    <form class="group mx-auto flex max-w-lg flex-col gap-0 sm:flex-row">
+      <input
+        type="email"
+        placeholder="Enter email address"
+        required
+        class="flex-grow rounded-none border border-[#dae5e6]/15 bg-[#131d1e] px-6 py-4 font-mono text-sm text-white transition-all placeholder:text-[#dae5e6]/30 focus:border-[#36f4a4]/50 focus:ring-1 focus:ring-[#36f4a4]/50 focus:outline-none"
       />
-      <button 
-        type="submit" 
-        class="bg-[#36f4a4] text-[#003822] px-8 py-4 rounded-none font-bold text-sm uppercase tracking-wider hover:bg-[#36f4a4]/90 transition-all duration-300 shadow-[0_0_15px_rgba(54,244,164,0.1)] hover:shadow-[0_0_25px_rgba(54,244,164,0.2)]"
+      <button
+        type="submit"
+        class="rounded-none bg-[#36f4a4] px-8 py-4 text-sm font-bold tracking-wider text-[#003822] uppercase shadow-[0_0_15px_rgba(54,244,164,0.1)] transition-all duration-300 hover:bg-[#36f4a4]/90 hover:shadow-[0_0_25px_rgba(54,244,164,0.2)]"
       >
         Send Me Deals
       </button>
     </form>
-    
-    <p class="mt-6 text-[10px] font-mono text-[#dae5e6]/40 uppercase tracking-[0.2em]">
+
+    <p
+      class="mt-6 font-mono text-[10px] tracking-[0.2em] text-[#dae5e6]/40 uppercase"
+    >
       Zero Spam &middot; Encrypted Data &middot; Unsubscribe Anytime
     </p>
   </div>
