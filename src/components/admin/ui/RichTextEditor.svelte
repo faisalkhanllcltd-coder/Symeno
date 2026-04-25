@@ -18,7 +18,7 @@
         editorProps: {
           attributes: {
             class:
-              'prose prose-invert max-w-none focus:outline-none min-h-[200px] p-4 text-sm font-mono',
+              'prose prose-invert max-w-none focus:outline-none min-h-[200px] p-4 text-sm font-mono text-content',
           },
         },
         onUpdate: ({ editor }) => {
@@ -37,47 +37,47 @@
 </script>
 
 <div
-  class="group flex flex-col overflow-hidden border border-white/10 bg-[#111318] transition-colors focus-within:border-[#36f4a4]/50"
+  class="group flex flex-col overflow-hidden border border-outline bg-surface transition-colors focus-within:border-brand/50 focus-within:ring-1 focus-within:ring-brand rounded-sm"
 >
   {#if editor}
-    <div class="flex flex-wrap gap-1 border-b border-white/10 bg-[#1A1D23] p-2">
+    <div class="flex flex-wrap gap-1 border-b border-outline bg-base p-2">
       <button
         type="button"
         onclick={() => editor.chain().focus().toggleBold().run()}
-        class="px-2 py-1 font-mono text-[10px] tracking-widest uppercase {editor.isActive(
+        class="px-2 py-1 font-mono text-[10px] tracking-widest uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm {editor.isActive(
           'bold'
         )
-          ? 'bg-[#36f4a4]/20 text-[#36f4a4]'
-          : 'text-white/50 hover:bg-white/10'}">Bold</button
+          ? 'bg-brand/20 text-brand'
+          : 'text-content-muted hover:bg-white/10'}">Bold</button
       >
       <button
         type="button"
         onclick={() => editor.chain().focus().toggleItalic().run()}
-        class="px-2 py-1 font-mono text-[10px] tracking-widest uppercase {editor.isActive(
+        class="px-2 py-1 font-mono text-[10px] tracking-widest uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm {editor.isActive(
           'italic'
         )
-          ? 'bg-[#36f4a4]/20 text-[#36f4a4]'
-          : 'text-white/50 hover:bg-white/10'}">Italic</button
+          ? 'bg-brand/20 text-brand'
+          : 'text-content-muted hover:bg-white/10'}">Italic</button
       >
-      <div class="mx-2 h-4 w-px self-center bg-white/10"></div>
+      <div class="mx-2 h-4 w-px self-center bg-outline"></div>
       <button
         type="button"
         onclick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        class="px-2 py-1 font-mono text-[10px] tracking-widest uppercase {editor.isActive(
+        class="px-2 py-1 font-mono text-[10px] tracking-widest uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm {editor.isActive(
           'heading',
           { level: 2 }
         )
-          ? 'bg-[#36f4a4]/20 text-[#36f4a4]'
-          : 'text-white/50 hover:bg-white/10'}">H2</button
+          ? 'bg-brand/20 text-brand'
+          : 'text-content-muted hover:bg-white/10'}">H2</button
       >
       <button
         type="button"
         onclick={() => editor.chain().focus().toggleBulletList().run()}
-        class="px-2 py-1 font-mono text-[10px] tracking-widest uppercase {editor.isActive(
+        class="px-2 py-1 font-mono text-[10px] tracking-widest uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm {editor.isActive(
           'bulletList'
         )
-          ? 'bg-[#36f4a4]/20 text-[#36f4a4]'
-          : 'text-white/50 hover:bg-white/10'}">List</button
+          ? 'bg-brand/20 text-brand'
+          : 'text-content-muted hover:bg-white/10'}">List</button
       >
     </div>
   {/if}

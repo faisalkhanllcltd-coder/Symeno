@@ -1,6 +1,6 @@
 <script lang="ts">
   let { categories = [], onEdit } = $props<{
-    categories: any[];
+    categories?: any[];
     onEdit: (c: any) => void;
   }>();
 
@@ -48,9 +48,9 @@
   }
 </script>
 
-<div class="h-full border border-white/10 bg-[#111318] p-6">
+<div class="h-full border border-outline bg-surface p-6">
   <h3
-    class="mb-4 font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+    class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
   >
     Taxonomy Tree (Drag to Reorder)
   </h3>
@@ -65,14 +65,14 @@
           dropTargetId = root.id;
         }}
         ondrop={(e) => handleDrop(e, root.id, false)}
-        class="group flex items-center justify-between border border-white/10 bg-[#1A1D23] p-3 transition-colors {dropTargetId ===
+        class="group flex items-center justify-between border border-outline bg-base p-3 transition-colors {dropTargetId ===
         root.id
-          ? 'border-[#36f4a4]'
+          ? 'border-brand'
           : ''}"
       >
         <div class="flex items-center gap-3">
           <svg
-            class="h-4 w-4 cursor-grab text-white/30"
+            class="h-4 w-4 cursor-grab text-content-muted"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -86,17 +86,17 @@
           {#if root.image_url}<img
               src={root.image_url}
               alt=""
-              class="h-6 w-6 border border-white/10 bg-white/5 object-cover"
+              class="h-6 w-6 border border-outline bg-white/5 object-cover"
             />{/if}
-          <span class="text-xs font-bold text-white">{root.name}</span>
+          <span class="text-xs font-bold text-content">{root.name}</span>
           {#if !root.is_active}<span
-              class="bg-white/5 px-1 font-mono text-[9px] text-white/40 uppercase"
+              class="bg-white/5 px-1 font-mono text-[9px] text-content-muted uppercase"
               >Hidden</span
             >{/if}
         </div>
         <button
           onclick={() => onEdit(root)}
-          class="font-mono text-[10px] text-white/50 uppercase transition-colors hover:text-white focus:outline-none"
+          class="font-mono text-[10px] text-content-muted uppercase transition-colors hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
           >Edit</button
         >
       </div>
@@ -107,11 +107,11 @@
             <div
               draggable="true"
               ondragstart={(e) => handleDragStart(e, child)}
-              class="group flex items-center justify-between border border-white/5 bg-white/[0.02] p-3"
+              class="group flex items-center justify-between border border-outline bg-white/[0.02] p-3"
             >
               <div class="flex items-center gap-3">
                 <svg
-                  class="h-4 w-4 cursor-grab text-white/30"
+                  class="h-4 w-4 cursor-grab text-content-muted"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -122,11 +122,11 @@
                     d="M4 8h16M4 16h16"
                   /></svg
                 >
-                <span class="text-xs text-white/80">{child.name}</span>
+                <span class="text-xs text-content">{child.name}</span>
               </div>
               <button
                 onclick={() => onEdit(child)}
-                class="font-mono text-[10px] text-white/50 uppercase transition-colors hover:text-white focus:outline-none"
+                class="font-mono text-[10px] text-content-muted uppercase transition-colors hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                 >Edit</button
               >
             </div>

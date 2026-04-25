@@ -1,6 +1,6 @@
 <script lang="ts">
   let { initialData = {}, isEdit = false } = $props<{
-    initialData: any;
+    initialData?: any;
     isEdit?: boolean;
   }>();
 
@@ -67,12 +67,12 @@
 </script>
 
 <form onsubmit={submitForm} class="max-w-4xl space-y-6">
-  <div class="border border-white/10 bg-[#111318] p-6 sm:p-8">
+  <div class="border border-outline bg-surface p-6 sm:p-8">
     <div
-      class="mb-6 flex items-center justify-between border-b border-white/10 pb-2"
+      class="mb-6 flex items-center justify-between border-b border-outline pb-2"
     >
       <h2
-        class="font-mono text-xs font-bold tracking-widest text-white uppercase"
+        class="font-mono text-xs font-bold tracking-widest text-content uppercase"
       >
         Brand Identity
       </h2>
@@ -80,10 +80,10 @@
         <input
           type="checkbox"
           bind:checked={is_featured}
-          class="h-4 w-4 border-white/10 bg-[#1A1D23] accent-[#36f4a4]"
+          class="h-4 w-4 border-outline bg-base accent-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
         />
         <span
-          class="font-mono text-[10px] tracking-widest text-white/70 uppercase"
+          class="font-mono text-[10px] tracking-widest text-content-muted uppercase"
           >Featured Brand</span
         >
       </label>
@@ -92,123 +92,123 @@
     <div class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-6">
       <div class="sm:col-span-3">
         <label
-          class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+          class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
           >Brand Name</label
         >
         <input
           type="text"
           bind:value={name}
           required
-          class="block w-full border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+          class="block w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
         />
       </div>
 
       <div class="sm:col-span-3">
         <label
-          class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+          class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
           >URL Slug</label
         >
         <div class="flex">
           <span
-            class="border border-r-0 border-white/10 bg-[#0a0b0e] px-3 py-2 font-mono text-sm text-white/30 select-none"
+            class="border border-r-0 border-outline bg-surface px-3 py-2 font-mono text-sm text-content-muted select-none"
             >/brands/</span
           >
           <input
             type="text"
             bind:value={slug}
             required
-            class="flex-1 border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+            class="flex-1 border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
           />
         </div>
       </div>
 
       <div class="sm:col-span-6">
         <label
-          class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+          class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
           >Description / Manifesto</label
         >
         <textarea
           bind:value={description}
           rows="4"
-          class="block w-full border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+          class="block w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
         ></textarea>
       </div>
 
       <div class="sm:col-span-3">
         <label
-          class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+          class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
           >Country of Origin</label
         >
         <input
           type="text"
           bind:value={country}
           placeholder="e.g. Japan, Germany, USA"
-          class="block w-full border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+          class="block w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
         />
       </div>
 
       <div class="sm:col-span-3">
         <label
-          class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+          class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
           >Official Website</label
         >
         <input
           type="url"
           bind:value={website_url}
           placeholder="https://"
-          class="block w-full border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+          class="block w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
         />
       </div>
     </div>
   </div>
 
-  <div class="border border-white/10 bg-[#111318] p-6 sm:p-8">
+  <div class="border border-outline bg-surface p-6 sm:p-8">
     <h2
-      class="mb-6 border-b border-white/10 pb-2 font-mono text-xs font-bold tracking-widest text-white uppercase"
+      class="mb-6 border-b border-outline pb-2 font-mono text-xs font-bold tracking-widest text-content uppercase"
     >
       Media Assets (R2)
     </h2>
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
       <div>
         <label
-          class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+          class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
           >Brand Logo URL</label
         >
         <input
           type="text"
           bind:value={logo_url}
           placeholder="/cdn/images/logo.png"
-          class="mb-2 block w-full border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+          class="mb-2 block w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
         />
         {#if logo_url}<img
             src={logo_url}
             alt="Logo Preview"
-            class="h-16 border border-white/10 bg-white/5 object-contain p-2"
+            class="h-16 border border-outline bg-white/5 object-contain p-2"
           />{/if}
       </div>
       <div>
         <label
-          class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+          class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
           >Hero Cover URL</label
         >
         <input
           type="text"
           bind:value={cover_url}
           placeholder="/cdn/images/cover.jpg"
-          class="mb-2 block w-full border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+          class="mb-2 block w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
         />
         {#if cover_url}<img
             src={cover_url}
             alt="Cover Preview"
-            class="h-16 w-full border border-white/10 bg-white/5 object-cover"
+            class="h-16 w-full border border-outline bg-white/5 object-cover"
           />{/if}
       </div>
     </div>
   </div>
 
-  <div class="border border-white/10 bg-[#111318] p-6 sm:p-8">
+  <div class="border border-outline bg-surface p-6 sm:p-8">
     <h2
-      class="mb-6 border-b border-white/10 pb-2 font-mono text-xs font-bold tracking-widest text-white uppercase"
+      class="mb-6 border-b border-outline pb-2 font-mono text-xs font-bold tracking-widest text-content uppercase"
     >
       Search Engine Optimization
     </h2>
@@ -216,40 +216,40 @@
       <div>
         <div class="mb-2 flex justify-between">
           <label
-            class="block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+            class="block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
             >Meta Title</label
           >
           <span
             class="font-mono text-[10px] {seo_title.length > 60
               ? 'text-amber-400'
-              : 'text-white/30'}">{seo_title.length}/60</span
+              : 'text-content-muted'}">{seo_title.length}/60</span
           >
         </div>
         <input
           type="text"
           bind:value={seo_title}
           maxlength="70"
-          class="w-full border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+          class="w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
         />
       </div>
 
       <div>
         <div class="mb-2 flex justify-between">
           <label
-            class="block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+            class="block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
             >Meta Description</label
           >
           <span
             class="font-mono text-[10px] {seo_description.length > 160
               ? 'text-amber-400'
-              : 'text-white/30'}">{seo_description.length}/160</span
+              : 'text-content-muted'}">{seo_description.length}/160</span
           >
         </div>
         <textarea
           bind:value={seo_description}
           rows="3"
           maxlength="320"
-          class="w-full border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+          class="w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
         ></textarea>
       </div>
     </div>
@@ -258,13 +258,13 @@
   <div class="flex justify-end gap-4 pt-4">
     <a
       href="/admin/brands"
-      class="border border-white/10 px-6 py-3 text-xs font-bold tracking-widest text-white uppercase transition-colors hover:bg-white/5 focus:outline-none"
+      class="border border-outline px-6 py-3 text-xs font-bold tracking-widest text-content uppercase transition-colors hover:bg-white/5 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       >Abort</a
     >
     <button
       type="submit"
       disabled={isSubmitting}
-      class="bg-[#36f4a4] px-8 py-3 text-xs font-bold tracking-widest text-[#003822] uppercase shadow-[0_0_15px_rgba(54,244,164,0.15)] transition-colors hover:bg-white focus:outline-none disabled:opacity-50"
+      class="bg-brand px-8 py-3 text-xs font-bold tracking-widest text-black uppercase shadow-[0_0_15px_rgba(54,244,164,0.15)] transition-colors hover:bg-white focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm disabled:opacity-50"
     >
       {isSubmitting ? 'Committing...' : isEdit ? 'Update Brand' : 'Save Brand'}
     </button>

@@ -20,20 +20,20 @@
 
 <div class="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5">
   <div
-    class="flex flex-col justify-between border border-white/10 bg-[#111318] p-4"
+    class="flex flex-col justify-between border border-outline bg-surface p-4"
   >
     <h3
-      class="mb-2 font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+      class="mb-2 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
     >
       Revenue (24h)
     </h3>
-    <p class="font-mono text-2xl text-[#36f4a4]">
+    <p class="font-mono text-2xl text-brand">
       {formatMoney(metrics.revenueToday)}
     </p>
     <div
       class="mt-2 font-mono text-[10px] {metrics.revenueChange >= 0
-        ? 'text-[#36f4a4]'
-        : 'text-rose-400'}"
+        ? 'text-brand'
+        : 'text-brand-alert'}"
     >
       {metrics.revenueChange >= 0 ? '+' : ''}{metrics.revenueChange.toFixed(1)}%
       vs yesterday
@@ -41,70 +41,70 @@
   </div>
 
   <div
-    class="flex flex-col justify-between border border-white/10 bg-[#111318] p-4"
+    class="flex flex-col justify-between border border-outline bg-surface p-4"
   >
     <h3
-      class="mb-2 font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+      class="mb-2 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
     >
       Avg Order Value
     </h3>
-    <p class="font-mono text-2xl text-white">{formatMoney(metrics.aov)}</p>
-    <div class="mt-2 font-mono text-[10px] text-white/40">Trailing 7 Days</div>
+    <p class="font-mono text-2xl text-content">{formatMoney(metrics.aov)}</p>
+    <div class="mt-2 font-mono text-[10px] text-content-muted">Trailing 7 Days</div>
   </div>
 
   <div
-    class="flex flex-col justify-between border border-white/10 bg-[#111318] p-4"
+    class="flex flex-col justify-between border border-outline bg-surface p-4"
   >
     <h3
-      class="mb-2 font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+      class="mb-2 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
     >
       Orders (24h)
     </h3>
-    <p class="font-mono text-2xl text-white">{metrics.ordersToday}</p>
-    <div class="mt-2 font-mono text-[10px] text-white/40">
+    <p class="font-mono text-2xl text-content">{metrics.ordersToday}</p>
+    <div class="mt-2 font-mono text-[10px] text-content-muted">
       {metrics.ordersWeek} this week
     </div>
   </div>
 
   <div
-    class="border bg-[#111318] p-4 {metrics.pendingFulfillment > 10
-      ? 'border-rose-500/50 bg-rose-500/5'
-      : 'border-white/10'} flex flex-col justify-between"
+    class="border bg-surface p-4 {metrics.pendingFulfillment > 10
+      ? 'border-brand-alert/50 bg-brand-alert/5'
+      : 'border-outline'} flex flex-col justify-between"
   >
     <h3
-      class="mb-2 font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+      class="mb-2 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
     >
       Pending Dispatch
     </h3>
     <p
       class="font-mono text-2xl {metrics.pendingFulfillment > 10
-        ? 'text-rose-400'
-        : 'text-white'}"
+        ? 'text-brand-alert'
+        : 'text-content'}"
     >
       {metrics.pendingFulfillment}
     </p>
-    <div class="mt-2 font-mono text-[10px] text-white/40">
+    <div class="mt-2 font-mono text-[10px] text-content-muted">
       Awaiting shipment
     </div>
   </div>
 
   <div
-    class="border bg-[#111318] p-4 {metrics.lowStockCount > 0
+    class="border bg-surface p-4 {metrics.lowStockCount > 0
       ? 'border-amber-500/50 bg-amber-500/5'
-      : 'border-white/10'} flex flex-col justify-between"
+      : 'border-outline'} flex flex-col justify-between"
   >
     <h3
-      class="mb-2 font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+      class="mb-2 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
     >
       Low Stock SKUs
     </h3>
     <p
       class="font-mono text-2xl {metrics.lowStockCount > 0
         ? 'text-amber-400'
-        : 'text-white'}"
+        : 'text-content'}"
     >
       {metrics.lowStockCount}
     </p>
-    <div class="mt-2 font-mono text-[10px] text-white/40">Requires restock</div>
+    <div class="mt-2 font-mono text-[10px] text-content-muted">Requires restock</div>
   </div>
 </div>

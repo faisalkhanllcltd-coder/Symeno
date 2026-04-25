@@ -35,7 +35,7 @@
   }
 </script>
 
-<div class="border border-rose-500/30 bg-[#111318] p-6">
+<div class="border border-rose-500/30 bg-surface p-6">
   <h3
     class="mb-4 font-mono text-[10px] font-bold tracking-widest text-rose-400 uppercase"
   >
@@ -43,7 +43,7 @@
   </h3>
   <form onsubmit={processRefund} class="space-y-4">
     <div>
-      <label class="mb-2 block font-mono text-[10px] text-white/50"
+      <label class="mb-2 block font-mono text-[10px] text-content-muted"
         >Refund Amount (Max: ${maxAmount.toFixed(2)})</label
       >
       <input
@@ -52,11 +52,11 @@
         max={maxAmount}
         bind:value={amount}
         required
-        class="w-full border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-rose-400/50 focus:outline-none"
+        class="w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-rose-400/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 rounded-sm"
       />
     </div>
     <div>
-      <label class="mb-2 block font-mono text-[10px] text-white/50"
+      <label class="mb-2 block font-mono text-[10px] text-content-muted"
         >Reason</label
       >
       <input
@@ -64,13 +64,13 @@
         bind:value={reason}
         required
         placeholder="e.g. Damaged in transit"
-        class="w-full border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-rose-400/50 focus:outline-none"
+        class="w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-rose-400/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 rounded-sm"
       />
     </div>
     <button
       type="submit"
       disabled={isProcessing}
-      class="w-full border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-xs font-bold tracking-widest text-rose-400 uppercase transition-colors hover:bg-rose-500 hover:text-white disabled:opacity-50"
+      class="w-full border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-xs font-bold tracking-widest text-rose-400 uppercase transition-colors hover:bg-rose-500 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 rounded-sm disabled:opacity-50"
     >
       {isProcessing ? 'Communicating with Stripe...' : 'Issue Refund'}
     </button>

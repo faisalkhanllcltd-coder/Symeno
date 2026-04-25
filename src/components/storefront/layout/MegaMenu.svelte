@@ -1,5 +1,5 @@
 <script lang="ts">
-  let activeMenu: 'shop' | 'brands' | null = null;
+  let activeMenu = $state<'shop' | 'brands' | null>(null);
   let timeout: ReturnType<typeof setTimeout>;
 
   function handleEnter(menu: 'shop' | 'brands') {
@@ -14,19 +14,19 @@
   }
 </script>
 
-<nav class="flex h-full" on:mouseleave={handleLeave}>
+<nav class="flex h-full" onmouseleave={handleLeave}>
   <ul
-    class="flex h-full items-center space-x-8 text-xs font-bold tracking-widest text-gray-900 uppercase"
+    class="flex h-full items-center space-x-8 text-xs font-bold tracking-widest text-content uppercase"
   >
     <li
       class="flex h-full items-center border-b-2 transition-colors {activeMenu ===
       'shop'
-        ? 'border-[#10b981] text-[#10b981]'
+        ? 'border-brand text-brand'
         : 'border-transparent'}"
     >
       <button
-        class="flex h-full items-center gap-1 focus:outline-none"
-        on:mouseenter={() => handleEnter('shop')}
+        class="flex h-full items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+        onmouseenter={() => handleEnter('shop')}
       >
         Shop
         <svg
@@ -50,12 +50,12 @@
     <li
       class="flex h-full items-center border-b-2 transition-colors {activeMenu ===
       'brands'
-        ? 'border-[#10b981] text-[#10b981]'
+        ? 'border-brand text-brand'
         : 'border-transparent'}"
     >
       <button
-        class="flex h-full items-center gap-1 focus:outline-none"
-        on:mouseenter={() => handleEnter('brands')}
+        class="flex h-full items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+        onmouseenter={() => handleEnter('brands')}
       >
         Brands
         <svg
@@ -79,15 +79,15 @@
     <li class="flex h-full items-center">
       <a
         href="/sale"
-        class="text-red-600 transition-colors hover:text-red-700"
-        on:mouseenter={handleLeave}>Deals</a
+        class="text-brand-alert transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-alert rounded-sm"
+        onmouseenter={handleLeave}>Deals</a
       >
     </li>
     <li class="flex h-full items-center">
       <a
         href="/new-arrivals"
-        class="transition-colors hover:text-[#10b981]"
-        on:mouseenter={handleLeave}>New In</a
+        class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+        onmouseenter={handleLeave}>New In</a
       >
     </li>
   </ul>
@@ -97,45 +97,45 @@
   <div
     role="region"
     aria-label="Mega Menu"
-    class="absolute top-full left-0 z-40 w-full border-b border-gray-200 bg-white shadow-[0_20px_40px_rgba(0,0,0,0.08)]"
-    on:mouseenter={() => clearTimeout(timeout)}
-    on:mouseleave={handleLeave}
+    class="absolute top-full left-0 z-40 w-full border-b border-outline bg-base shadow-[0_20px_40px_rgba(0,0,0,0.08)]"
+    onmouseenter={() => clearTimeout(timeout)}
+    onmouseleave={handleLeave}
   >
     <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       {#if activeMenu === 'shop'}
         <div class="grid animate-[fade-in_0.2s_ease-out] grid-cols-4 gap-12">
           <div class="col-span-1">
             <h3
-              class="mb-4 font-mono text-[10px] tracking-widest text-gray-400 uppercase"
+              class="mb-4 font-mono text-[10px] tracking-widest text-content-muted uppercase"
             >
               Hardware Matrix
             </h3>
-            <ul class="space-y-3 text-sm font-bold text-gray-900">
+            <ul class="space-y-3 text-sm font-bold text-content">
               <li>
                 <a
                   href="/shop/audio"
-                  class="transition-colors hover:text-[#10b981]"
+                  class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                   >Audio & Acoustics</a
                 >
               </li>
               <li>
                 <a
                   href="/shop/displays"
-                  class="transition-colors hover:text-[#10b981]"
+                  class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                   >Displays & Monitors</a
                 >
               </li>
               <li>
                 <a
                   href="/shop/peripherals"
-                  class="transition-colors hover:text-[#10b981]"
+                  class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                   >Peripherals & Input</a
                 >
               </li>
               <li>
                 <a
                   href="/shop/components"
-                  class="transition-colors hover:text-[#10b981]"
+                  class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                   >Core Components</a
                 >
               </li>
@@ -143,59 +143,59 @@
           </div>
           <div class="col-span-1">
             <h3
-              class="mb-4 font-mono text-[10px] tracking-widest text-gray-400 uppercase"
+              class="mb-4 font-mono text-[10px] tracking-widest text-content-muted uppercase"
             >
               Operations
             </h3>
-            <ul class="space-y-3 text-sm font-bold text-gray-900">
+            <ul class="space-y-3 text-sm font-bold text-content">
               <li>
-                <a href="/shop" class="transition-colors hover:text-[#10b981]"
+                <a href="/shop" class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                   >Shop All Inventory &rarr;</a
                 >
               </li>
               <li>
                 <a
                   href="/new-arrivals"
-                  class="transition-colors hover:text-[#10b981]"
+                  class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                   >Latest Deployments</a
                 >
               </li>
               <li>
                 <a
                   href="/sale"
-                  class="text-red-600 transition-colors hover:text-red-700"
+                  class="text-brand-alert transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-alert rounded-sm"
                   >Live Arbitrage Deals</a
                 >
               </li>
             </ul>
           </div>
           <div
-            class="group col-span-2 flex gap-6 border border-gray-200 bg-[#F9FAFB] p-6 transition-colors hover:border-black"
+            class="group col-span-2 flex gap-6 border border-outline bg-surface p-6 transition-colors hover:border-content"
           >
             <div
-              class="flex h-32 w-32 shrink-0 items-center justify-center bg-gray-100 font-mono text-[10px] text-gray-400"
+              class="flex h-32 w-32 shrink-0 items-center justify-center bg-base font-mono text-[10px] text-content-muted"
             >
               IMG
             </div>
             <div class="flex flex-col justify-center">
               <span
-                class="mb-2 inline-block w-max bg-black px-2 py-1 text-[9px] font-bold tracking-widest text-[#36f4a4] uppercase"
+                class="mb-2 inline-block w-max bg-content px-2 py-1 text-[9px] font-bold tracking-widest text-brand uppercase"
                 >Deal of the Week</span
               >
               <h4
-                class="mb-1 text-lg font-bold text-gray-900 transition-colors group-hover:text-[#10b981]"
+                class="mb-1 text-lg font-bold text-content transition-colors group-hover:text-brand"
               >
                 Sony WH-1000XM5
               </h4>
               <div class="mb-4 flex items-baseline gap-2 font-mono">
-                <span class="text-sm font-bold text-red-600">$249.00</span>
-                <span class="text-[10px] text-gray-400 line-through"
+                <span class="text-sm font-bold text-brand-alert">$249.00</span>
+                <span class="text-[10px] text-content-muted line-through"
                   >$399.00</span
                 >
               </div>
               <a
                 href="/shop/product/sony-xm5"
-                class="w-max border-b border-black pb-0.5 text-xs font-bold tracking-widest text-black uppercase"
+                class="w-max border-b border-content pb-0.5 text-xs font-bold tracking-widest text-content uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                 >Secure Unit &rarr;</a
               >
             </div>
@@ -204,16 +204,16 @@
       {:else if activeMenu === 'brands'}
         <div class="animate-[fade-in_0.2s_ease-out]">
           <div
-            class="mb-6 flex items-end justify-between border-b border-gray-200 pb-2"
+            class="mb-6 flex items-end justify-between border-b border-outline pb-2"
           >
             <h3
-              class="font-mono text-[10px] tracking-widest text-gray-400 uppercase"
+              class="font-mono text-[10px] tracking-widest text-content-muted uppercase"
             >
               Authorized Suppliers
             </h3>
             <a
               href="/brands"
-              class="font-mono text-[10px] tracking-widest text-black uppercase transition-colors hover:text-[#10b981]"
+              class="font-mono text-[10px] tracking-widest text-content uppercase transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
               >View All Directory &rarr;</a
             >
           </div>
@@ -221,7 +221,7 @@
             {#each ['Apple', 'Dell', 'Keychron', 'LG', 'Logitech', 'Razer', 'Samsung', 'Sony'] as brand}
               <a
                 href={`/brands/${brand.toLowerCase()}`}
-                class="border border-transparent bg-gray-50 py-2 text-center text-sm font-bold text-gray-900 transition-colors hover:border-gray-200 hover:bg-white hover:text-[#10b981]"
+                class="border border-transparent bg-surface py-2 text-center text-sm font-bold text-content transition-colors hover:border-outline hover:bg-base hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                 >{brand}</a
               >
             {/each}

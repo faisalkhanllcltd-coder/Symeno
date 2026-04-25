@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { data = [] } = $props<{ data: any[] }>();
+  let { data = [] } = $props<{ data?: any[] }>();
 
   let maxAmount = $derived(Math.max(...data.map((d) => Number(d.amount)), 100));
   let points = $derived(
@@ -17,15 +17,15 @@
   );
 </script>
 
-<div class="flex h-full flex-col border border-white/10 bg-[#111318] p-6">
+<div class="flex h-full flex-col border border-outline bg-surface p-6">
   <div class="mb-6 flex items-start justify-between">
     <div>
       <h3
-        class="mb-2 font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+        class="mb-2 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
       >
         Gross Revenue (Period)
       </h3>
-      <p class="font-mono text-3xl font-bold text-[#36f4a4]">
+      <p class="font-mono text-3xl font-bold text-brand">
         ${totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
       </p>
     </div>
@@ -64,7 +64,8 @@
         />
         <polyline
           fill="none"
-          stroke="#36f4a4"
+          stroke="currentColor"
+          class="text-brand"
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -73,14 +74,14 @@
         <polygon fill="url(#revGradient)" points="0,100 {points} 100,100" />
         <defs>
           <linearGradient id="revGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="rgba(54, 244, 164, 0.2)" />
-            <stop offset="100%" stop-color="rgba(54, 244, 164, 0)" />
+            <stop offset="0%" stop-color="currentColor" stop-opacity="0.2" class="text-brand" />
+            <stop offset="100%" stop-color="currentColor" stop-opacity="0" class="text-brand" />
           </linearGradient>
         </defs>
       </svg>
     {:else}
       <div
-        class="flex h-full w-full items-center justify-center font-mono text-xs text-white/30"
+        class="flex h-full w-full items-center justify-center font-mono text-xs text-content-muted"
       >
         Insufficient data for chart
       </div>

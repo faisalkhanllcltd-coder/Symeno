@@ -48,14 +48,14 @@
 <button
   onclick={toggleWishlist}
   class="absolute top-3 right-3 rounded-full border p-2 backdrop-blur-md transition-all {isSaved
-    ? 'border-[#36f4a4]/50 bg-[#36f4a4]/20'
-    : 'border-white/10 bg-black/50 hover:border-white/30'} group z-10 focus:outline-none"
+    ? 'border-brand/50 bg-brand/20'
+    : 'border-outline bg-base/50 hover:border-content-muted'} group z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
   aria-label="Toggle Wishlist"
 >
   <svg
     class="h-4 w-4 transition-colors {isSaved
-      ? 'fill-[#36f4a4] text-[#36f4a4]'
-      : 'fill-transparent text-white/70 group-hover:text-white'}"
+      ? 'fill-brand text-brand'
+      : 'fill-transparent text-content-muted group-hover:text-content'}"
     viewBox="0 0 24 24"
     stroke="currentColor"
     stroke-width="2"

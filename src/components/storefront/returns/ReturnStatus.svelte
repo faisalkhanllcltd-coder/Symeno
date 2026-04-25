@@ -11,18 +11,18 @@
   let currentIndex = $derived(stages.findIndex((s) => s.id === status));
 </script>
 
-<div class="border border-white/10 bg-[#111318] p-6">
+<div class="border border-outline bg-base p-6">
   <h3
-    class="mb-6 font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+    class="mb-6 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
   >
     RMA Progress
   </h3>
   <div class="relative flex items-center justify-between px-4">
     <div
-      class="absolute top-1/2 right-4 left-4 z-0 h-0.5 -translate-y-1/2 bg-white/10"
+      class="absolute top-1/2 right-4 left-4 z-0 h-0.5 -translate-y-1/2 bg-outline"
     ></div>
     <div
-      class="absolute top-1/2 left-4 z-0 h-0.5 -translate-y-1/2 bg-[#36f4a4] transition-all duration-500"
+      class="absolute top-1/2 left-4 z-0 h-0.5 -translate-y-1/2 bg-brand transition-all duration-500"
       style="width: {(Math.max(0, currentIndex) / (stages.length - 1)) * 100}%"
     ></div>
 
@@ -30,14 +30,14 @@
       <div class="relative z-10 flex flex-col items-center gap-2">
         <div
           class="h-4 w-4 rounded-full border-2 {i <= currentIndex
-            ? 'border-[#36f4a4] bg-[#36f4a4]'
-            : 'border-white/20 bg-[#1A1D23]'}"
+            ? 'border-brand bg-brand'
+            : 'border-outline bg-surface'}"
         ></div>
         <span
           class="absolute -bottom-6 w-20 text-center font-mono text-[9px] tracking-widest uppercase {i <=
           currentIndex
-            ? 'text-[#36f4a4]'
-            : 'text-white/30'}">{stage.label}</span
+            ? 'text-brand'
+            : 'text-content-muted'}">{stage.label}</span
         >
       </div>
     {/each}

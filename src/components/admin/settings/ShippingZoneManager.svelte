@@ -25,43 +25,43 @@
   let isSubmitting = $state(false);
 </script>
 
-<div class="border border-white/10 bg-[#111318] p-6">
+<div class="border border-outline bg-surface p-6">
   <h2
-    class="mb-6 border-b border-white/10 pb-2 font-mono text-xs font-bold tracking-widest text-white uppercase"
+    class="mb-6 border-b border-outline pb-2 font-mono text-xs font-bold tracking-widest text-content uppercase"
   >
     Logistics & Zones
   </h2>
 
   <div class="space-y-6">
     {#each zones as zone}
-      <div class="border border-white/5 bg-white/[0.02] p-4">
+      <div class="border border-outline bg-base p-4">
         <div class="mb-4 flex items-center justify-between">
-          <h3 class="font-mono text-sm font-bold text-[#36f4a4]">
+          <h3 class="font-mono text-sm font-bold text-brand">
             {zone.name}
           </h3>
-          <span class="text-[9px] tracking-widest text-white/40 uppercase"
+          <span class="text-[9px] tracking-widest text-content-muted uppercase"
             >{zone.carriers.join(' | ')}</span
           >
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="mb-1 block font-mono text-[10px] text-white/50"
+            <label class="mb-1 block font-mono text-[10px] text-content-muted"
               >Flat Rate (AED)</label
             >
             <input
               type="number"
               bind:value={zone.flatRate}
-              class="w-full border border-white/10 bg-[#1A1D23] p-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+              class="w-full border border-outline bg-surface p-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
             />
           </div>
           <div>
-            <label class="mb-1 block font-mono text-[10px] text-white/50"
+            <label class="mb-1 block font-mono text-[10px] text-content-muted"
               >Free Shipping Over (AED)</label
             >
             <input
               type="number"
               bind:value={zone.freeThreshold}
-              class="w-full border border-white/10 bg-[#1A1D23] p-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+              class="w-full border border-outline bg-surface p-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
             />
           </div>
         </div>
@@ -70,10 +70,10 @@
             <input
               type="checkbox"
               bind:checked={zone.pickup}
-              class="h-4 w-4 border-white/10 bg-[#1A1D23] accent-[#36f4a4]"
+              class="h-4 w-4 border-outline bg-surface accent-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
             />
             <span
-              class="font-mono text-[10px] tracking-widest text-white/70 uppercase"
+              class="font-mono text-[10px] tracking-widest text-content-muted uppercase"
               >Enable Local Pickup</span
             >
           </label>
@@ -82,9 +82,9 @@
     {/each}
   </div>
 
-  <div class="mt-6 flex justify-end border-t border-white/10 pt-6">
+  <div class="mt-6 flex justify-end border-t border-outline pt-6">
     <button
-      class="bg-[#36f4a4] px-6 py-2 text-[10px] font-bold tracking-widest text-black uppercase transition-colors hover:bg-white"
+      class="bg-brand px-6 py-2 text-[10px] font-bold tracking-widest text-black uppercase transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       >Deploy Shipping Rules</button
     >
   </div>

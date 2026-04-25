@@ -11,27 +11,27 @@
   };
 </script>
 
-<div class="border border-white/10 bg-[#111318] p-6">
+<div class="border border-outline bg-surface p-6">
   <h3
-    class="mb-4 font-mono text-[10px] font-bold tracking-widest text-[#36f4a4] uppercase"
+    class="mb-4 font-mono text-[10px] font-bold tracking-widest text-brand uppercase"
   >
     Logistics & Dispatch
   </h3>
 
   <div
-    class="mb-4 border border-white/5 bg-white/5 p-3 font-mono text-xs whitespace-pre-wrap text-white/70"
+    class="mb-4 border border-outline bg-base p-3 font-mono text-xs whitespace-pre-wrap text-content-muted"
   >
     {address || 'No shipping address provided.'}
   </div>
 
   <div class="space-y-4">
     <div>
-      <label class="mb-2 block font-mono text-[10px] text-white/50"
+      <label class="mb-2 block font-mono text-[10px] text-content-muted"
         >Carrier</label
       >
       <select
         bind:value={carrier}
-        class="w-full cursor-pointer border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+        class="w-full cursor-pointer border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       >
         <option value="aramex">Aramex (MENA Standard)</option>
         <option value="dhl">DHL Express (Global)</option>
@@ -39,25 +39,25 @@
       </select>
     </div>
     <div>
-      <label class="mb-2 block font-mono text-[10px] text-white/50"
+      <label class="mb-2 block font-mono text-[10px] text-content-muted"
         >Tracking Number</label
       >
       <input
         type="text"
         bind:value={trackingNum}
         placeholder="e.g. 3948293001"
-        class="w-full border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+        class="w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       />
     </div>
     <div class="flex gap-2">
       <button
-        class="flex-1 border border-[#36f4a4]/30 px-4 py-2 text-[10px] font-bold tracking-widest text-[#36f4a4] uppercase transition-colors hover:bg-[#36f4a4]/10"
+        class="flex-1 border border-brand/30 px-4 py-2 text-[10px] font-bold tracking-widest text-brand uppercase transition-colors hover:bg-brand/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
         >Generate Label PDF</button
       >
       <button
         onclick={saveTracking}
         disabled={isSaving}
-        class="flex-1 bg-[#36f4a4] px-4 py-2 text-[10px] font-bold tracking-widest text-black uppercase transition-colors hover:bg-white disabled:opacity-50"
+        class="flex-1 bg-brand px-4 py-2 text-[10px] font-bold tracking-widest text-black uppercase transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm disabled:opacity-50"
         >Save Tracking</button
       >
     </div>

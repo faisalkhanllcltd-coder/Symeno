@@ -1,25 +1,27 @@
 <script lang="ts">
-  export let items: { question: string; answer: string }[] = [];
-  let openIndex: number | null = null;
+  let { items = [] } = $props<{
+    items: { question: string; answer: string }[];
+  }>();
+  let openIndex = $state<number | null>(null);
 
   function toggle(index: number) {
     openIndex = openIndex === index ? null : index;
   }
 </script>
 
-<div class="border-t border-gray-200">
+<div class="border-t border-outline">
   {#each items as item, i}
-    <div class="border-b border-gray-200">
+    <div class="border-b border-outline">
       <button
-        on:click={() => toggle(i)}
-        class="group flex w-full items-center justify-between py-6 text-left focus:outline-none"
+        onclick={() => toggle(i)}
+        class="group flex w-full items-center justify-between py-6 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       >
         <span
-          class="text-sm font-bold tracking-widest text-gray-900 uppercase transition-colors group-hover:text-[#10b981]"
+          class="text-sm font-bold tracking-widest text-content uppercase transition-colors group-hover:text-brand"
           >{item.question}</span
         >
         <span
-          class="transform text-gray-400 transition-transform duration-200 {openIndex ===
+          class="transform text-content-muted transition-transform duration-200 {openIndex ===
           i
             ? 'rotate-180'
             : ''}"
@@ -40,7 +42,7 @@
       </button>
       {#if openIndex === i}
         <div class="animate-[fade-in_0.2s_ease-out] pb-8">
-          <p class="max-w-2xl text-sm leading-relaxed font-light text-gray-600">
+          <p class="max-w-2xl text-sm leading-relaxed font-light text-content-muted">
             {item.answer}
           </p>
         </div>

@@ -1,10 +1,10 @@
 <script lang="ts">
-  let { historyLogs = [] } = $props<{ historyLogs: any[] }>();
+  let { historyLogs = [] } = $props<{ historyLogs?: any[] }>();
 </script>
 
-<div class="flex h-full flex-col border border-white/10 bg-[#111318] p-6">
+<div class="flex h-full flex-col border border-outline bg-surface p-6">
   <h3
-    class="mb-4 font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+    class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
   >
     Imutable Ledger (Recent Changes)
   </h3>
@@ -13,38 +13,38 @@
     {#each historyLogs as log}
       <div
         class="border-l-2 bg-white/5 p-3 {log.adjustment > 0
-          ? 'border-[#36f4a4]'
-          : 'border-rose-400'}"
+          ? 'border-brand'
+          : 'border-brand-alert'}"
       >
         <div class="mb-2 flex items-center justify-between">
-          <span class="bg-[#36f4a4]/10 px-1 font-mono text-[9px] text-[#36f4a4]"
+          <span class="bg-brand/10 px-1 font-mono text-[9px] text-brand"
             >{log.sku}</span
           >
-          <span class="font-mono text-[9px] text-white/40"
+          <span class="font-mono text-[9px] text-content-muted"
             >{new Date(log.created_at).toLocaleString()}</span
           >
         </div>
-        <div class="flex justify-between text-xs text-white">
-          <span class="font-mono text-white/60">{log.reason}</span>
+        <div class="flex justify-between text-xs text-content">
+          <span class="font-mono text-content-muted">{log.reason}</span>
           <span
             class="font-mono font-bold {log.adjustment > 0
-              ? 'text-[#36f4a4]'
-              : 'text-rose-400'}"
+              ? 'text-brand'
+              : 'text-brand-alert'}"
           >
             {log.adjustment > 0 ? '+' : ''}{log.adjustment}
-            <span class="font-normal text-white/30"
+            <span class="font-normal text-content-muted"
               >(&rarr; {log.new_stock})</span
             >
           </span>
         </div>
         {#if log.notes}
-          <div class="mt-2 font-mono text-[9px] break-words text-white/40">
+          <div class="mt-2 font-mono text-[9px] break-words text-content-muted">
             {log.notes}
           </div>
         {/if}
       </div>
     {:else}
-      <p class="text-center text-[10px] font-mono text-white/30 uppercase mt-4">
+      <p class="text-center text-[10px] font-mono text-content-muted uppercase mt-4">
         No recent history.
       </p>
     {/each}

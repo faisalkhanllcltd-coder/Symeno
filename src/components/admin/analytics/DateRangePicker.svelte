@@ -1,6 +1,6 @@
 <script lang="ts">
   let { selectedRange = $bindable('30d') } = $props<{
-    selectedRange: string;
+    selectedRange?: string;
   }>();
 
   const ranges = [
@@ -11,13 +11,13 @@
   ];
 </script>
 
-<div class="flex items-center gap-2 border border-white/10 bg-[#1A1D23] p-1">
+<div class="flex items-center gap-2 border border-outline bg-surface p-1">
   {#each ranges as range}
     <button
-      class="px-4 py-1.5 font-mono text-[10px] tracking-widest uppercase transition-colors {selectedRange ===
+      class="px-4 py-1.5 font-mono text-[10px] tracking-widest uppercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm {selectedRange ===
       range.id
-        ? 'bg-[#36f4a4] font-bold text-black'
-        : 'text-white/50 hover:bg-white/5 hover:text-white'}"
+        ? 'bg-brand font-bold text-black'
+        : 'text-content-muted hover:bg-white/5 hover:text-content'}"
       onclick={() => (selectedRange = range.id)}
     >
       {range.label}

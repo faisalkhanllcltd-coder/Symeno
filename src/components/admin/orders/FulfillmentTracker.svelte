@@ -1,8 +1,13 @@
 <script lang="ts">
-  export let status: 'pending' | 'processing' | 'shipped' | 'delivered' =
-    'pending';
-  export let trackingNumber: string = '';
-  export let carrier: string = '';
+  let {
+    status = 'pending',
+    trackingNumber = '',
+    carrier = '',
+  } = $props<{
+    status?: 'pending' | 'processing' | 'shipped' | 'delivered';
+    trackingNumber?: string;
+    carrier?: string;
+  }>();
 
   const steps = [
     { id: 'pending', label: 'Payment Verified' },
@@ -11,22 +16,22 @@
     { id: 'delivered', label: 'Delivered' },
   ];
 
-  $: currentIndex = steps.findIndex((s) => s.id === status);
+  let currentIndex = $derived(steps.findIndex((s) => s.id === status));
 </script>
 
-<div class="border border-white/10 bg-[#111318] p-6">
+<div class="border border-outline bg-surface p-6">
   <h3
-    class="mb-6 border-b border-white/10 pb-3 font-mono text-xs font-bold tracking-widest text-white uppercase"
+    class="mb-6 border-b border-outline pb-3 font-mono text-xs font-bold tracking-widest text-content uppercase"
   >
     Logistics Pipeline
   </h3>
 
   <div class="relative mb-8 flex items-center justify-between">
     <div
-      class="absolute top-1/2 left-0 z-0 h-0.5 w-full -translate-y-1/2 bg-white/10"
+      class="absolute top-1/2 left-0 z-0 h-0.5 w-full -translate-y-1/2 bg-outline"
     ></div>
     <div
-      class="absolute top-1/2 left-0 z-0 h-0.5 -translate-y-1/2 bg-[#36f4a4] transition-all duration-500"
+      class="absolute top-1/2 left-0 z-0 h-0.5 -translate-y-1/2 bg-brand transition-all duration-500"
       style="width: {(currentIndex / (steps.length - 1)) * 100}%"
     ></div>
 
@@ -35,8 +40,8 @@
         <div
           class="flex h-4 w-4 items-center justify-center border {i <=
           currentIndex
-            ? 'border-[#36f4a4] bg-[#36f4a4]'
-            : 'border-white/20 bg-[#1A1D23]'} transition-colors duration-300"
+            ? 'border-brand bg-brand'
+            : 'border-outline bg-base'} transition-colors duration-300"
         >
           {#if i < currentIndex}
             <svg
@@ -56,8 +61,8 @@
         <span
           class="absolute -bottom-6 font-mono text-[9px] tracking-widest uppercase {i <=
           currentIndex
-            ? 'text-[#36f4a4]'
-            : 'text-white/40'} -ml-10 w-24 text-center"
+            ? 'text-brand'
+            : 'text-content-muted'} -ml-10 w-24 text-center"
         >
           {step.label}
         </span>
@@ -67,20 +72,20 @@
 
   {#if status === 'shipped' || status === 'delivered'}
     <div
-      class="mt-12 flex items-center justify-between border-t border-l-2 border-white/10 border-l-[#36f4a4] bg-[#1A1D23] p-4 pt-6"
+      class="mt-12 flex items-center justify-between border-t border-l-2 border-outline border-l-brand bg-base p-4 pt-6"
     >
       <div>
         <p
-          class="mb-1 font-mono text-[9px] tracking-widest text-white/50 uppercase"
+          class="mb-1 font-mono text-[9px] tracking-widest text-content-muted uppercase"
         >
           Tracking Telemetry ({carrier})
         </p>
-        <p class="font-mono text-sm font-bold tracking-wider text-white">
+        <p class="font-mono text-sm font-bold tracking-wider text-content">
           {trackingNumber}
         </p>
       </div>
       <button
-        class="bg-[#36f4a4] px-4 py-2 font-mono text-[10px] tracking-widest text-black uppercase transition-colors hover:bg-white focus:outline-none"
+        class="bg-brand px-4 py-2 font-mono text-[10px] tracking-widest text-black uppercase transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       >
         Verify on {carrier}
       </button>

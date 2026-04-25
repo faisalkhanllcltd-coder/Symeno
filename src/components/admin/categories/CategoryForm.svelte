@@ -5,8 +5,8 @@
     onSave,
     onCancel,
   } = $props<{
-    category: any;
-    categories: any[];
+    category?: any;
+    categories?: any[];
     onSave: () => void;
     onCancel: () => void;
   }>();
@@ -75,11 +75,11 @@
 
 <form
   onsubmit={submitForm}
-  class="flex h-full flex-col space-y-6 border border-white/10 bg-[#111318] p-6"
+  class="flex h-full flex-col space-y-6 border border-outline bg-surface p-6"
 >
-  <div class="flex items-center justify-between border-b border-white/10 pb-4">
+  <div class="flex items-center justify-between border-b border-outline pb-4">
     <h3
-      class="font-mono text-xs font-bold tracking-widest text-white uppercase"
+      class="font-mono text-xs font-bold tracking-widest text-content uppercase"
     >
       {id ? 'Edit Taxonomy' : 'New Node'}
     </h3>
@@ -87,10 +87,10 @@
       <input
         type="checkbox"
         bind:checked={is_active}
-        class="h-4 w-4 border-white/10 bg-[#1A1D23] accent-[#36f4a4]"
+        class="h-4 w-4 border-outline bg-base accent-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       />
       <span
-        class="font-mono text-[10px] tracking-widest text-white/70 uppercase"
+        class="font-mono text-[10px] tracking-widest text-content-muted uppercase"
         >Visible</span
       >
     </label>
@@ -99,25 +99,25 @@
   <div class="flex-1 space-y-4 overflow-y-auto pr-2">
     <div>
       <label
-        class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+        class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
         >Node Name</label
       >
       <input
         type="text"
         bind:value={name}
         required
-        class="block w-full border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+        class="block w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       />
     </div>
 
     <div>
       <label
-        class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+        class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
         >Parent Node</label
       >
       <select
         bind:value={parent_id}
-        class="w-full cursor-pointer border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+        class="w-full cursor-pointer border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       >
         <option value="">-- None (Root Level) --</option>
         {#each availableParents as p}
@@ -128,53 +128,53 @@
 
     <div>
       <label
-        class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+        class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
         >URL Slug</label
       >
       <input
         type="text"
         bind:value={slug}
         required
-        class="block w-full border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+        class="block w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       />
     </div>
 
     <div>
       <label
-        class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+        class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
         >Cover Asset URL</label
       >
       <input
         type="text"
         bind:value={image_url}
-        class="block w-full border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+        class="block w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       />
     </div>
 
     <div>
       <label
-        class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+        class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
         >SEO Title</label
       >
       <input
         type="text"
         bind:value={seo_title}
-        class="block w-full border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+        class="block w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       />
     </div>
   </div>
 
-  <div class="flex gap-2 border-t border-white/10 pt-4">
+  <div class="flex gap-2 border-t border-outline pt-4">
     <button
       type="button"
       onclick={onCancel}
-      class="flex-1 border border-white/10 px-4 py-2 text-xs font-bold tracking-widest text-white uppercase transition-colors hover:bg-white/5 focus:outline-none"
+      class="flex-1 border border-outline px-4 py-2 text-xs font-bold tracking-widest text-content uppercase transition-colors hover:bg-white/5 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       >Cancel</button
     >
     <button
       type="submit"
       disabled={isSubmitting}
-      class="flex-1 bg-[#36f4a4] px-4 py-2 text-xs font-bold tracking-widest text-[#003822] uppercase transition-colors hover:bg-white focus:outline-none disabled:opacity-50"
+      class="flex-1 bg-brand px-4 py-2 text-xs font-bold tracking-widest text-black uppercase transition-colors hover:bg-white focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm disabled:opacity-50"
     >
       {isSubmitting ? 'Saving...' : 'Commit Node'}
     </button>

@@ -3,7 +3,7 @@
   import Button from '../../ui/navigation/Button.svelte';
   import SelectBox from '../../ui/forms/SelectBox.svelte';
 
-  let subject = '';
+  let subject = $state('');
   const subjects = [
     { value: 'order', label: 'Order Inquiry' },
     { value: 'return', label: 'Return (RMA) Request' },
@@ -15,7 +15,7 @@
 <form
   action="/api/support/contact"
   method="POST"
-  class="space-y-6 border border-gray-200 bg-[#F9FAFB] p-8"
+  class="space-y-6 border border-outline bg-surface p-8"
 >
   <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
     <InputField id="name" label="Full Name" required={true} client:load />
@@ -40,7 +40,7 @@
   <div class="flex flex-col gap-1.5">
     <label
       for="message"
-      class="font-mono text-[10px] tracking-widest text-gray-500 uppercase"
+      class="font-mono text-[10px] tracking-widest text-content-muted uppercase"
       >Message Payload</label
     >
     <textarea
@@ -48,7 +48,7 @@
       name="message"
       rows="5"
       required
-      class="w-full rounded-none border border-gray-300 bg-white px-3 py-2 text-sm transition-colors focus:border-black focus:ring-1 focus:ring-black focus:outline-none"
+      class="w-full rounded-none border border-outline bg-base px-3 py-2 text-sm text-content transition-colors focus:border-brand focus:ring-1 focus:ring-brand focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
     ></textarea>
   </div>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   // Cloudflare's invisible challenge to block bot checkout/registration attempts
   // Using the dummy testing key for local development
-  export let sitekey: string = '1x00000000000000000000AA';
+  let { sitekey = '1x00000000000000000000AA' } = $props<{ sitekey?: string }>();
 </script>
 
 <div class="my-4">

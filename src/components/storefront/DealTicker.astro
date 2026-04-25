@@ -1,16 +1,16 @@
 ---
 // src/components/storefront/DealTicker.astro
 const deals = [
-  'London, UK � M. Taylor just saved $45 on Bose Headphones',
-  'Only 4 left � Samsung Odyssey OLED G9',
-  'Dubai, UAE � S. Ahmed just saved $120 on Dyson V15',
-  'Toronto, CA � K. Chen just saved $60 on Apple AirPods',
-  'New York, US � D. Smith just saved $300 on Sony A7IV',
+  'London, UK — M. Taylor just saved $45 on Bose Headphones',
+  'Only 4 left — Samsung Odyssey OLED G9',
+  'Dubai, UAE — S. Ahmed just saved $120 on Dyson V15',
+  'Toronto, CA — K. Chen just saved $60 on Apple AirPods',
+  'New York, US — D. Smith just saved $300 on Sony A7IV',
 ];
 ---
 
 <section
-  class="flex h-12 w-full items-center overflow-hidden border-y border-[#dae5e6]/10 bg-[#070d0e]"
+  class="flex h-12 w-full items-center overflow-hidden border-y border-outline bg-base"
 >
   <div
     class="flex w-max animate-[marquee_40s_linear_infinite] whitespace-nowrap hover:[animation-play-state:paused]"
@@ -22,16 +22,16 @@ const deals = [
             const parts = deal.split(/($\d+)/);
             return (
               <div class="flex items-center">
-                <span class="px-8 font-mono text-xs tracking-wide text-[#dae5e6]/70">
+                <span class="px-8 font-mono text-xs tracking-wide text-content-muted">
                   {parts.map((p) =>
                     p.startsWith('$') ? (
-                      <span class="font-bold text-[#36f4a4]">{p}</span>
+                      <span class="font-bold text-brand">{p}</span>
                     ) : (
                       p
                     )
                   )}
                 </span>
-                <span class="text-[#36f4a4]/30">&middot;</span>
+                <span class="text-brand/30">&middot;</span>
               </div>
             );
           })}

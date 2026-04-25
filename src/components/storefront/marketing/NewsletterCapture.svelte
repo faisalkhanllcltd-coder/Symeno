@@ -35,11 +35,11 @@
 
 <div class="w-full max-w-md">
   <h3
-    class="mb-2 font-mono text-xs font-bold tracking-widest text-white uppercase"
+    class="mb-2 font-mono text-xs font-bold tracking-widest text-content uppercase"
   >
     Secure Comm Channel
   </h3>
-  <p class="mb-4 font-mono text-[10px] text-white/50">
+  <p class="mb-4 font-mono text-[10px] text-content-muted">
     Intercept logistics updates, wholesale price drops, and operational
     intelligence.
   </p>
@@ -51,12 +51,12 @@
       disabled={status === 'loading' || status === 'success'}
       placeholder="operator@domain.com"
       required
-      class="w-full border border-white/10 bg-[#111318] px-4 py-3 font-mono text-sm text-white transition-colors focus:border-[#36f4a4]/50 focus:outline-none disabled:opacity-50"
+      class="w-full border border-outline bg-base px-4 py-3 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
     />
     <button
       type="submit"
       disabled={status === 'loading' || status === 'success'}
-      class="absolute top-1 right-1 bottom-1 border border-transparent bg-white/5 px-6 text-[10px] font-bold tracking-widest text-[#36f4a4] uppercase transition-colors hover:border-[#36f4a4]/30 hover:bg-[#36f4a4]/20 disabled:opacity-50"
+      class="absolute top-1 right-1 bottom-1 border border-transparent bg-surface px-6 text-[10px] font-bold tracking-widest text-brand uppercase transition-colors hover:border-brand/30 hover:bg-brand/20 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
     >
       {#if status === 'loading'}
         SYNC...
@@ -70,8 +70,8 @@
     <p
       class="animate-fade-in mt-3 font-mono text-[10px] tracking-widest uppercase {status ===
       'success'
-        ? 'text-[#36f4a4]'
-        : 'text-rose-400'}"
+        ? 'text-brand'
+        : 'text-brand-alert'}"
     >
       > {message}
     </p>

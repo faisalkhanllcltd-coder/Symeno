@@ -20,9 +20,9 @@
 <form class="space-y-8" method="POST" action="/api/admin/discounts">
   <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
     <div class="space-y-6 lg:col-span-2">
-      <div class="space-y-6 border border-white/10 bg-[#111318] p-6">
+      <div class="space-y-6 border border-outline bg-surface p-6">
         <h3
-          class="border-b border-white/10 pb-3 font-mono text-xs font-bold tracking-widest text-white uppercase"
+          class="border-b border-outline pb-3 font-mono text-xs font-bold tracking-widest text-content uppercase"
         >
           Promotion Logic
         </h3>
@@ -59,9 +59,9 @@
     </div>
 
     <div class="space-y-6">
-      <div class="space-y-6 border border-white/10 bg-[#111318] p-6">
+      <div class="space-y-6 border border-outline bg-surface p-6">
         <h3
-          class="border-b border-white/10 pb-3 font-mono text-xs font-bold tracking-widest text-white uppercase"
+          class="border-b border-outline pb-3 font-mono text-xs font-bold tracking-widest text-content uppercase"
         >
           Constraints
         </h3>
@@ -74,7 +74,7 @@
           />
         </div>
 
-        <div class="border-t border-white/10 pt-4">
+        <div class="border-t border-outline pt-4">
           <InputField
             id="usage_limit"
             label="Total Usage Limit (Optional)"
@@ -82,7 +82,7 @@
             bind:value={usageLimit}
             placeholder="8"
           />
-          <p class="mt-2 font-mono text-[9px] text-white/40">
+          <p class="mt-2 font-mono text-[9px] text-content-muted">
             Leave blank for unlimited uses across all customers.
           </p>
         </div>
@@ -90,8 +90,8 @@
     </div>
   </div>
 
-  <div class="flex justify-end gap-4 border-t border-white/10 pt-6">
-    <Button variant="ghost" type="button" on:click={() => window.history.back()}
+  <div class="flex justify-end gap-4 border-t border-outline pt-6">
+    <Button variant="ghost" type="button" onclick={() => window.history.back()}
       >Cancel</Button
     >
     <Button variant="primary" type="submit">Activate Promotion</Button>

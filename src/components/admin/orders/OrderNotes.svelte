@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { orderId, notes = [] } = $props<{ orderId: string; notes: any[] }>();
+  let { orderId, notes = [] } = $props<{ orderId: string; notes?: any[] }>();
   let newNote = $state('');
   let isSubmitting = $state(false);
 
@@ -30,8 +30,8 @@
   }
 </script>
 
-<div class="flex h-[400px] flex-col border border-white/10 bg-[#111318]">
-  <div class="border-b border-white/10 bg-amber-500/5 p-4">
+<div class="flex h-[400px] flex-col border border-outline bg-surface">
+  <div class="border-b border-outline bg-amber-500/5 p-4">
     <h3
       class="font-mono text-[10px] font-bold tracking-widest text-amber-400 uppercase"
     >
@@ -41,34 +41,34 @@
 
   <div class="flex-1 space-y-4 overflow-y-auto p-4">
     {#each notes as note}
-      <div class="border-l-2 border-amber-400 bg-white/5 p-3">
+      <div class="border-l-2 border-amber-400 bg-base p-3">
         <div
-          class="mb-1 flex items-center justify-between font-mono text-[9px] text-white/40"
+          class="mb-1 flex items-center justify-between font-mono text-[9px] text-content-muted"
         >
           <span>{note.author || 'System'}</span>
           <span>{new Date(note.created_at).toLocaleString()}</span>
         </div>
-        <p class="text-xs text-white/80">{note.note}</p>
+        <p class="text-xs text-content">{note.note}</p>
       </div>
     {:else}
-      <p class="text-center text-[10px] font-mono text-white/30 uppercase mt-4">
+      <p class="text-center text-[10px] font-mono text-content-muted uppercase mt-4">
         No internal notes.
       </p>
     {/each}
   </div>
 
-  <form onsubmit={addNote} class="border-t border-white/10 bg-white/[0.02] p-4">
+  <form onsubmit={addNote} class="border-t border-outline bg-base p-4">
     <div class="flex gap-2">
       <input
         type="text"
         bind:value={newNote}
         placeholder="Add private note..."
-        class="flex-1 border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-xs text-white placeholder:text-white/30 focus:border-amber-400/50 focus:outline-none"
+        class="flex-1 border border-outline bg-surface px-3 py-2 font-mono text-xs text-content placeholder:text-content-muted focus:border-amber-400/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-sm"
       />
       <button
         type="submit"
         disabled={isSubmitting}
-        class="bg-amber-400 px-4 py-2 text-[10px] font-bold tracking-widest text-black uppercase transition-colors focus:outline-none disabled:opacity-50"
+        class="bg-amber-400 px-4 py-2 text-[10px] font-bold tracking-widest text-black uppercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-sm disabled:opacity-50"
         >Save</button
       >
     </div>

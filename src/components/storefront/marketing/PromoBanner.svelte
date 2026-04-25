@@ -4,11 +4,11 @@
 
 {#if isVisible}
   <div
-    class="animate-fade-in relative z-50 flex items-center justify-between bg-[#36f4a4] px-4 py-2 text-[#003822]"
+    class="animate-fade-in relative z-50 flex items-center justify-between bg-brand px-4 py-2 text-brand-dark"
   >
     <div class="flex flex-1 items-center justify-center gap-3">
       <span
-        class="h-1.5 w-1.5 animate-pulse rounded-full bg-[#003822] shadow-[0_0_8px_rgba(0,56,34,0.5)]"
+        class="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-dark shadow-[0_0_8px_rgba(0,56,34,0.5)]"
       ></span>
       <span
         class="truncate text-[10px] font-bold tracking-widest uppercase sm:text-xs"
@@ -18,7 +18,7 @@
     </div>
     <button
       onclick={() => (isVisible = false)}
-      class="ml-4 opacity-70 transition-opacity hover:opacity-100 focus:outline-none"
+      class="ml-4 opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark rounded-sm"
       aria-label="Dismiss"
     >
       <svg

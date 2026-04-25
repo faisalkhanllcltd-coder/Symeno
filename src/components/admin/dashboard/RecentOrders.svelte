@@ -1,13 +1,13 @@
 <script lang="ts">
-  let { orders = [] } = $props<{ orders: any[] }>();
+  let { orders = [] } = $props<{ orders?: any[] }>();
 </script>
 
 <div
-  class="flex h-full flex-col overflow-hidden border border-white/10 bg-[#111318]"
+  class="flex h-full flex-col overflow-hidden border border-outline bg-surface"
 >
-  <div class="border-b border-white/10 p-4">
+  <div class="border-b border-outline p-4">
     <h3
-      class="font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+      class="font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
     >
       Recent Transactions
     </h3>
@@ -17,23 +17,23 @@
       <tbody>
         {#each orders as order}
           <tr
-            class="border-b border-white/[0.04] transition-colors hover:bg-white/[0.02]"
+            class="border-b border-outline transition-colors hover:bg-white/[0.02]"
           >
-            <td class="p-4 font-mono text-xs text-white/80"
+            <td class="p-4 font-mono text-xs text-content-muted"
               ><a
                 href={`/admin/orders/${order.id}`}
-                class="hover:text-[#36f4a4]">{order.id}</a
+                class="hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm">{order.id}</a
               ></td
             >
-            <td class="p-4 font-mono text-xs text-white/50"
+            <td class="p-4 font-mono text-xs text-content-muted"
               >{order.customer_email}</td
             >
-            <td class="p-4 font-mono text-xs font-bold text-[#36f4a4]"
+            <td class="p-4 font-mono text-xs font-bold text-brand"
               >${(order.total || 0).toFixed(2)}</td
             >
             <td class="p-4 text-right">
               <span
-                class="border border-white/10 px-2 py-1 text-[9px] tracking-widest text-white/70 uppercase"
+                class="border border-outline px-2 py-1 text-[9px] tracking-widest text-content-muted uppercase"
                 >{order.status}</span
               >
             </td>
@@ -42,7 +42,7 @@
           <tr
             ><td
               colspan="4"
-              class="p-8 text-center text-[10px] font-mono text-white/30 uppercase"
+              class="p-8 text-center text-[10px] font-mono text-content-muted uppercase"
               >No recent orders.</td
             ></tr
           >

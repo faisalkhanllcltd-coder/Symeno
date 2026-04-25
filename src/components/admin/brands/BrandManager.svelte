@@ -1,12 +1,12 @@
 <script lang="ts">
-  let { brands = [] } = $props<{ brands: any[] }>();
+  let { brands = [] } = $props<{ brands?: any[] }>();
 </script>
 
-<div class="overflow-x-auto border border-white/10 bg-[#111318]">
+<div class="overflow-x-auto border border-outline bg-surface">
   <table class="w-full border-collapse text-left whitespace-nowrap">
     <thead>
       <tr
-        class="border-b border-white/10 bg-[#0a0b0e] font-mono text-[10px] tracking-widest text-white/40 uppercase"
+        class="border-b border-outline bg-surface font-mono text-[10px] tracking-widest text-content-muted uppercase"
       >
         <th class="p-4 font-normal">Brand</th>
         <th class="p-4 font-normal">Origin</th>
@@ -14,7 +14,7 @@
         <th class="p-4 text-right font-normal">Actions</th>
       </tr>
     </thead>
-    <tbody class="divide-y divide-white/[0.04]">
+    <tbody class="divide-y divide-outline">
       {#each brands as brand}
         <tr class="transition-colors hover:bg-white/[0.02]">
           <td class="p-4">
@@ -23,11 +23,11 @@
                 <img
                   src={brand.logo_url}
                   alt={brand.name}
-                  class="h-8 w-8 rounded border border-white/10 bg-white/5 object-contain p-1"
+                  class="h-8 w-8 rounded border border-outline bg-white/5 object-contain p-1"
                 />
               {:else}
                 <div
-                  class="flex h-8 w-8 items-center justify-center rounded border border-white/10 bg-[#1A1D23] font-mono text-[10px] text-white/30"
+                  class="flex h-8 w-8 items-center justify-center rounded border border-outline bg-base font-mono text-[10px] text-content-muted"
                 >
                   {brand.name.substring(0, 2).toUpperCase()}
                 </div>
@@ -35,16 +35,16 @@
               <div>
                 <a
                   href={`/admin/brands/${brand.id}`}
-                  class="text-xs font-bold text-white transition-colors hover:text-[#36f4a4]"
+                  class="text-xs font-bold text-content transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                   >{brand.name}</a
                 >
-                <div class="mt-0.5 font-mono text-[9px] text-white/40">
+                <div class="mt-0.5 font-mono text-[9px] text-content-muted">
                   /brands/{brand.slug}
                 </div>
               </div>
             </div>
           </td>
-          <td class="p-4 font-mono text-xs text-white/60"
+          <td class="p-4 font-mono text-xs text-content-muted"
             >{brand.country || '-'}</td
           >
           <td class="p-4 text-center">
@@ -55,7 +55,7 @@
               >
             {:else}
               <span
-                class="border border-white/10 bg-white/5 px-2 py-1 text-[9px] tracking-widest text-white/40 uppercase"
+                class="border border-outline bg-white/5 px-2 py-1 text-[9px] tracking-widest text-content-muted uppercase"
                 >Standard</span
               >
             {/if}
@@ -63,7 +63,7 @@
           <td class="p-4 text-right">
             <a
               href={`/admin/brands/${brand.id}`}
-              class="border border-white/10 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white/70 uppercase transition-colors hover:border-white/30 hover:text-white"
+              class="border border-outline px-3 py-1.5 font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors hover:border-outline hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
               >Edit</a
             >
           </td>
@@ -72,7 +72,7 @@
         <tr
           ><td
             colspan="4"
-            class="p-8 text-center text-xs font-mono text-white/30 uppercase"
+            class="p-8 text-center text-xs font-mono text-content-muted uppercase"
             >No brands registered.</td
           ></tr
         >

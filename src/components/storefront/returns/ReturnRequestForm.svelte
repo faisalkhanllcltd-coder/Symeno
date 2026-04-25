@@ -74,17 +74,17 @@
   }
 </script>
 
-<div class="mx-auto max-w-3xl border border-white/10 bg-[#111318] p-6 md:p-8">
+<div class="mx-auto max-w-3xl border border-outline bg-base p-6 md:p-8">
   <div class="relative mb-8 flex items-center justify-between">
     <div
-      class="absolute top-1/2 left-0 z-0 h-px w-full -translate-y-1/2 bg-white/10"
+      class="absolute top-1/2 left-0 z-0 h-px w-full -translate-y-1/2 bg-outline"
     ></div>
     {#each [1, 2, 3] as s}
       <div
         class="relative z-10 flex h-8 w-8 items-center justify-center rounded-full font-mono text-xs {step >=
         s
-          ? 'bg-[#36f4a4] font-bold text-black'
-          : 'border border-white/20 bg-[#1A1D23] text-white/50'}"
+          ? 'bg-brand font-bold text-brand-dark'
+          : 'border border-outline bg-surface text-content-muted'}"
       >
         {s}
       </div>
@@ -94,10 +94,10 @@
   <form onsubmit={submitRMA}>
     {#if step === 1}
       <div class="animate-fade-in space-y-6">
-        <h2 class="text-lg font-bold tracking-widest text-white uppercase">
+        <h2 class="text-lg font-bold tracking-widest text-content uppercase">
           Select Transaction
         </h2>
-        <p class="mb-4 font-mono text-xs text-white/50">
+        <p class="mb-4 font-mono text-xs text-content-muted">
           Choose the order containing the items you wish to return.
         </p>
 
@@ -106,26 +106,26 @@
             <label
               class="flex cursor-pointer items-center gap-4 border p-4 transition-colors {selectedOrder ===
               order.id
-                ? 'border-[#36f4a4] bg-[#36f4a4]/5'
-                : 'border-white/10 bg-[#1A1D23] hover:border-white/30'}"
+                ? 'border-brand bg-brand/5'
+                : 'border-outline bg-surface hover:border-content-muted'}"
             >
               <input
                 type="radio"
                 name="order"
                 value={order.id}
                 bind:group={selectedOrder}
-                class="h-4 w-4 accent-[#36f4a4]"
+                class="h-4 w-4 accent-brand"
               />
               <div class="flex-1">
                 <div class="mb-1 flex items-center justify-between">
-                  <span class="font-mono text-xs font-bold text-white"
+                  <span class="font-mono text-xs font-bold text-content"
                     >#{order.id.substring(0, 8)}</span
                   >
-                  <span class="font-mono text-[10px] text-[#36f4a4]"
+                  <span class="font-mono text-[10px] text-brand"
                     >${order.total.toFixed(2)}</span
                   >
                 </div>
-                <span class="font-mono text-[10px] text-white/40"
+                <span class="font-mono text-[10px] text-content-muted"
                   >Placed on {new Date(
                     order.created_at
                   ).toLocaleDateString()}</span
@@ -133,8 +133,8 @@
               </div>
             </label>
           {:else}
-            <div class="p-8 text-center border border-white/10">
-              <p class="text-xs font-mono text-white/40 uppercase">
+            <div class="p-8 text-center border border-outline">
+              <p class="text-xs font-mono text-content-muted uppercase">
                 No eligible orders found within the 14-day return window.
               </p>
             </div>
@@ -146,7 +146,7 @@
             type="button"
             disabled={!selectedOrder}
             onclick={() => (step = 2)}
-            class="bg-[#36f4a4] px-8 py-3 text-xs font-bold tracking-widest text-black uppercase transition-colors disabled:opacity-50"
+            class="bg-brand px-8 py-3 text-xs font-bold tracking-widest text-brand-dark uppercase transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark rounded-sm"
             >Continue</button
           >
         </div>
@@ -155,39 +155,39 @@
 
     {#if step === 2}
       <div class="animate-fade-in space-y-6">
-        <h2 class="text-lg font-bold tracking-widest text-white uppercase">
+        <h2 class="text-lg font-bold tracking-widest text-content uppercase">
           Select Items
         </h2>
 
         <div class="space-y-4">
           {#each orderItems() as item}
-            <div class="border border-white/10 bg-[#1A1D23] p-4">
+            <div class="border border-outline bg-surface p-4">
               <label class="mb-4 flex cursor-pointer items-center gap-4">
                 <input
                   type="checkbox"
                   checked={selectedItems.some((i) => i.id === item.id)}
                   onchange={() => toggleItem(item)}
-                  class="h-4 w-4 accent-[#36f4a4]"
+                  class="h-4 w-4 accent-brand"
                 />
                 <div class="flex flex-1 justify-between">
-                  <span class="text-xs font-bold text-white">{item.name}</span>
-                  <span class="font-mono text-xs text-white/70"
+                  <span class="text-xs font-bold text-content">{item.name}</span>
+                  <span class="font-mono text-xs text-content-muted"
                     >${item.price.toFixed(2)}</span
                   >
                 </div>
               </label>
 
               {#if selectedItems.some((i) => i.id === item.id)}
-                <div class="mt-4 space-y-4 border-t border-white/10 pt-4 pl-8">
+                <div class="mt-4 space-y-4 border-t border-outline pt-4 pl-8">
                   <div>
                     <label
-                      class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+                      class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
                       >Reason for Return</label
                     >
                     <select
                       onchange={(e) =>
-                        updateItemReason(item.id, e.target.value)}
-                      class="w-full border border-white/10 bg-[#111318] p-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+                        updateItemReason(item.id, (e.target as HTMLSelectElement).value)}
+                      class="w-full border border-outline bg-base p-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                     >
                       <option value="" disabled selected
                         >Select a reason...</option
@@ -201,13 +201,13 @@
                   {#if selectedItems.find((i) => i.id === item.id)?.reason === 'Item was damaged or defective'}
                     <div>
                       <label
-                        class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-rose-400 uppercase"
+                        class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-brand-alert uppercase"
                         >Upload Photographic Proof (Required)</label
                       >
                       <input
                         type="file"
                         accept="image/*"
-                        class="w-full text-xs text-white/50 file:mr-4 file:border-0 file:bg-rose-500/10 file:px-4 file:py-2 file:font-mono file:text-xs file:text-rose-400 file:uppercase hover:file:bg-rose-500/20"
+                        class="w-full text-xs text-content-muted file:mr-4 file:border-0 file:bg-brand-alert/10 file:px-4 file:py-2 file:font-mono file:text-xs file:text-brand-alert file:uppercase hover:file:bg-brand-alert/20"
                       />
                     </div>
                   {/if}
@@ -221,7 +221,7 @@
           <button
             type="button"
             onclick={() => (step = 1)}
-            class="border border-white/10 px-6 py-3 font-mono text-xs tracking-widest text-white/70 uppercase transition-colors hover:text-white"
+            class="border border-outline px-6 py-3 font-mono text-xs tracking-widest text-content-muted uppercase transition-colors hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
             >Back</button
           >
           <button
@@ -229,7 +229,7 @@
             disabled={selectedItems.length === 0 ||
               selectedItems.some((i) => !i.reason)}
             onclick={() => (step = 3)}
-            class="bg-[#36f4a4] px-8 py-3 text-xs font-bold tracking-widest text-black uppercase transition-colors disabled:opacity-50"
+            class="bg-brand px-8 py-3 text-xs font-bold tracking-widest text-brand-dark uppercase transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark rounded-sm"
             >Review Details</button
           >
         </div>
@@ -238,7 +238,7 @@
 
     {#if step === 3}
       <div class="animate-fade-in space-y-6">
-        <h2 class="text-lg font-bold tracking-widest text-white uppercase">
+        <h2 class="text-lg font-bold tracking-widest text-content uppercase">
           Resolution Request
         </h2>
 
@@ -246,8 +246,8 @@
           <label
             class="flex-1 cursor-pointer border p-4 transition-colors {resolution ===
             'refund'
-              ? 'border-[#36f4a4] bg-[#36f4a4]/5'
-              : 'border-white/10 bg-[#1A1D23] hover:border-white/30'}"
+              ? 'border-brand bg-brand/5'
+              : 'border-outline bg-surface hover:border-content-muted'}"
           >
             <input
               type="radio"
@@ -258,8 +258,8 @@
             <div class="text-center">
               <svg
                 class="mx-auto mb-2 h-6 w-6 {resolution === 'refund'
-                  ? 'text-[#36f4a4]'
-                  : 'text-white/30'}"
+                  ? 'text-brand'
+                  : 'text-content-muted'}"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -271,11 +271,11 @@
                 /></svg
               >
               <h3
-                class="text-xs font-bold tracking-widest text-white uppercase"
+                class="text-xs font-bold tracking-widest text-content uppercase"
               >
                 Original Payment Method
               </h3>
-              <p class="mt-1 font-mono text-[9px] text-white/50">
+              <p class="mt-1 font-mono text-[9px] text-content-muted">
                 Refund processed in 5-7 business days.
               </p>
             </div>
@@ -283,8 +283,8 @@
           <label
             class="flex-1 cursor-pointer border p-4 transition-colors {resolution ===
             'exchange'
-              ? 'border-[#36f4a4] bg-[#36f4a4]/5'
-              : 'border-white/10 bg-[#1A1D23] hover:border-white/30'}"
+              ? 'border-brand bg-brand/5'
+              : 'border-outline bg-surface hover:border-content-muted'}"
           >
             <input
               type="radio"
@@ -295,8 +295,8 @@
             <div class="text-center">
               <svg
                 class="mx-auto mb-2 h-6 w-6 {resolution === 'exchange'
-                  ? 'text-[#36f4a4]'
-                  : 'text-white/30'}"
+                  ? 'text-brand'
+                  : 'text-content-muted'}"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -308,11 +308,11 @@
                 /></svg
               >
               <h3
-                class="text-xs font-bold tracking-widest text-white uppercase"
+                class="text-xs font-bold tracking-widest text-content uppercase"
               >
                 Store Credit / Exchange
               </h3>
-              <p class="mt-1 font-mono text-[9px] text-white/50">
+              <p class="mt-1 font-mono text-[9px] text-content-muted">
                 Instant credit issued upon drop-off.
               </p>
             </div>
@@ -331,13 +331,13 @@
           <button
             type="button"
             onclick={() => (step = 2)}
-            class="border border-white/10 px-6 py-3 font-mono text-xs tracking-widest text-white/70 uppercase transition-colors hover:text-white"
+            class="border border-outline px-6 py-3 font-mono text-xs tracking-widest text-content-muted uppercase transition-colors hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
             >Back</button
           >
           <button
             type="submit"
             disabled={isSubmitting}
-            class="bg-[#36f4a4] px-8 py-3 text-xs font-bold tracking-widest text-[#003822] uppercase shadow-[0_0_15px_rgba(54,244,164,0.15)] transition-colors disabled:opacity-50"
+            class="bg-brand px-8 py-3 text-xs font-bold tracking-widest text-brand-dark uppercase shadow-[0_0_15px_var(--color-brand,rgba(54,244,164,0.15))] transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark rounded-sm"
           >
             {isSubmitting ? 'Authorizing...' : 'Submit Request'}
           </button>
@@ -348,10 +348,10 @@
     {#if step === 4}
       <div class="animate-fade-in space-y-6 py-8 text-center">
         <div
-          class="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#36f4a4] bg-[#36f4a4]/10"
+          class="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-brand bg-brand/10"
         >
           <svg
-            class="h-8 w-8 text-[#36f4a4]"
+            class="h-8 w-8 text-brand"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -364,14 +364,14 @@
           >
         </div>
         <div>
-          <h2 class="text-xl font-bold tracking-widest text-white uppercase">
+          <h2 class="text-xl font-bold tracking-widest text-content uppercase">
             RMA Authorized
           </h2>
-          <p class="mt-2 font-mono text-xs text-[#36f4a4]">
+          <p class="mt-2 font-mono text-xs text-brand">
             Authorization Code: RMA-{rmaResult?.substring(0, 6).toUpperCase()}
           </p>
         </div>
-        <p class="mx-auto max-w-md font-mono text-[10px] text-white/50">
+        <p class="mx-auto max-w-md font-mono text-[10px] text-content-muted">
           Your return request has been submitted to the operations team. You
           will receive an email with your shipping label and further
           instructions within 24 hours.
@@ -379,7 +379,7 @@
         <div class="pt-4">
           <a
             href="/account/returns"
-            class="border border-white/10 px-8 py-3 text-xs font-bold tracking-widest text-white uppercase transition-colors hover:bg-white/5"
+            class="border border-outline px-8 py-3 text-xs font-bold tracking-widest text-content uppercase transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
             >View Return Status</a
           >
         </div>

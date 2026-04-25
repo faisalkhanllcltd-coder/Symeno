@@ -26,17 +26,17 @@
 </script>
 
 <div
-  class="flex flex-wrap items-end gap-4 border border-white/10 bg-[#111318] p-4"
+  class="flex flex-wrap items-end gap-4 border border-outline bg-surface p-4"
 >
   <div>
     <label
-      class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+      class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
       >Action Type</label
     >
     <select
       bind:value={action}
       onchange={applyFilters}
-      class="w-48 border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-xs text-white focus:border-[#36f4a4]/50 focus:outline-none"
+      class="w-48 border border-outline bg-base px-3 py-2 font-mono text-xs text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
     >
       <option value="">All Actions</option>
       {#each actions as a}
@@ -46,13 +46,13 @@
   </div>
   <div>
     <label
-      class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+      class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
       >Target Entity</label
     >
     <select
       bind:value={entity}
       onchange={applyFilters}
-      class="w-48 border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-xs text-white focus:border-[#36f4a4]/50 focus:outline-none"
+      class="w-48 border border-outline bg-base px-3 py-2 font-mono text-xs text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
     >
       <option value="">All Entities</option>
       {#each entities as e}
@@ -62,7 +62,7 @@
   </div>
   <button
     onclick={resetFilters}
-    class="h-[34px] border border-white/10 px-4 py-2 font-mono text-[10px] tracking-widest text-white/50 transition-colors hover:text-white"
+    class="h-[34px] border border-outline px-4 py-2 font-mono text-[10px] tracking-widest text-content-muted transition-colors hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
   >
     Reset
   </button>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { data = [] } = $props<{ data: { date: string; amount: number }[] }>();
+  let { data = [] } = $props<{ data?: { date: string; amount: number }[] }>();
 
   let maxAmount = $derived(Math.max(...data.map((d) => d.amount), 100));
   let points = $derived(
@@ -13,9 +13,9 @@
   );
 </script>
 
-<div class="flex h-full flex-col border border-white/10 bg-[#111318] p-6">
+<div class="flex h-full flex-col border border-outline bg-surface p-6">
   <h3
-    class="mb-6 font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+    class="mb-6 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
   >
     Revenue Velocity (30 Days)
   </h3>
@@ -54,7 +54,8 @@
 
         <polyline
           fill="none"
-          stroke="#36f4a4"
+          stroke="currentColor"
+          class="text-brand"
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -64,14 +65,14 @@
         <polygon fill="url(#gradient)" points="0,100 {points} 100,100" />
         <defs>
           <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="rgba(54, 244, 164, 0.2)" />
-            <stop offset="100%" stop-color="rgba(54, 244, 164, 0)" />
+            <stop offset="0%" stop-color="currentColor" stop-opacity="0.2" class="text-brand" />
+            <stop offset="100%" stop-color="currentColor" stop-opacity="0" class="text-brand" />
           </linearGradient>
         </defs>
       </svg>
     {:else}
       <div
-        class="flex h-full w-full items-center justify-center font-mono text-xs text-white/30"
+        class="flex h-full w-full items-center justify-center font-mono text-xs text-content-muted"
       >
         Awaiting data aggregation...
       </div>

@@ -10,15 +10,15 @@ const categories = [
 ];
 ---
 
-<section class="relative w-full bg-[#0b1516] py-24">
+<section class="relative w-full bg-base py-24">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="mb-12 flex items-end justify-between">
-      <h2 class="text-3xl font-bold tracking-tight text-white">
+      <h2 class="text-3xl font-bold tracking-tight text-content">
         Shop by Category
       </h2>
       <a
         href="/shop"
-        class="group hidden items-center gap-1 text-sm font-medium text-[#dae5e6]/60 transition-colors hover:text-[#36f4a4] sm:flex"
+        class="group hidden items-center gap-1 text-sm font-medium text-content-muted transition-colors hover:text-brand sm:flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       >
         View All Catalog <span
           class="transition-transform group-hover:translate-x-1">&rarr;</span
@@ -31,37 +31,37 @@ const categories = [
         categories.map((cat) => (
           <a
             href={/shop/ + cat.name.toLowerCase().replace(' ', '-')}
-            class="group relative block aspect-[4/3] overflow-hidden rounded-xl border border-[#dae5e6]/10 bg-[#131d1e] transition-all duration-500 hover:-translate-y-1 hover:border-[#dae5e6]/30 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)]"
+            class="group relative block aspect-[4/3] overflow-hidden rounded-xl border border-outline bg-surface transition-all duration-500 hover:-translate-y-1 hover:border-content-muted hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)]"
           >
-            <div class="absolute top-4 right-4 z-20 -rotate-2 transform rounded border border-[#dae5e6]/15 bg-[#070d0e]/90 px-3 py-1.5 shadow-xl backdrop-blur-sm">
-              <span class="mb-0.5 block font-mono text-[10px] leading-none tracking-wider text-[#dae5e6]/70 uppercase">
+            <div class="absolute top-4 right-4 z-20 -rotate-2 transform rounded border border-outline bg-base/90 px-3 py-1.5 shadow-xl backdrop-blur-sm">
+              <span class="mb-0.5 block font-mono text-[10px] leading-none tracking-wider text-content-muted uppercase">
                 Up to
               </span>
-              <span class="font-mono text-sm leading-none font-bold text-[#36f4a4]">
+              <span class="font-mono text-sm leading-none font-bold text-brand">
                 {cat.discount} Off
               </span>
             </div>
 
-            <div class="absolute inset-0 flex items-center justify-center bg-[#172122]">
-              <span class="font-mono text-sm text-[#dae5e6]/10 transition-transform duration-700 group-hover:scale-105">
+            <div class="absolute inset-0 flex items-center justify-center bg-surface">
+              <span class="font-mono text-sm text-content-muted/10 transition-transform duration-700 group-hover:scale-105">
                 Category Image
               </span>
             </div>
 
-            <div class="absolute inset-0 z-10 bg-gradient-to-t from-[#0b1516] via-[#0b1516]/60 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-75" />
+            <div class="absolute inset-0 z-10 bg-gradient-to-t from-base via-base/60 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-75" />
 
             <div class="absolute bottom-0 left-0 z-20 w-full translate-y-0 transform p-5">
-              <h3 class="mb-1.5 text-lg font-bold tracking-wider text-white uppercase transition-colors group-hover:text-[#36f4a4]">
+              <h3 class="mb-1.5 text-lg font-bold tracking-wider text-content uppercase transition-colors group-hover:text-brand">
                 {cat.name}
               </h3>
               <div class="flex items-center gap-3">
-                <span class="font-mono text-xs tracking-wide text-[#dae5e6]/60">
+                <span class="font-mono text-xs tracking-wide text-content-muted">
                   {cat.count} Products
                 </span>
                 {cat.lowStock && (
-                  <div class="flex items-center gap-1.5 rounded border border-rose-500/20 bg-[#0b1516]/80 px-2 py-0.5">
-                    <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-rose-500" />
-                    <span class="font-mono text-[10px] tracking-widest text-rose-400 uppercase">
+                  <div class="flex items-center gap-1.5 rounded border border-brand-alert/20 bg-base/80 px-2 py-0.5">
+                    <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-alert" />
+                    <span class="font-mono text-[10px] tracking-widest text-brand-alert uppercase">
                       Low Stock
                     </span>
                   </div>

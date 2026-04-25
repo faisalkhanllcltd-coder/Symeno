@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { reviews = [] } = $props<{ reviews: any[] }>();
+  let { reviews = [] } = $props<{ reviews?: any[] }>();
   let isProcessing = $state(false);
 
   async function updateStatus(id: string, status: 'APPROVED' | 'REJECTED') {
@@ -23,11 +23,11 @@
     '★'.repeat(rating) + '☆'.repeat(5 - rating);
 </script>
 
-<div class="overflow-x-auto border border-white/10 bg-[#111318]">
+<div class="overflow-x-auto border border-outline bg-surface">
   <table class="w-full border-collapse text-left">
     <thead>
       <tr
-        class="border-b border-white/10 bg-[#0a0b0e] font-mono text-[10px] tracking-widest text-white/40 uppercase"
+        class="border-b border-outline bg-surface font-mono text-[10px] tracking-widest text-content-muted uppercase"
       >
         <th class="p-4 font-normal">Rating / Product</th>
         <th class="p-4 font-normal">Customer Review</th>
@@ -35,37 +35,37 @@
         <th class="p-4 text-right font-normal">Moderation</th>
       </tr>
     </thead>
-    <tbody class="divide-y divide-white/[0.04]">
+    <tbody class="divide-y divide-outline">
       {#each reviews as review}
         <tr class="transition-colors hover:bg-white/[0.02]">
           <td class="p-4">
             <div class="text-sm tracking-widest text-amber-400">
               {renderStars(review.rating)}
             </div>
-            <div class="mt-1 font-mono text-[10px] text-white/50">
+            <div class="mt-1 font-mono text-[10px] text-content-muted">
               {review.product_title}
             </div>
           </td>
           <td class="max-w-md p-4">
-            <div class="mb-1 text-xs font-bold text-white">
+            <div class="mb-1 text-xs font-bold text-content">
               {review.title || 'No Title'}
             </div>
-            <div class="line-clamp-2 font-mono text-[10px] text-white/70">
+            <div class="line-clamp-2 font-mono text-[10px] text-content-muted">
               {review.comment}
             </div>
-            <div class="mt-1 font-mono text-[9px] text-white/30">
+            <div class="mt-1 font-mono text-[9px] text-content-muted">
               {review.customer_email || 'Guest'}
             </div>
           </td>
           <td class="p-4 text-center">
             {#if review.status === 'APPROVED'}
               <span
-                class="border border-[#36f4a4]/30 bg-[#36f4a4]/10 px-2 py-1 text-[9px] tracking-widest text-[#36f4a4] uppercase"
+                class="border border-brand/30 bg-brand/10 px-2 py-1 text-[9px] tracking-widest text-brand uppercase"
                 >Approved</span
               >
             {:else if review.status === 'REJECTED'}
               <span
-                class="border border-rose-500/30 bg-rose-500/10 px-2 py-1 text-[9px] tracking-widest text-rose-400 uppercase"
+                class="border border-brand-alert/30 bg-brand-alert/10 px-2 py-1 text-[9px] tracking-widest text-brand-alert uppercase"
                 >Rejected</span
               >
             {:else}
@@ -81,18 +81,18 @@
                 <button
                   onclick={() => updateStatus(review.id, 'APPROVED')}
                   disabled={isProcessing}
-                  class="border border-[#36f4a4]/30 px-2 py-1 font-mono text-[10px] tracking-widest text-[#36f4a4] uppercase transition-colors hover:bg-[#36f4a4]/10"
+                  class="border border-brand/30 px-2 py-1 font-mono text-[10px] tracking-widest text-brand uppercase transition-colors hover:bg-brand/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm disabled:opacity-50"
                   >Approve</button
                 >
                 <button
                   onclick={() => updateStatus(review.id, 'REJECTED')}
                   disabled={isProcessing}
-                  class="border border-rose-500/30 px-2 py-1 font-mono text-[10px] tracking-widest text-rose-400 uppercase transition-colors hover:bg-rose-500/10"
+                  class="border border-brand-alert/30 px-2 py-1 font-mono text-[10px] tracking-widest text-brand-alert uppercase transition-colors hover:bg-brand-alert/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-alert rounded-sm disabled:opacity-50"
                   >Reject</button
                 >
               </div>
             {:else}
-              <span class="font-mono text-[9px] text-white/30 uppercase"
+              <span class="font-mono text-[9px] text-content-muted uppercase"
                 >Moderated</span
               >
             {/if}
@@ -102,7 +102,7 @@
         <tr
           ><td
             colspan="4"
-            class="p-8 text-center text-xs font-mono text-white/30 uppercase"
+            class="p-8 text-center text-xs font-mono text-content-muted uppercase"
             >No reviews in queue.</td
           ></tr
         >

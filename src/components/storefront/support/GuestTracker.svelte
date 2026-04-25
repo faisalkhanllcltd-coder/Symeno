@@ -34,11 +34,11 @@
   {#if !orderData}
     <form
       onsubmit={handleTrack}
-      class="animate-fade-in space-y-6 border border-white/10 bg-[#111318] p-6 sm:p-8"
+      class="animate-fade-in space-y-6 border border-outline bg-base p-6 sm:p-8"
     >
       <div class="space-y-2">
         <label
-          class="block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+          class="block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
           >Order Number</label
         >
         <input
@@ -46,12 +46,12 @@
           bind:value={orderId}
           required
           placeholder="e.g. 8A9B2C1D"
-          class="w-full border border-white/10 bg-[#1A1D23] px-3 py-3 font-mono text-sm text-white transition-colors focus:border-[#36f4a4]/50 focus:outline-none"
+          class="w-full border border-outline bg-surface px-3 py-3 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
         />
       </div>
       <div class="space-y-2">
         <label
-          class="block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+          class="block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
           >Billing Email</label
         >
         <input
@@ -59,13 +59,13 @@
           bind:value={email}
           required
           placeholder="operator@symeno.com"
-          class="w-full border border-white/10 bg-[#1A1D23] px-3 py-3 font-mono text-sm text-white transition-colors focus:border-[#36f4a4]/50 focus:outline-none"
+          class="w-full border border-outline bg-surface px-3 py-3 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
         />
       </div>
 
       {#if errorMsg}
         <div
-          class="border border-rose-500/30 bg-rose-500/10 p-3 text-center font-mono text-[10px] tracking-widest text-rose-400 uppercase"
+          class="border border-brand-alert/30 bg-brand-alert/10 p-3 text-center font-mono text-[10px] tracking-widest text-brand-alert uppercase"
         >
           {errorMsg}
         </div>
@@ -74,20 +74,20 @@
       <button
         type="submit"
         disabled={isProcessing}
-        class="w-full bg-[#36f4a4] px-4 py-3 text-xs font-bold tracking-widest text-[#003822] uppercase shadow-[0_0_15px_rgba(54,244,164,0.15)] transition-colors disabled:opacity-50"
+        class="w-full bg-brand px-4 py-3 text-xs font-bold tracking-widest text-brand-dark uppercase shadow-[0_0_15px_var(--color-brand,rgba(54,244,164,0.15))] transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark rounded-sm"
       >
         {isProcessing ? 'Interrogating Database...' : 'Locate Shipment'}
       </button>
     </form>
   {:else}
     <div
-      class="animate-fade-in space-y-6 border border-[#36f4a4]/30 bg-[#111318] p-6 text-center sm:p-8"
+      class="animate-fade-in space-y-6 border border-brand/30 bg-base p-6 text-center sm:p-8"
     >
       <div
-        class="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#36f4a4] bg-[#36f4a4]/10"
+        class="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-brand bg-brand/10"
       >
         <svg
-          class="h-8 w-8 text-[#36f4a4]"
+          class="h-8 w-8 text-brand"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -101,12 +101,12 @@
       </div>
       <div>
         <h3
-          class="font-mono text-lg font-bold tracking-widest text-white uppercase"
+          class="font-mono text-lg font-bold tracking-widest text-content uppercase"
         >
           Order Found
         </h3>
-        <p class="mt-1 font-mono text-xs text-white/50">
-          Status: <span class="font-bold text-[#36f4a4]"
+        <p class="mt-1 font-mono text-xs text-content-muted">
+          Status: <span class="font-bold text-brand"
             >{orderData.status}</span
           >
         </p>
@@ -116,7 +116,7 @@
         <a
           href={orderData.tracking_url}
           target="_blank"
-          class="block w-full border border-[#36f4a4]/30 bg-[#1A1D23] px-4 py-3 text-xs font-bold tracking-widest text-[#36f4a4] uppercase transition-colors hover:bg-[#36f4a4]/10"
+          class="block w-full border border-brand/30 bg-surface px-4 py-3 text-xs font-bold tracking-widest text-brand uppercase transition-colors hover:bg-brand/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
         >
           Open Carrier Tracking
         </a>
@@ -124,7 +124,7 @@
 
       <button
         onclick={() => (orderData = null)}
-        class="font-mono text-[10px] tracking-widest text-white/50 uppercase transition-colors hover:text-white"
+        class="font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
         >Track Another</button
       >
     </div>
