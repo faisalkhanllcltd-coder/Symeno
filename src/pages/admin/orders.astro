@@ -2,6 +2,8 @@
 // src/pages/admin/orders.astro
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import OrderDataTable from '../../components/admin/orders/OrderDataTable.svelte';
+// ASSEMBLY: Wiring FulfillmentTracker for order pipeline visualization
+import FulfillmentTracker from '../../components/admin/orders/FulfillmentTracker.svelte';
 
 if (!Astro.locals.user) {
   return Astro.redirect('/auth/login');
@@ -31,34 +33,42 @@ const orders = [
     date: 'Aug 22, 2025',
   },
 ];
+
+// Derive fulfillment summary from orders for the tracker
+const pendingCount = orders.filter(o => o.status === 'PENDING_DISPATCH').length;
+const fulfilledCount = orders.filter(o => o.status === 'FULFILLED').length;
+const totalCount = orders.length;
 ---
 
-<AdminLayout
-  title="Order Matrix"
-  subtitle="Fulfillment and Dispatch Ledger"
-  currentPath="/admin/orders"
->
-  <div
-    class="flex h-full flex-col overflow-hidden border border-outline bg-base"
-  >
-    <div
-      class="flex items-center justify-between border-b border-outline bg-surface p-4"
-    >
-      <input
-        type="text"
-        placeholder="Search orders by ID or email..."
-        class="w-64 border border-outline bg-surface px-3 py-1.5 font-mono text-xs text-content placeholder:text-content-muted focus:border-brand/50 focus:outline-none"
-      />
-      <div class="flex gap-2">
-        <button
-          class="border border-outline px-3 py-1.5 font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors hover:text-content focus:outline-none"
-          >Export CSV</button
-        >
-      </div>
-    </div>
+<AdminLayout title="Order Matrix">
+  <div class="space-y-6">
+    <FulfillmentTracker
+      client:load
+      status={pendingCount > 0 ? 'processing' : fulfilledCount === totalCount ? 'delivered' : 'pending'}
+    />
 
-    <div class="flex-1 overflow-x-auto">
-      <OrderDataTable client:load orders={orders} />
+    <div
+      class="flex h-full flex-col overflow-hidden border border-outline bg-base"
+    >
+      <div
+        class="flex items-center justify-between border-b border-outline bg-surface p-4"
+      >
+        <input
+          type="text"
+          placeholder="Search orders by ID or email..."
+          class="w-64 border border-outline bg-surface px-3 py-1.5 font-mono text-xs text-content placeholder:text-content-muted focus:border-brand/50 focus:outline-none"
+        />
+        <div class="flex gap-2">
+          <button
+            class="border border-outline px-3 py-1.5 font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors hover:text-content focus:outline-none"
+            >Export CSV</button
+          >
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-x-auto">
+        <OrderDataTable client:load orders={orders} />
+      </div>
     </div>
   </div>
 </AdminLayout>

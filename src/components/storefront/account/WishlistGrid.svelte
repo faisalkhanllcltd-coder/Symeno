@@ -1,5 +1,5 @@
-﻿<script lang="ts">
-  import { cart } from '../../../stores/cart.svelte';
+<script lang="ts">
+  import { cart } from '../../../stores/cart.svelte.ts';
 
   let { initialItems = [], shareId = '' } = $props<{    
     initialItems?: any[];

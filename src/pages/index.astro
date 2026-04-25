@@ -8,6 +8,9 @@ import FeaturedProducts from '../components/storefront/FeaturedProducts.astro';
 import DealTicker from '../components/storefront/DealTicker.astro';
 import Testimonials from '../components/storefront/Testimonials.astro';
 import Newsletter from '../components/storefront/Newsletter.astro';
+
+// ASSEMBLY: Wiring BrandStory into homepage narrative flow
+import BrandStory from '../components/storefront/BrandStory.astro';
 ---
 
 <StorefrontLayout
@@ -17,6 +20,7 @@ import Newsletter from '../components/storefront/Newsletter.astro';
   <Hero />
   <TrustBar />
   <CategoryGrid />
+  <BrandStory />
   <Manifesto />
   <FeaturedProducts />
   <DealTicker />

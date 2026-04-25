@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { cart } from '../../stores/cart.svelte';
+  import { cart } from '../../stores/cart.svelte.ts';
 
   // Svelte 5 Runes API for incoming props
   let { product } = $props<{ product: any }>();

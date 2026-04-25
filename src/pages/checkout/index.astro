@@ -3,6 +3,9 @@ import StorefrontLayout from '../../layouts/Storefront.astro';
 import CheckoutForm from '../../components/storefront/checkout/CheckoutForm.svelte';
 import OrderSummary from '../../components/storefront/checkout/OrderSummary.svelte';
 
+// ASSEMBLY: Wiring CheckoutStickyBar for mobile checkout CTA
+import CheckoutStickyBar from '../../components/storefront/cart/CheckoutStickyBar.svelte';
+
 // Load Stripe Public Key from Environment Variables securely
 const STRIPE_PUBLIC_KEY = import.meta.env.PUBLIC_STRIPE_KEY || '';
 ---
@@ -71,4 +74,6 @@ const STRIPE_PUBLIC_KEY = import.meta.env.PUBLIC_STRIPE_KEY || '';
       </aside>
     </div>
   </main>
+
+  <CheckoutStickyBar client:load />
 </StorefrontLayout>

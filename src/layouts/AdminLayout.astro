@@ -1,7 +1,10 @@
-﻿---
+---
 import '../styles/global.css';
+import AdminSidebar from '../components/admin/layout/AdminSidebar.svelte';
+import AdminHeader from '../components/admin/layout/AdminHeader.svelte';
 
 const { title = 'Store Admin' } = Astro.props;
+const currentPath = Astro.url.pathname;
 ---
 
 <!doctype html>
@@ -10,120 +13,18 @@ const { title = 'Store Admin' } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title} | Symeno Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
-  <body class="flex min-h-screen bg-gray-50 text-gray-900">
-    <aside
-      class="flex hidden w-64 flex-shrink-0 flex-col border-r border-slate-800 bg-slate-900 text-slate-300 md:flex"
-    >
-      <div
-        class="flex h-16 items-center border-b border-slate-800 bg-slate-950 px-6"
-      >
-        <span class="text-lg font-black tracking-wider text-white"
-          >SYMENO <span class="text-emerald-500">ADMIN</span></span
-        >
-      </div>
-
-      <nav class="flex-1 space-y-8 overflow-y-auto px-4 py-6">
-        <div>
-          <p
-            class="mb-2 px-2 text-xs font-semibold tracking-wider text-slate-500 uppercase"
-          >
-            Overview
-          </p>
-          <div class="space-y-1">
-            <a
-              href="/admin"
-              class="block rounded-lg px-3 py-2 transition-colors hover:bg-slate-800 hover:text-white"
-              >Dashboard</a
-            >
-            <a
-              href="/admin/analytics"
-              class="block rounded-lg px-3 py-2 transition-colors hover:bg-slate-800 hover:text-white"
-              >Analytics</a
-            >
-          </div>
-        </div>
-
-        <div>
-          <p
-            class="mb-2 px-2 text-xs font-semibold tracking-wider text-slate-500 uppercase"
-          >
-            Catalog
-          </p>
-          <div class="space-y-1">
-            <a
-              href="/admin/categories"
-              class="block rounded-lg bg-emerald-500/10 px-3 py-2 font-medium text-emerald-400"
-              >Categories</a
-            >
-            <a
-              href="/admin/brands"
-              class="block rounded-lg px-3 py-2 transition-colors hover:bg-slate-800 hover:text-white"
-              >Brands</a
-            >
-            <a
-              href="/admin/products"
-              class="block rounded-lg px-3 py-2 transition-colors hover:bg-slate-800 hover:text-white"
-              >Products</a
-            >
-            <a
-              href="/admin/inventory"
-              class="block rounded-lg px-3 py-2 transition-colors hover:bg-slate-800 hover:text-white"
-              >Inventory</a
-            >
-          </div>
-        </div>
-
-        <div>
-          <p
-            class="mb-2 px-2 text-xs font-semibold tracking-wider text-slate-500 uppercase"
-          >
-            Sales & CRM
-          </p>
-          <div class="space-y-1">
-            <a
-              href="/admin/orders"
-              class="block rounded-lg px-3 py-2 transition-colors hover:bg-slate-800 hover:text-white"
-              >Orders</a
-            >
-            <a
-              href="/admin/customers"
-              class="block rounded-lg px-3 py-2 transition-colors hover:bg-slate-800 hover:text-white"
-              >Customers</a
-            >
-            <a
-              href="/admin/discounts"
-              class="block rounded-lg px-3 py-2 transition-colors hover:bg-slate-800 hover:text-white"
-              >Discounts</a
-            >
-          </div>
-        </div>
-      </nav>
-
-      <div class="border-t border-slate-800 p-4">
-        <a
-          href="/admin/settings"
-          class="block rounded-lg px-3 py-2 text-sm transition-colors hover:bg-slate-800 hover:text-white"
-          >Store Settings</a
-        >
-      </div>
-    </aside>
+  <body class="flex min-h-screen bg-base text-content">
+    <AdminSidebar currentPath={currentPath} client:load />
 
     <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
-      <header
-        class="flex h-16 flex-shrink-0 items-center justify-end border-b border-gray-200 bg-white px-8"
-      >
-        <div class="flex items-center gap-4">
-          <span class="text-sm font-medium text-gray-600"
-            >Admin Session Active</span
-          >
-          <button
-            class="text-sm font-medium text-red-600 hover:text-red-800"
-            onclick="document.cookie='auth_session=;path=/;max-age=0';window.location.href='/auth/login'"
-            >Sign Out</button
-          >
-        </div>
-      </header>
+      <AdminHeader title={title} client:load />
 
       <main class="flex-1 overflow-y-auto p-8">
         <slot />

@@ -3,6 +3,8 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 // FIX 1: Import path corrected to the new domain-driven architecture
 import InventoryTable from '../../../components/admin/inventory/InventoryTable.svelte';
+// ASSEMBLY: Wiring InventoryMatrix for SKU-level search and overview
+import InventoryMatrix from '../../../components/admin/inventory/InventoryMatrix.svelte';
 // FIX 2: Secure Cloudflare Edge Bindings (dropping legacy getDb)
 import { env } from 'cloudflare:workers';
 
@@ -10,9 +12,11 @@ if (!Astro.locals.user) return Astro.redirect('/auth/login');
 
 const db = env.DB;
 let inventoryData: any[] = [];
+let matrixData: any[] = [];
 
 if (db) {
   try {
+    // 1. Fetch full inventory for the InventoryTable
     const { results } = await db
       .prepare(
         `
@@ -25,6 +29,21 @@ if (db) {
       )
       .all();
     inventoryData = results || [];
+
+    // 2. Fetch matrix-view data for InventoryMatrix (SKU-level with product context)
+    const matrixRes = await db
+      .prepare(
+        `
+      SELECT
+        v.sku, p.title as product_title, v.title as variant_title,
+        v.stock_quantity as stock, v.product_id, p.is_active
+      FROM product_variants v
+      JOIN products p ON v.product_id = p.id
+      ORDER BY v.stock_quantity ASC
+    `
+      )
+      .all();
+    matrixData = matrixRes.results || [];
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error('[DB_ERROR] Failed to fetch inventory:', error.message);
@@ -33,13 +52,12 @@ if (db) {
 }
 ---
 
-<AdminLayout
-  title="Inventory Matrix"
-  subtitle="Live cross-reference with D1 Edge"
-  currentPath="/admin/inventory"
-  primaryAction={{ label: 'New Product', url: '/admin/inventory/new' }}
->
-  <div class="border border-outline bg-base">
-    <InventoryTable client:load inventory={inventoryData} />
+<AdminLayout title="Inventory Matrix">
+  <div class="space-y-6">
+    <InventoryMatrix client:load inventory={matrixData} />
+
+    <div class="border border-outline bg-base">
+      <InventoryTable client:load inventory={inventoryData} />
+    </div>
   </div>
 </AdminLayout>

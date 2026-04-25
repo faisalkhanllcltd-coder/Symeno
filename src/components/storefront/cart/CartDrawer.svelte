@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { cart } from '../../../stores/cart.svelte';
+  import { cart } from '../../../stores/cart.svelte.ts';
 
   let isProcessing = $state(false);
 

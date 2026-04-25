@@ -1,5 +1,5 @@
-﻿<script lang="ts">
-  import { cart } from '../../../stores/cart.svelte';
+<script lang="ts">
+  import { cart } from '../../../stores/cart.svelte.ts';
 
   let { orderId } = $props<{ orderId: string }>();      
   let isProcessing = $state(false);

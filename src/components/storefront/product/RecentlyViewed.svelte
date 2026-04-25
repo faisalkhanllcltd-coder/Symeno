@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { recentStore } from '../../../stores/recentlyViewed.svelte';
+  import { recentStore } from '../../../stores/recentlyViewed.svelte.ts';
 
   // Exclude current product if we are on a product page
   let { currentProductId = '' } = $props<{ currentProductId?: string }>();

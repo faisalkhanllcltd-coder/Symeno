@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
+import CartBadge from '../components/storefront/cart/CartBadge.svelte';
+import CartDrawer from '../components/storefront/cart/CartDrawer.svelte';
 
 interface Props {
   title: string;
@@ -95,6 +97,9 @@ const currentYear = new Date().getFullYear();
           class="text-content-muted hover:text-brand hidden font-mono text-xs tracking-widest uppercase transition-colors focus:outline-none md:block"
           >Storefront &rarr;</a
         >
+
+        <CartBadge client:load />
+
         <form
           action="/api/auth/logout"
           method="POST"
@@ -201,5 +206,7 @@ const currentYear = new Date().getFullYear();
         </nav>
       </div>
     </footer>
+
+    <CartDrawer client:load />
   </body>
 </html>

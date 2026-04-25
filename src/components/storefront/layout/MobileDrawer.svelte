@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { isMobileNavOpen } from '../../../stores/ui'; 
+  import { isMobileNavOpen } from '../../../stores/ui.svelte.ts'; 
 
   let openSection = $state<'shop' | 'brands' | null>('shop');   
 
