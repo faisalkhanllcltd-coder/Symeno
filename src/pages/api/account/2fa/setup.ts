@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { generateTOTPKey, createTOTPKeyURI } from '@oslojs/otp';
+import { generateTOTP, createTOTPKeyURI } from '@oslojs/otp';
 import { encodeBase64 } from '@oslojs/encoding';
 
 export const POST: APIRoute = async ({ locals }) => {
@@ -15,7 +15,9 @@ export const POST: APIRoute = async ({ locals }) => {
     const uri = createTOTPKeyURI(
       'Symeno Operator Panel',
       locals.user.email,
-      key
+      key,
+      30,
+      6
     );
 
     // 3. Store the temporary key in the database (requires a 'totp_secret' column in users)

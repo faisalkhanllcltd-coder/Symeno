@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { team = [] } = $props<{ team?: any[] }>();
+  let { team = [] }: { team?: any[] } = $props();
   let inviteEmail = $state('');
   let inviteRole = $state('staff');
 

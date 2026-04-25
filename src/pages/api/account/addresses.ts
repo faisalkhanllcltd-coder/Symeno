@@ -8,7 +8,7 @@ export const GET: APIRoute = async ({ locals }) => {
 
     const { results } = await env.DB.prepare(
       `
-      SELECT * FROM addresses 
+      SELECT id, customer_id, label, full_name, phone, country, state, city, line1, line2, landmark, is_default FROM addresses 
       WHERE customer_id = ?1 
       ORDER BY is_default DESC, created_at DESC
     `

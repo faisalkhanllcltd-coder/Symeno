@@ -1,11 +1,11 @@
 ---
-import AccountLayout from '../../layouts/Account.astro';
+import AccountLayout from '../../../layouts/Account.astro';
 import { env } from 'cloudflare:workers';
 
 const user = Astro.locals.user;
 if (!user) return Astro.redirect('/auth/login');
 
-let returns = [];
+let returns: any[] = [];
 if (env.DB) {
   try {
     const { results } = await env.DB.prepare(`
@@ -30,7 +30,7 @@ if (env.DB) {
     </div>
 
     <div class="space-y-4">
-      {#each returns as rma}
+      {returns.map((rma: any) => (
         <div class="bg-base border border-outline p-4 flex justify-between items-center hover:border-brand/30 transition-colors">
           <div>
             <div class="flex items-center gap-3 mb-1">
@@ -41,7 +41,7 @@ if (env.DB) {
           </div>
           <a href={`/account/returns/${rma.id}`} class="border border-outline text-content-muted px-4 py-2 text-[10px] font-mono uppercase tracking-widest hover:text-content transition-colors">View Status</a>
         </div>
-      {/each}
+      ))}
       {returns.length === 0 && (
         <div class="p-12 border border-outline text-center bg-base">
           <p class="text-xs font-mono text-content-muted uppercase mb-4">No active return authorizations.</p>

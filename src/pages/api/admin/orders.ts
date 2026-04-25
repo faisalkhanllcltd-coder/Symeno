@@ -13,7 +13,7 @@ export const GET: APIRoute = async ({ locals }) => {
   try {
     enforceAdmin(locals);
     const { results } = await env.DB.prepare(
-      'SELECT * FROM orders ORDER BY created_at DESC LIMIT 100'
+      'SELECT id, customer_id, total, status, created_at, updated_at FROM orders ORDER BY created_at DESC LIMIT 100'
     ).all();
     return new Response(JSON.stringify(results), { status: 200 });
   } catch (e) {

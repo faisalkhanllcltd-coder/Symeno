@@ -1,7 +1,7 @@
 ---
-import AdminLayout from '../../layouts/AdminLayout.astro';
-import DiscountManager from '../../components/admin/discounts/DiscountManager.svelte';
-import UsageReport from '../../components/admin/discounts/UsageReport.svelte';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import DiscountManager from '../../../components/admin/discounts/DiscountManager.svelte';
+import UsageReport from '../../../components/admin/discounts/UsageReport.svelte';
 import { env } from 'cloudflare:workers';
 
 if (
@@ -11,7 +11,7 @@ if (
   return Astro.redirect('/auth/login');
 }
 
-let discounts = [];
+let discounts: any[] = [];
 // Mock report data - in production, this aggregates order_discounts table
 let impactReports = [
   {
@@ -26,7 +26,7 @@ let impactReports = [
 if (env.DB) {
   try {
     const { results } = await env.DB.prepare(
-      'SELECT * FROM discounts ORDER BY created_at DESC'
+      'SELECT id, code, type, value, min_order_amount, uses_count, is_active, created_at, updated_at FROM discounts ORDER BY created_at DESC'
     ).all();
     discounts = results || [];
   } catch (e) {}
@@ -49,3 +49,4 @@ if (env.DB) {
     </div>
   </div>
 </AdminLayout>
+

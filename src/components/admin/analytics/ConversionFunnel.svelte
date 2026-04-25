@@ -18,7 +18,7 @@
       <div class="w-full flex items-center gap-4">
         <div class="w-24 text-right text-[10px] font-mono text-content-muted uppercase">{step.stage}</div>
         <div class="flex-1 flex justify-center">
-          <div class="h-10 flex items-center justify-center text-xs font-mono font-bold text-black transition-all" style="width: {width}%;" class="{step.color}">
+          <div class="h-10 flex items-center justify-center text-xs font-mono font-bold text-black transition-all {step.color}" style="width: {width}%;">
             {step.users.toLocaleString()}
           </div>
         </div>

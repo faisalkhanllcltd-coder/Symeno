@@ -15,10 +15,22 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": [
+        "src/*"
+      ]
     },
-    "types": ["@cloudflare/workers-types", "astro/client"]
+    "types": [
+      "astro/client"
+    ]
   },
-  "include": ["src/**/*", "env.d.ts", ".astro/types.d.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*",
+    "env.d.ts",
+    ".astro/types.d.ts",
+    "worker-configuration.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

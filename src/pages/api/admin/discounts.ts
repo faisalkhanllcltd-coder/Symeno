@@ -15,7 +15,7 @@ export const GET: APIRoute = async ({ locals }) => {
     // Fetch discounts and calculate current usage
     const { results } = await env.DB.prepare(
       `
-      SELECT * FROM discounts ORDER BY created_at DESC
+      SELECT id, code, type, value, min_order_amount, uses_count, is_active, created_at, updated_at FROM discounts ORDER BY created_at DESC
     `
     ).all();
     return new Response(JSON.stringify(results), { status: 200 });

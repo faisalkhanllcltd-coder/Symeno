@@ -7,13 +7,13 @@ import { env } from 'cloudflare:workers';
 const user = Astro.locals.user;
 if (!user) return Astro.redirect('/auth/login');
 
-const { id } = Astro.params;
+const id = Astro.params.id as string;
 let order = null;
 
 if (env.DB) {
   try {
     order = await env.DB.prepare(
-      'SELECT * FROM orders WHERE id = ? AND customer_id = ?'
+      'SELECT id, status, created_at, amount_total, total_amount, shipping_address FROM orders WHERE id = ? AND customer_id = ?'
     )
       .bind(id, user.id)
       .first();
@@ -40,11 +40,11 @@ if (!order) return Astro.redirect('/404');
           </h1>
           <span
             class="border border-outline px-2 py-0.5 text-[9px] tracking-widest text-content-muted uppercase"
-            >{order.status}</span
+            >{(order as any).status}</span
           >
         </div>
         <p class="mt-1 font-mono text-xs text-content-muted">
-          Placed on {new Date(order.created_at).toLocaleDateString()}
+          Placed on {new Date((order as any).created_at).toLocaleDateString()}
         </p>
       </div>
       <div class="flex w-full gap-3 md:w-auto">
@@ -58,7 +58,7 @@ if (!order) return Astro.redirect('/404');
     </div>
 
     <div class="mb-8 hidden border border-outline bg-base p-6 sm:block">
-      <CustomerOrderTimeline client:load status={order.status} />
+      <CustomerOrderTimeline client:load status={(order as any).status} />
     </div>
 
     <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -82,7 +82,7 @@ if (!order) return Astro.redirect('/404');
               </div>
               <div class="text-right">
                 <p class="font-mono text-sm font-bold text-brand">
-                  ${order.total.toFixed(2)}
+                  ${(order as any).total.toFixed(2)}
                 </p>
                 <p class="font-mono text-[10px] text-content-muted">Qty: 1</p>
               </div>
@@ -99,7 +99,7 @@ if (!order) return Astro.redirect('/404');
             Logistics
           </h2>
           <p class="font-mono text-xs whitespace-pre-wrap text-content">
-            {order.shipping_address || 'No address provided.'}
+            {(order as any).shipping_address || 'No address provided.'}
           </p>
         </div>
 
@@ -111,7 +111,7 @@ if (!order) return Astro.redirect('/404');
           </h2>
           <div class="space-y-2 font-mono text-xs">
             <div class="flex justify-between text-content-muted">
-              <span>Subtotal</span><span>${order.total.toFixed(2)}</span>
+              <span>Subtotal</span><span>${(order as any).total.toFixed(2)}</span>
             </div>
             <div class="flex justify-between text-content-muted">
               <span>Shipping</span><span>$0.00</span>
@@ -120,7 +120,7 @@ if (!order) return Astro.redirect('/404');
               class="flex justify-between border-t border-outline pt-2 font-bold text-content"
             >
               <span>Total</span><span class="text-brand"
-                >${order.total.toFixed(2)}</span>
+                >${(order as any).total.toFixed(2)}</span>
             </div>
           </div>
         </div>

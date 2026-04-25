@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { discounts = [] } = $props<{ discounts?: any[] }>();
+  let { discounts = [] }: { discounts?: any[] } = $props();
   let searchQuery = $state('');
 
   let filtered = $derived(

@@ -25,7 +25,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     for (const clientItem of items) {
       const dbProduct = results.find((r: any) => r.id === clientItem.productId);
       if (dbProduct) {
-        totalCents += Math.round(dbProduct.base_price * clientItem.quantity * 100);
+        totalCents += Math.round((dbProduct as any).base_price * clientItem.quantity * 100);
       }
     }
 

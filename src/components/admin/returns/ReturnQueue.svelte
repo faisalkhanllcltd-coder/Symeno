@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { rmas = [] } = $props<{ rmas?: any[] }>();
+  let { rmas = [] }: { rmas?: any[] } = $props();
 </script>
 
 <div class="overflow-x-auto border border-outline bg-surface">

@@ -14,7 +14,7 @@ export const GET: APIRoute = async ({ locals }) => {
     enforceAdmin(locals);
     // Fetch all categories, ordered by sort_order for hierarchy building
     const { results } = await env.DB.prepare(
-      'SELECT * FROM categories ORDER BY parent_id ASC, sort_order ASC, name ASC'
+      'SELECT id, name, slug, created_at, updated_at FROM categories ORDER BY parent_id ASC, sort_order ASC, name ASC'
     ).all();
     return new Response(JSON.stringify(results), { status: 200 });
   } catch (e) {

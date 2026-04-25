@@ -9,7 +9,7 @@ if (!user) {
   return Astro.redirect('/auth/login?redirect=/support/start-return');
 }
 
-let eligibleOrders = [];
+let eligibleOrders: any[] = [];
 const db = (env as any).DB;
 
 if (db) {
@@ -50,3 +50,4 @@ if (db) {
     <ReturnRequestForm client:load recentOrders={eligibleOrders} />
   </main>
 </StorefrontLayout>
+

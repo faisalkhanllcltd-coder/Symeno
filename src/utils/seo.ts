@@ -14,7 +14,7 @@ const SITE_NAME = 'Symeno';
 export function generateSeoMeta(config: SeoConfig) {
   const title = `${config.title} | ${SITE_NAME}`;
   const description = config.description || DEFAULT_DESCRIPTION;
-  const image = config.ogImage || '/og-image.jpg';
+  const image = config.ogImage || '/og-image.webp';
 
   return {
     title,

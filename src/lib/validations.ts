@@ -30,8 +30,8 @@ export function validatePayload<T>(
   data: any
 ): { success: true; data: T } | { success: false; error: string } {
   const result = schema.safeParse(data);
-  if (result.success) {
-    return { success: true, data: result.data };
+  if (!result.success) {
+    return { success: false, error: (result as any).error.errors[0].message };
   }
-  return { success: false, error: result.error.errors[0].message };
+  return { success: true, data: result.data };
 }

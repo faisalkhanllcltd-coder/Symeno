@@ -1,5 +1,5 @@
-﻿// src/lib/sentry.ts
-// @ts-ignore
+// src/lib/sentry.ts
+// @ts-ignore - Edge runtime global injection
 import { env } from 'cloudflare:workers';
 
 export function logError(error: any, context: string = 'Edge Execution') {

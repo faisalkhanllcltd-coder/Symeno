@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { products = [] } = $props<{ products?: any[] }>();
+  let { products }: { products: any[] } = $props();
 </script>
 
 <div class="h-full border border-outline bg-surface p-6">

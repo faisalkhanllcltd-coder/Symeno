@@ -1,6 +1,6 @@
 ---
-import AdminLayout from '../layouts/AdminLayout.astro';
-import ReviewModerationTable from '../components/admin/reviews/ReviewModerationTable.svelte';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import ReviewModerationTable from '../../components/admin/reviews/ReviewModerationTable.svelte';
 import { env } from 'cloudflare:workers';
 
 if (
@@ -10,7 +10,7 @@ if (
   return Astro.redirect('/auth/login');
 }
 
-let reviews = [];
+let reviews: any[] = [];
 if (env.DB) {
   try {
     const { results } = await env.DB.prepare(
@@ -36,3 +36,4 @@ if (env.DB) {
     <ReviewModerationTable client:load reviews={reviews} />
   </div>
 </AdminLayout>
+

@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { data = [] } = $props<{ data?: any[] }>();
+  let { data }: { data: any[] } = $props();
 
   let maxAmount = $derived(Math.max(...data.map((d) => Number(d.amount)), 100));
   let points = $derived(

@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { data = [] } = $props<{ data?: any[] }>();
+  let { data }: { data: any[] } = $props();
   let totalOrders = $derived(data.reduce((sum, d) => sum + Number(d.count), 0));
 </script>
 

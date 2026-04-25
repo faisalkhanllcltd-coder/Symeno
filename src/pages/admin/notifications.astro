@@ -1,6 +1,6 @@
 ---
-import AdminLayout from '../layouts/AdminLayout.astro';
-import AlertCenter from '../components/admin/notifications/AlertCenter.svelte';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import AlertCenter from '../../components/admin/notifications/AlertCenter.svelte';
 import { env } from 'cloudflare:workers';
 
 if (
@@ -10,12 +10,12 @@ if (
   return Astro.redirect('/auth/login');
 }
 
-let alerts = [];
+let alerts: any[] = [];
 if (env.DB) {
   try {
     const { results } = await env.DB.prepare(
       `
-      SELECT * FROM admin_alerts ORDER BY is_read ASC, created_at DESC LIMIT 50
+      SELECT id, is_read, priority, title, message, created_at FROM admin_alerts ORDER BY is_read ASC, created_at DESC LIMIT 50
     `
     ).all();
     alerts = results || [];
@@ -32,3 +32,4 @@ if (env.DB) {
     <AlertCenter client:load initialAlerts={alerts} />
   </div>
 </AdminLayout>
+

@@ -1,26 +1,26 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { isMobileNavOpen } from '../../../stores/ui.svelte.ts'; 
+  import { ui } from '../../../stores/ui.svelte.ts';
 
-  let openSection = $state<'shop' | 'brands' | null>('shop');   
+  let openSection = $state<'shop' | 'brands' | null>('shop');
 
-  function toggleSection(section: 'shop' | 'brands') {  
+  function toggleSection(section: 'shop' | 'brands') {
     openSection = openSection === section ? null : section;
   }
 
   function closeMenu() {
-    isMobileNavOpen.set(false);
+    ui.isMobileNavOpen = false;
   }
 
   onMount(() => {
-    const handleOpen = () => isMobileNavOpen.set(true); 
+    const handleOpen = () => (ui.isMobileNavOpen = true);
     window.addEventListener('open-mobile-nav', handleOpen);
     return () => window.removeEventListener('open-mobile-nav', handleOpen);
   });
 </script>
 
 <div
-  class="fixed inset-0 z-[100] bg-base/60 backdrop-blur-sm transition-opacity duration-300 md:hidden {$isMobileNavOpen
+  class="fixed inset-0 z-[100] bg-base/60 backdrop-blur-sm transition-opacity duration-300 md:hidden {ui.isMobileNavOpen
     ? 'opacity-100'
     : 'pointer-events-none opacity-0'}"
   onclick={closeMenu}
@@ -28,7 +28,7 @@
 ></div>
 
 <div
-  class="fixed inset-y-0 left-0 z-[101] flex w-full max-w-[300px] transform flex-col border-r border-outline bg-base shadow-2xl transition-transform duration-300 ease-in-out md:hidden {$isMobileNavOpen
+  class="fixed inset-y-0 left-0 z-[101] flex w-full max-w-[300px] transform flex-col border-r border-outline bg-base shadow-2xl transition-transform duration-300 ease-in-out md:hidden {ui.isMobileNavOpen
     ? 'translate-x-0'
     : '-translate-x-full'}"
 >
@@ -36,7 +36,7 @@
     class="flex h-16 shrink-0 items-center justify-between border-b border-outline bg-base px-6"
   >
     <span class="text-lg font-bold tracking-tighter text-content uppercase"
-      >Menu<span class="text-brand">.</span></span  
+      >Menu<span class="text-brand">.</span></span
     >
     <button
       onclick={closeMenu}
@@ -63,13 +63,13 @@
       <a
         href="/sale"
         onclick={closeMenu}
-        class="flex items-center justify-between text-sm font-bold tracking-widest text-brand-alert uppercase focus-visible:outline-none focus-visible:underline"      
+        class="flex items-center justify-between text-sm font-bold tracking-widest text-brand-alert uppercase focus-visible:outline-none focus-visible:underline"
         >Live Arbitrage Deals <span class="text-lg">&rarr;</span></a
       >
       <a
         href="/new-arrivals"
         onclick={closeMenu}
-        class="flex items-center justify-between text-sm font-bold tracking-widest text-content uppercase focus-visible:outline-none focus-visible:text-brand"     
+        class="flex items-center justify-between text-sm font-bold tracking-widest text-content uppercase focus-visible:outline-none focus-visible:text-brand"
         >New Deployments <span class="text-lg">&rarr;</span></a
       >
     </div>
@@ -97,14 +97,14 @@
       </button>
       {#if openSection === 'shop'}
         <ul
-          class="ml-2 animate-[slide-down_0.2s_ease-out] space-y-4 border-l-2 border-brand py-4 pl-4"       
+          class="ml-2 animate-[slide-down_0.2s_ease-out] space-y-4 border-l-2 border-brand py-4 pl-4"
         >
           <li>
             <a
               href="/shop/audio"
               onclick={closeMenu}
               class="block font-mono text-sm text-content-muted hover:text-content focus-visible:outline-none focus-visible:text-brand"
-              >Audio & Acoustics</a
+              >Audio &amp; Acoustics</a
             >
           </li>
           <li>
@@ -112,7 +112,7 @@
               href="/shop/displays"
               onclick={closeMenu}
               class="block font-mono text-sm text-content-muted hover:text-content focus-visible:outline-none focus-visible:text-brand"
-              >Displays & Monitors</a
+              >Displays &amp; Monitors</a
             >
           </li>
           <li>
@@ -120,7 +120,7 @@
               href="/shop/peripherals"
               onclick={closeMenu}
               class="block font-mono text-sm text-content-muted hover:text-content focus-visible:outline-none focus-visible:text-brand"
-              >Peripherals & Input</a
+              >Peripherals &amp; Input</a
             >
           </li>
           <li>
@@ -137,7 +137,7 @@
 
     <div class="border-b border-outline pb-2">
       <button
-        onclick={() => toggleSection('brands')}        
+        onclick={() => toggleSection('brands')}
         class="flex w-full items-center justify-between py-2 text-sm font-bold tracking-widest text-content uppercase focus-visible:outline-none focus-visible:text-brand rounded-sm"
       >
         Authorized Brands <svg
@@ -158,12 +158,12 @@
       </button>
       {#if openSection === 'brands'}
         <ul
-          class="ml-2 animate-[slide-down_0.2s_ease-out] space-y-4 border-l-2 border-brand py-4 pl-4"       
+          class="ml-2 animate-[slide-down_0.2s_ease-out] space-y-4 border-l-2 border-brand py-4 pl-4"
         >
           {#each ['Apple', 'Logitech', 'Sony', 'Keychron'] as brand}
             <li>
               <a
-                href={`/brands/${brand.toLowerCase()}`} 
+                href={`/brands/${brand.toLowerCase()}`}
                 onclick={closeMenu}
                 class="block font-mono text-sm text-content-muted hover:text-content focus-visible:outline-none focus-visible:text-brand"
                 >{brand}</a

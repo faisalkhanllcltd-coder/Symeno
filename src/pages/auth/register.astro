@@ -1,5 +1,6 @@
-﻿---
+---
 import Storefront from '../../layouts/Storefront.astro';
+import Turnstile from '../../components/security/Turnstile.svelte';
 ---
 
 <Storefront title="Register Access">
@@ -57,6 +58,7 @@ import Storefront from '../../layouts/Storefront.astro';
             Min 8 chars, 1 uppercase, 1 number.
           </p>
         </div>
+        <Turnstile client:load />
         <button
           type="submit"
           class="bg-brand text-brand-dark shadow-brand/10 w-full rounded-lg py-4 font-bold tracking-widest uppercase shadow-lg hover:opacity-90"

@@ -1,6 +1,6 @@
 ---
-import AdminLayout from '../layouts/AdminLayout.astro';
-import ReturnQueue from '../components/admin/returns/ReturnQueue.svelte';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import ReturnQueue from '../../components/admin/returns/ReturnQueue.svelte';
 import { env } from 'cloudflare:workers';
 
 if (
@@ -10,11 +10,11 @@ if (
   return Astro.redirect('/auth/login');
 }
 
-let RMAs = [];
+let RMAs: any[] = [];
 if (env.DB) {
   try {
     const { results } = await env.DB.prepare(
-      "SELECT * FROM orders WHERE status = 'RETURN_REQUESTED'"
+      "SELECT id, customer_email, total_amount, amount_total, status, created_at, updated_at FROM orders WHERE status = 'RETURN_REQUESTED'"
     ).all();
     RMAs = results || [];
   } catch (e) {}
@@ -30,3 +30,4 @@ if (env.DB) {
     <ReturnQueue client:load rmas={RMAs} />
   </div>
 </AdminLayout>
+

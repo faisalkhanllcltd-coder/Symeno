@@ -30,7 +30,7 @@
       if (error) throw new Error(error);
 
       // 2. Initialize Stripe
-      // @ts-ignore
+      // @ts-ignore - Stripe Elements external typing
       stripe = window.Stripe(publicKey);
 
       // Kept explicit hex values here because Stripe's external iframe is notoriously 

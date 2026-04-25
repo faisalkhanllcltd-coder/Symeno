@@ -15,10 +15,10 @@ export const PUT: APIRoute = async ({ request, params, locals }) => {
       SET title = ?1, base_price = ?2, retail_price = ?3, description = ?4, updated_at = CURRENT_TIMESTAMP 
       WHERE id = ?5
     `).bind(
-      data.title,
-      data.base_price,
-      data.retail_price,
-      data.description,
+      (data as any).title,
+      (data as any).base_price,
+      (data as any).retail_price,
+      (data as any).description,
       params.id
     ).run();
 

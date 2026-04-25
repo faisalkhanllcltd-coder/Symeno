@@ -1,4 +1,4 @@
-﻿import type { APIRoute } from 'astro';
+import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { hashPassword } from '../../../lib/crypto';
 import { z } from 'zod';
@@ -22,7 +22,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     if (!db) return new Response('Database missing.', { status: 500 });
 
     const user = await db
-      .prepare('SELECT * FROM customers WHERE email = ?1')
+      .prepare('SELECT id, email, password_hash FROM customers WHERE email = ?1')
       .bind(email)
       .first();
     if (!user || !user.password_hash)

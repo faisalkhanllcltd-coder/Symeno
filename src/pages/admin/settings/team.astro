@@ -1,13 +1,13 @@
 ---
-import AdminLayout from '../../layouts/AdminLayout.astro';
-import TeamManager from '../../components/admin/settings/TeamManager.svelte';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import TeamManager from '../../../components/admin/settings/TeamManager.svelte';
 
 const db = Astro.locals.runtime?.env?.DB;
-let results = [];
+let results: any[] = [];
 
 if (db) {
   try {
-    const res = await db.prepare("SELECT * FROM users WHERE role IN ('admin', 'staff')").all();
+    const res = await db.prepare("SELECT id, email, role, name, created_at, updated_at FROM users WHERE role IN ('admin', 'staff')").all();
     results = res.results || [];
   } catch (err) {
     console.error("[TEAM_MATRIX_ERROR]", err);

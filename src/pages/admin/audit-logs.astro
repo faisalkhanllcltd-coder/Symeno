@@ -1,7 +1,7 @@
 ---
-import AdminLayout from '../layouts/AdminLayout.astro';
-import AuditLogTable from '../components/admin/audit-logs/AuditLogTable.svelte';
-import AuditLogFilters from '../components/admin/audit-logs/AuditLogFilters.svelte';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import AuditLogTable from '../../components/admin/audit-logs/AuditLogTable.svelte';
+import AuditLogFilters from '../../components/admin/audit-logs/AuditLogFilters.svelte';
 import { env } from 'cloudflare:workers';
 
 if (!Astro.locals.user || Astro.locals.user.role !== 'admin') {
@@ -9,7 +9,7 @@ if (!Astro.locals.user || Astro.locals.user.role !== 'admin') {
 }
 
 // Initial server-side fetch
-let initialLogs = [];
+let initialLogs: any[] = [];
 if (env.DB) {
   try {
     const { results } = await env.DB.prepare(
@@ -34,17 +34,17 @@ if (env.DB) {
     <div id="audit-app" data-initial={JSON.stringify(initialLogs)}></div>
     <script>
       import { mount } from 'svelte';
-      import AuditLogTable from '../components/admin/audit-logs/AuditLogTable.svelte';
-      import AuditLogFilters from '../components/admin/audit-logs/AuditLogFilters.svelte';
+      import AuditLogTable from '../../components/admin/audit-logs/AuditLogTable.svelte';
+      import AuditLogFilters from '../../components/admin/audit-logs/AuditLogFilters.svelte';
 
-      const container = document.getElementById('audit-app');
-      const initialData = JSON.parse(container.dataset.initial);
+      const container = document.getElementById('audit-app') as HTMLElement;
+      const initialData = JSON.parse(container.dataset.initial || '[]');
 
       // Temporary state management for the Astro script block
       let currentLogs = initialData;
       let tableComponent;
 
-      const fetchLogs = async (filters) => {
+      const fetchLogs = async (filters: any) => {
         const params = new URLSearchParams();
         if (filters.action) params.append('action', filters.action);
         if (filters.entity) params.append('entity', filters.entity);
@@ -60,17 +60,17 @@ if (env.DB) {
       };
 
       const mountFilters = () => {
-        mount(AuditLogFilters, {
+        mount(AuditLogFilters as any, {
           target: container,
           props: { onFilter: fetchLogs },
         });
       };
 
-      const mountTable = (logs) => {
+      const mountTable = (logs: any) => {
         const tableWrapper = document.createElement('div');
         tableWrapper.className = 'mt-6';
         container.appendChild(tableWrapper);
-        mount(AuditLogTable, { target: tableWrapper, props: { logs } });
+        mount(AuditLogTable as any, { target: tableWrapper, props: { logs } });
       };
 
       // Initial Mount

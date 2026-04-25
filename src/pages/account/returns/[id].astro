@@ -6,12 +6,12 @@ import { env } from 'cloudflare:workers';
 const user = Astro.locals.user;
 if (!user) return Astro.redirect('/auth/login');
 
-const { id } = Astro.params;
+const id = Astro.params.id as string;
 let rma = null;
 
 if (env.DB) {
   try {
-    rma = await env.DB.prepare("SELECT * FROM orders WHERE id = ? AND customer_id = ? AND (status LIKE '%RETURN%' OR status = 'REFUNDED')").bind(id, user.id).first();
+    rma = await env.DB.prepare("SELECT id, status, total_amount, amount_total, created_at, updated_at FROM orders WHERE id = ? AND customer_id = ? AND (status LIKE '%RETURN%' OR status = 'REFUNDED')").bind(id, user.id).first();
   } catch (e) {}
 }
 
@@ -23,25 +23,25 @@ if (!rma) return Astro.redirect('/404');
     <div class="border-b border-outline pb-6">
       <div class="flex items-center gap-3">
         <h1 class="text-xl font-bold text-content uppercase tracking-widest font-mono">RMA-{id.substring(0,6).toUpperCase()}</h1>
-        <span class="text-[9px] px-2 py-0.5 border border-amber-500/30 text-amber-400 bg-amber-500/10 uppercase tracking-widest">{rma.status.replace('_', ' ')}</span>
+        <span class="text-[9px] px-2 py-0.5 border border-amber-500/30 text-amber-400 bg-amber-500/10 uppercase tracking-widest">{(rma as any).status.replace('_', ' ')}</span>
       </div>
       <p class="text-xs text-content-muted font-mono mt-1">Original Order: #{id.substring(0,8)}</p>
     </div>
 
-    <ReturnStatus client:load status={rma.status} />
+    <ReturnStatus client:load status={(rma as any).status} />
 
     <div class="bg-base border border-outline p-6">
       <h2 class="text-xs font-bold uppercase tracking-widest text-content-muted font-mono mb-4 border-b border-outline pb-2">Next Steps</h2>
-      {#if rma.status === 'RETURN_REQUESTED'}
+      {(rma as any).status === 'RETURN_REQUESTED' ? (
         <p class="text-sm text-content font-mono leading-relaxed">Your request is under review. Please allow up to 24 hours for our operations team to authorize the return. You will receive an email with a prepaid shipping label once approved.</p>
-      {:else if rma.status === 'RETURN_APPROVED'}
+      ) : (rma as any).status === 'RETURN_APPROVED' ? (
         <div class="space-y-4">
           <p class="text-sm text-content font-mono leading-relaxed">Your return is authorized. Please print your shipping label and drop the package at your nearest courier facility within 14 days.</p>
           <button class="bg-brand text-black px-6 py-3 text-xs font-bold uppercase tracking-widest hover:opacity-80 transition-colors">Download Shipping Label PDF</button>
         </div>
-      {:else if rma.status === 'REFUNDED'}
-        <p class="text-sm text-brand font-mono leading-relaxed">This RMA is closed. The refund of ${rma.total.toFixed(2)} has been issued to your original payment method.</p>
-      {/if}
+      ) : (rma as any).status === 'REFUNDED' ? (
+        <p class="text-sm text-brand font-mono leading-relaxed">This RMA is closed. The refund of ${(rma as any).total.toFixed(2)} has been issued to your original payment method.</p>
+      ) : null}
     </div>
   </div>
 </AccountLayout>

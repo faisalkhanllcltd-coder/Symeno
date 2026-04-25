@@ -1,7 +1,5 @@
 <script lang="ts">
-  let { selectedRange = $bindable('30d') } = $props<{
-    selectedRange?: string;
-  }>();
+  let { selectedRange }: { selectedRange: string } = $props();
 
   const ranges = [
     { id: '7d', label: 'Last 7 Days' },

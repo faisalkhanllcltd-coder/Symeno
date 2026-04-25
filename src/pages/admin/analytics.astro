@@ -1,10 +1,10 @@
 ---
-import AdminLayout from '../layouts/AdminLayout.astro';
-import DateRangePicker from '../components/admin/analytics/DateRangePicker.svelte';
-import RevenueOverview from '../components/admin/analytics/RevenueOverview.svelte';
-import OrderMetrics from '../components/admin/analytics/OrderMetrics.svelte';
-import ConversionFunnel from '../components/admin/analytics/ConversionFunnel.svelte';
-import ProductPerformance from '../components/admin/analytics/ProductPerformance.svelte';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import DateRangePicker from '../../components/admin/analytics/DateRangePicker.svelte';
+import RevenueOverview from '../../components/admin/analytics/RevenueOverview.svelte';
+import OrderMetrics from '../../components/admin/analytics/OrderMetrics.svelte';
+import ConversionFunnel from '../../components/admin/analytics/ConversionFunnel.svelte';
+import ProductPerformance from '../../components/admin/analytics/ProductPerformance.svelte';
 import { env } from 'cloudflare:workers';
 
 if (
@@ -16,7 +16,7 @@ if (
 
 // Pre-fetch initial data server-side
 const db = env.DB;
-let analyticsData = { revenue: [], orders: [], products: [], customers: [] };
+let analyticsData = { revenue: [] as any[], orders: [] as any[], products: [] as any[], customers: [] as any[] };
 
 if (db) {
   try {

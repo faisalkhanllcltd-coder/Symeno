@@ -23,7 +23,7 @@ if (!db) {
 
 try {
   const prodResult = await db
-    .prepare('SELECT * FROM products WHERE id = ?1')
+    .prepare('SELECT id, slug, brand, title, description, base_price, retail_price, stock_status FROM products WHERE id = ?1')
     .bind(id)
     .first();
   if (!prodResult) return Astro.redirect('/admin/products');
@@ -43,7 +43,7 @@ try {
   } as Product;
 
   const varResult = await db
-    .prepare('SELECT * FROM product_variants WHERE product_id = ?1')
+    .prepare('SELECT id, product_id, sku, title, price_adjustment, inventory_quantity FROM product_variants WHERE product_id = ?1')
     .bind(id)
     .all();
   variants = (varResult.results || []).map((v: any) => ({

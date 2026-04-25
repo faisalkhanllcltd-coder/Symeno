@@ -19,7 +19,7 @@ const sort = url.searchParams.get('sort') || 'newest';
 // 3. FETCH LIVE INVENTORY FROM CLOUDFLARE D1
 if (db) {
   try {
-    let query = `SELECT * FROM products WHERE stock_status != 'OUT_OF_STOCK'`;
+    let query = `SELECT id, slug, brand, title, description, base_price, retail_price, stock_status FROM products WHERE stock_status != 'OUT_OF_STOCK'`;
     const params: any[] = [];
 
     if (q) {

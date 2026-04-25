@@ -23,7 +23,7 @@
             price: item.base_price,
             was: item.retail_price,
             stock: item.stock || 10,
-            image: item.image_url || '/placeholder.png'
+            image: item.image_url || '/placeholder.webp'
           }, item.quantity || 1);
         });
 

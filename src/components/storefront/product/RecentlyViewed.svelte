@@ -26,7 +26,7 @@
           >
             <div class="relative aspect-square overflow-hidden bg-surface">
               <img
-                src={item.image_url || '/placeholder.png'}
+                src={item.image_url || '/placeholder.webp'}
                 alt={item.title}
                 class="h-full w-full object-cover opacity-80 transition-all duration-500 group-hover:scale-105 group-hover:opacity-100"
               />

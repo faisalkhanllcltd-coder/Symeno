@@ -21,14 +21,14 @@ export const GET: APIRoute = async ({ locals }) => {
         .bind(locals.user.id),
       db
         .prepare(
-          'SELECT * FROM points_ledger WHERE user_id = ?1 ORDER BY created_at DESC LIMIT 20'
+          'SELECT id, user_id, points, reason, created_at, updated_at FROM points_ledger WHERE user_id = ?1 ORDER BY created_at DESC LIMIT 20'
         )
         .bind(locals.user.id),
     ]);
 
     const stats = {
-      current_balance: balanceReq.results[0]?.current_balance || 0,
-      lifetime_earned: balanceReq.results[0]?.lifetime_earned || 0,
+      current_balance: ((balanceReq.results[0] as any)?.current_balance as number) || 0,
+      lifetime_earned: ((balanceReq.results[0] as any)?.lifetime_earned as number) || 0,
     };
 
     return new Response(
@@ -61,7 +61,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       )
       .bind(locals.user.id)
       .all();
-    const currentBalance = results[0]?.balance || 0;
+    const currentBalance = ((results[0] as any)?.balance as number) || 0;
 
     if (currentBalance < points)
       throw new Error('Insufficient points balance.');

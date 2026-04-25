@@ -12,7 +12,7 @@ let customers: any[] = [];
 if (db) {
   try {
     const { results } = await db
-      .prepare(`SELECT * FROM customers ORDER BY created_at DESC LIMIT 50`)
+      .prepare(`SELECT id, first_name, last_name, email, total_spent, order_count, status, created_at FROM customers ORDER BY created_at DESC LIMIT 50`)
       .all();
     // Map DB row to exactly what the Svelte 5 component expects
     customers = (results || []).map((c: any) => ({

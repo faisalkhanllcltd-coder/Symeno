@@ -13,13 +13,13 @@ let orders: any[] = [];
 if (db) {
   try {
     customer = await db
-      .prepare(`SELECT * FROM customers WHERE id = ?1`)
+      .prepare(`SELECT id, email, first_name, last_name FROM customers WHERE id = ?1`)
       .bind(id)
       .first();
     if (customer) {
       const { results } = await db
         .prepare(
-          `SELECT * FROM orders WHERE customer_email = ?1 ORDER BY created_at DESC`
+          `SELECT id, status, amount_total, created_at FROM orders WHERE customer_email = ?1 ORDER BY created_at DESC`
         )
         .bind(customer.email)
         .all();

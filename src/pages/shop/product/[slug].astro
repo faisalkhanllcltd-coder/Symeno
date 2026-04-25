@@ -36,7 +36,7 @@ if (!db) {
   try {
     const prodResult = await db
       .prepare(
-        "SELECT * FROM products WHERE slug = ?1 AND stock_status != 'OUT_OF_STOCK'"
+        "SELECT id, slug, brand, title, description, base_price, retail_price, stock_status FROM products WHERE slug = ?1 AND stock_status != 'OUT_OF_STOCK'"
       )
       .bind(slug)
       .first();
@@ -55,7 +55,7 @@ if (!db) {
 
       // 1. Fetch Variants
       const varResult = await db
-        .prepare('SELECT * FROM product_variants WHERE product_id = ?1')
+        .prepare('SELECT id, product_id, sku, title, price_adjustment, inventory_quantity FROM product_variants WHERE product_id = ?1')
         .bind(product.id)
         .all();
       variants = (varResult.results || []).map((v: any) => ({

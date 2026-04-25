@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { reviews = [] } = $props<{ reviews?: any[] }>();
+  let { reviews = [] }: { reviews?: any[] } = $props();
   let isProcessing = $state(false);
 
   async function updateStatus(id: string, status: 'APPROVED' | 'REJECTED') {

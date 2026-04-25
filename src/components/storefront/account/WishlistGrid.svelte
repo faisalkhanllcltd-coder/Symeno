@@ -43,7 +43,7 @@
       price: item.base_price,
       was: item.retail_price,
       stock: item.stock,
-      image: item.image_url || '/placeholder.png'
+      image: item.image_url || '/placeholder.webp'
     }, 1);
     
     await removeItem(item.product_id);
@@ -92,7 +92,7 @@
         >
           <div class="relative aspect-square overflow-hidden bg-base">
             <img
-              src={item.image_url || '/placeholder.png'}
+              src={item.image_url || '/placeholder.webp'}
               alt={item.title}
               class="h-full w-full object-cover opacity-80 transition-opacity group-hover:opacity-100"
             />

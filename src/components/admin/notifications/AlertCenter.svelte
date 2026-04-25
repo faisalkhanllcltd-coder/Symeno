@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { initialAlerts = [] } = $props<{ initialAlerts?: any[] }>();
+  let { initialAlerts = [] }: { initialAlerts?: any[] } = $props();
   let alerts = $state(initialAlerts);
   let isProcessing = $state(false);
 

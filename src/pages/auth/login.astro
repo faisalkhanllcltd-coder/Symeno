@@ -1,15 +1,8 @@
 ---
 import Storefront from '../../layouts/Storefront.astro';
+import Turnstile from '../../components/security/Turnstile.svelte';
 
-const errorMap: Record<string, string> = {
-  invalid_credentials: 'The credentials provided are invalid.',
-  server_error: 'A system error occurred. Please try again.',
-};
-
-let errorMessage = null;
 if (Astro.cookies.has('auth_error')) {
-  const code = Astro.cookies.get('auth_error')?.value;
-  errorMessage = code ? errorMap[code] || errorMap['server_error'] : null;
   Astro.cookies.delete('auth_error', { path: '/' });
 }
 ---
@@ -47,11 +40,7 @@ if (Astro.cookies.has('auth_error')) {
     </div>
 
     <div class="bg-surface border-outline shadow-ambient rounded-xl border p-8">
-      <form
-        id="login-form"
-        class="space-y-6"
-        onsubmit="event.preventDefault(); return false;"
-      >
+      <form id="login-form" class="space-y-6">
         <div>
           <input
             type="email"
@@ -72,6 +61,7 @@ if (Astro.cookies.has('auth_error')) {
             class="bg-base border-outline text-content w-full rounded-lg border px-4 py-3 font-mono text-sm outline-none"
           />
         </div>
+        <Turnstile client:load />
         <button
           type="submit"
           id="auth-submit-btn"
@@ -89,12 +79,12 @@ if (Astro.cookies.has('auth_error')) {
   </div>
 
   <script is:inline>
-    // Execute immediately before DCL
     window.addEventListener('load', () => {
       const form = document.getElementById('login-form');
-      const btn = document.getElementById('auth-submit-btn');
       const errorContainer = document.getElementById('auth-error-container');
       const errorText = document.getElementById('auth-error');
+
+      if (!form || !errorContainer || !errorText) return;
 
       async function processLogin() {
         errorContainer.classList.add('hidden');
@@ -123,8 +113,7 @@ if (Astro.cookies.has('auth_error')) {
           } else if (res.status === 403) {
             errorText.textContent = 'Access denied by security matrix.';
           } else {
-            errorText.textContent =
-              'A system error occurred. Please try again.';
+            errorText.textContent = 'A system error occurred. Please try again.';
           }
           errorContainer.classList.remove('hidden');
         } catch (err) {

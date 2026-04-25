@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { reports = [] } = $props<{ reports?: any[] }>();
+  let { reports = [] }: { reports?: any[] } = $props();
 </script>
 
 <div class="h-full border border-outline bg-surface p-6">

@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { initialSettings = {} } = $props<{ initialSettings?: any }>();
+  let { initialSettings = {} }: { initialSettings?: any } = $props();
 
   let name = $state(initialSettings.name || 'Symeno Storefront');
   let currency = $state(initialSettings.currency || 'AED');

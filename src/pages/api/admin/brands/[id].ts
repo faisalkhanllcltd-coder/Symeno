@@ -13,7 +13,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
   try {
     enforceAdmin(locals);
     const { results } = await env.DB.prepare(
-      'SELECT * FROM brands WHERE id = ?1'
+      'SELECT id, name, slug, created_at, updated_at FROM brands WHERE id = ?1'
     )
       .bind(params.id)
       .all();

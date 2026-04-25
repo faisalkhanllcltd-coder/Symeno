@@ -14,7 +14,7 @@ const generateShareId = (id: string) =>
     .substring(0, 12);
 const shareId = generateShareId(user.id);
 
-let wishlistItems = [];
+let wishlistItems: any[] = [];
 if (env.DB) {
   try {
     const { results } = await env.DB.prepare(

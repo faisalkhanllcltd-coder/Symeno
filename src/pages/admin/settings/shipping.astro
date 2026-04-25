@@ -1,16 +1,12 @@
 ---
-import AdminLayout from '../../layouts/AdminLayout.astro';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import ShippingZoneManager from '../../../components/admin/settings/ShippingZoneManager.svelte';
 import { env } from 'cloudflare:workers';
 ---
 
-import ShippingZoneManager from
-'../../components/admin/settings/ShippingZoneManager.svelte';
 <AdminLayout
   title="Logistics"
-  subtitle="Regional"
-  Shipping
-  &
-  Fulfillment
+  subtitle="Regional Shipping & Fulfillment"
   currentPath="/admin/settings/shipping"
 >
   <div class="max-w-4xl"><ShippingZoneManager client:load /></div>

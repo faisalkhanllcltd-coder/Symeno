@@ -7,7 +7,7 @@ export const GET: APIRoute = async ({ locals }) => {
 
     // Aggregate user data for GDPR compliance
     const [userReq, ordersReq] = await env.DB.batch([
-      env.DB.prepare('SELECT * FROM users WHERE id = ?1').bind(locals.user.id),
+      env.DB.prepare('SELECT id, first_name, last_name, email, created_at FROM users WHERE id = ?1').bind(locals.user.id),
       env.DB.prepare(
         'SELECT id, total, status, created_at FROM orders WHERE customer_id = ?1'
       ).bind(locals.user.id),
