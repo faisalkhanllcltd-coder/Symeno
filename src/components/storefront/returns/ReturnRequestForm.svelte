@@ -37,6 +37,7 @@
   ];
 
   function toggleItem(item: any) {
+    if (isSubmitting) return;
     const exists = selectedItems.find((i) => i.id === item.id);
     if (exists) {
       selectedItems = selectedItems.filter((i) => i.id !== item.id);
@@ -46,13 +47,16 @@
   }
 
   function updateItemReason(id: string, reason: string) {
+    if (isSubmitting) return;
     const index = selectedItems.findIndex((i) => i.id === id);
     if (index !== -1) selectedItems[index].reason = reason;
   }
 
   async function submitRMA(e: Event) {
     e.preventDefault();
+    if (isSubmitting) return;
     isSubmitting = true;
+    
     try {
       const res = await fetch('/api/account/returns', {
         method: 'POST',
@@ -77,7 +81,7 @@
 <div class="mx-auto max-w-3xl border border-outline bg-base p-6 md:p-8">
   <div class="relative mb-8 flex items-center justify-between">
     <div
-      class="absolute top-1/2 left-0 z-0 h-px w-full -translate-y-1/2 bg-outline"
+      class="absolute top-1/2 left-0 z-0 h-px w-full -translate-y-1/2 bg-outline"   
     ></div>
     {#each [1, 2, 3] as s}
       <div
@@ -94,7 +98,7 @@
   <form onsubmit={submitRMA}>
     {#if step === 1}
       <div class="animate-fade-in space-y-6">
-        <h2 class="text-lg font-bold tracking-widest text-content uppercase">
+        <h2 class="text-lg font-bold tracking-widest text-content uppercase">       
           Select Transaction
         </h2>
         <p class="mb-4 font-mono text-xs text-content-muted">
@@ -107,14 +111,15 @@
               class="flex cursor-pointer items-center gap-4 border p-4 transition-colors {selectedOrder ===
               order.id
                 ? 'border-brand bg-brand/5'
-                : 'border-outline bg-surface hover:border-content-muted'}"
+                : 'border-outline bg-surface hover:border-content-muted'} {isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}"
             >
               <input
                 type="radio"
                 name="order"
                 value={order.id}
                 bind:group={selectedOrder}
-                class="h-4 w-4 accent-brand"
+                disabled={isSubmitting}
+                class="h-4 w-4 accent-brand disabled:cursor-not-allowed"
               />
               <div class="flex-1">
                 <div class="mb-1 flex items-center justify-between">
@@ -144,9 +149,9 @@
         <div class="flex justify-end pt-4">
           <button
             type="button"
-            disabled={!selectedOrder}
+            disabled={!selectedOrder || isSubmitting}
             onclick={() => (step = 2)}
-            class="bg-brand px-8 py-3 text-xs font-bold tracking-widest text-brand-dark uppercase transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark rounded-sm"
+            class="bg-brand px-8 py-3 text-xs font-bold tracking-widest text-brand-dark uppercase transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark rounded-sm"
             >Continue</button
           >
         </div>
@@ -155,22 +160,23 @@
 
     {#if step === 2}
       <div class="animate-fade-in space-y-6">
-        <h2 class="text-lg font-bold tracking-widest text-content uppercase">
+        <h2 class="text-lg font-bold tracking-widest text-content uppercase">       
           Select Items
         </h2>
 
         <div class="space-y-4">
           {#each orderItems() as item}
-            <div class="border border-outline bg-surface p-4">
-              <label class="mb-4 flex cursor-pointer items-center gap-4">
+            <div class="border border-outline bg-surface p-4 {isSubmitting ? 'opacity-70' : ''}">
+              <label class="mb-4 flex cursor-pointer items-center gap-4 {isSubmitting ? 'cursor-not-allowed' : ''}">
                 <input
                   type="checkbox"
                   checked={selectedItems.some((i) => i.id === item.id)}
                   onchange={() => toggleItem(item)}
-                  class="h-4 w-4 accent-brand"
+                  disabled={isSubmitting}
+                  class="h-4 w-4 accent-brand disabled:cursor-not-allowed"
                 />
                 <div class="flex flex-1 justify-between">
-                  <span class="text-xs font-bold text-content">{item.name}</span>
+                  <span class="text-xs font-bold text-content">{item.name}</span>   
                   <span class="font-mono text-xs text-content-muted"
                     >${item.price.toFixed(2)}</span
                   >
@@ -178,7 +184,7 @@
               </label>
 
               {#if selectedItems.some((i) => i.id === item.id)}
-                <div class="mt-4 space-y-4 border-t border-outline pt-4 pl-8">
+                <div class="mt-4 space-y-4 border-t border-outline pt-4 pl-8">      
                   <div>
                     <label
                       class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
@@ -187,13 +193,14 @@
                     <select
                       onchange={(e) =>
                         updateItemReason(item.id, (e.target as HTMLSelectElement).value)}
-                      class="w-full border border-outline bg-base p-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+                      disabled={isSubmitting}
+                      class="w-full border border-outline bg-base p-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <option value="" disabled selected
                         >Select a reason...</option
                       >
                       {#each reasons as r}
-                        <option value={r}>{r}</option>
+                        <option value={r} selected={selectedItems.find((i) => i.id === item.id)?.reason === r}>{r}</option>
                       {/each}
                     </select>
                   </div>
@@ -207,7 +214,8 @@
                       <input
                         type="file"
                         accept="image/*"
-                        class="w-full text-xs text-content-muted file:mr-4 file:border-0 file:bg-brand-alert/10 file:px-4 file:py-2 file:font-mono file:text-xs file:text-brand-alert file:uppercase hover:file:bg-brand-alert/20"
+                        disabled={isSubmitting}
+                        class="w-full text-xs text-content-muted file:mr-4 file:border-0 file:bg-brand-alert/10 file:px-4 file:py-2 file:font-mono file:text-xs file:text-brand-alert file:uppercase hover:file:bg-brand-alert/20 disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                     </div>
                   {/if}
@@ -220,16 +228,17 @@
         <div class="flex justify-between pt-4">
           <button
             type="button"
+            disabled={isSubmitting}
             onclick={() => (step = 1)}
-            class="border border-outline px-6 py-3 font-mono text-xs tracking-widest text-content-muted uppercase transition-colors hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+            class="border border-outline px-6 py-3 font-mono text-xs tracking-widest text-content-muted uppercase transition-colors hover:text-content disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
             >Back</button
           >
           <button
             type="button"
             disabled={selectedItems.length === 0 ||
-              selectedItems.some((i) => !i.reason)}
+              selectedItems.some((i) => !i.reason) || isSubmitting}
             onclick={() => (step = 3)}
-            class="bg-brand px-8 py-3 text-xs font-bold tracking-widest text-brand-dark uppercase transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark rounded-sm"
+            class="bg-brand px-8 py-3 text-xs font-bold tracking-widest text-brand-dark uppercase transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark rounded-sm"
             >Review Details</button
           >
         </div>
@@ -238,7 +247,7 @@
 
     {#if step === 3}
       <div class="animate-fade-in space-y-6">
-        <h2 class="text-lg font-bold tracking-widest text-content uppercase">
+        <h2 class="text-lg font-bold tracking-widest text-content uppercase">       
           Resolution Request
         </h2>
 
@@ -247,12 +256,13 @@
             class="flex-1 cursor-pointer border p-4 transition-colors {resolution ===
             'refund'
               ? 'border-brand bg-brand/5'
-              : 'border-outline bg-surface hover:border-content-muted'}"
+              : 'border-outline bg-surface hover:border-content-muted'} {isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}"
           >
             <input
               type="radio"
               value="refund"
               bind:group={resolution}
+              disabled={isSubmitting}
               class="hidden"
             />
             <div class="text-center">
@@ -271,7 +281,7 @@
                 /></svg
               >
               <h3
-                class="text-xs font-bold tracking-widest text-content uppercase"
+                class="text-xs font-bold tracking-widest text-content uppercase"    
               >
                 Original Payment Method
               </h3>
@@ -284,12 +294,13 @@
             class="flex-1 cursor-pointer border p-4 transition-colors {resolution ===
             'exchange'
               ? 'border-brand bg-brand/5'
-              : 'border-outline bg-surface hover:border-content-muted'}"
+              : 'border-outline bg-surface hover:border-content-muted'} {isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}"
           >
             <input
               type="radio"
               value="exchange"
               bind:group={resolution}
+              disabled={isSubmitting}
               class="hidden"
             />
             <div class="text-center">
@@ -308,7 +319,7 @@
                 /></svg
               >
               <h3
-                class="text-xs font-bold tracking-widest text-content uppercase"
+                class="text-xs font-bold tracking-widest text-content uppercase"    
               >
                 Store Credit / Exchange
               </h3>
@@ -321,8 +332,8 @@
 
         <div class="border border-amber-500/30 bg-amber-500/10 p-4">
           <p class="font-mono text-[10px] text-amber-400">
-            By submitting this request, you agree to our Return Policy. Items
-            must be shipped back within 14 days of label generation to avoid
+            By submitting this request, you agree to our Return Policy. Items       
+            must be shipped back within 14 days of label generation to avoid        
             cancellation.
           </p>
         </div>
@@ -330,14 +341,15 @@
         <div class="flex justify-between pt-4">
           <button
             type="button"
+            disabled={isSubmitting}
             onclick={() => (step = 2)}
-            class="border border-outline px-6 py-3 font-mono text-xs tracking-widest text-content-muted uppercase transition-colors hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+            class="border border-outline px-6 py-3 font-mono text-xs tracking-widest text-content-muted uppercase transition-colors hover:text-content disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
             >Back</button
           >
           <button
             type="submit"
             disabled={isSubmitting}
-            class="bg-brand px-8 py-3 text-xs font-bold tracking-widest text-brand-dark uppercase shadow-[0_0_15px_var(--color-brand,rgba(54,244,164,0.15))] transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark rounded-sm"
+            class="bg-brand px-8 py-3 text-xs font-bold tracking-widest text-brand-dark uppercase shadow-[0_0_15px_var(--color-brand,rgba(54,244,164,0.15))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark rounded-sm"
           >
             {isSubmitting ? 'Authorizing...' : 'Submit Request'}
           </button>
@@ -364,15 +376,15 @@
           >
         </div>
         <div>
-          <h2 class="text-xl font-bold tracking-widest text-content uppercase">
+          <h2 class="text-xl font-bold tracking-widest text-content uppercase">     
             RMA Authorized
           </h2>
           <p class="mt-2 font-mono text-xs text-brand">
-            Authorization Code: RMA-{rmaResult?.substring(0, 6).toUpperCase()}
+            Authorization Code: RMA-{rmaResult?.substring(0, 6).toUpperCase()}      
           </p>
         </div>
-        <p class="mx-auto max-w-md font-mono text-[10px] text-content-muted">
-          Your return request has been submitted to the operations team. You
+        <p class="mx-auto max-w-md font-mono text-[10px] text-content-muted">       
+          Your return request has been submitted to the operations team. You        
           will receive an email with your shipping label and further
           instructions within 24 hours.
         </p>

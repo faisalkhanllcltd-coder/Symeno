@@ -35,7 +35,7 @@
 
 <div class="w-full max-w-md">
   <h3
-    class="mb-2 font-mono text-xs font-bold tracking-widest text-content uppercase"
+    class="mb-2 font-mono text-xs font-bold tracking-widest text-content uppercase" 
   >
     Secure Comm Channel
   </h3>
@@ -51,12 +51,12 @@
       disabled={status === 'loading' || status === 'success'}
       placeholder="operator@domain.com"
       required
-      class="w-full border border-outline bg-base px-4 py-3 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+      class="w-full border border-outline bg-base px-4 py-3 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
     />
     <button
       type="submit"
       disabled={status === 'loading' || status === 'success'}
-      class="absolute top-1 right-1 bottom-1 border border-transparent bg-surface px-6 text-[10px] font-bold tracking-widest text-brand uppercase transition-colors hover:border-brand/30 hover:bg-brand/20 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+      class="absolute top-1 right-1 bottom-1 border border-transparent bg-surface px-6 text-[10px] font-bold tracking-widest text-brand uppercase transition-colors hover:border-brand/30 hover:bg-brand/20 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
     >
       {#if status === 'loading'}
         SYNC...

@@ -16,12 +16,10 @@
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Checkout initialization failed');
+        throw new Error(errorData.error || 'Checkout initialization failed');       
       }
 
       const { url } = await response.json();
-
-      // Redirect the user's browser to the secure Stripe Checkout Session
       window.location.href = url;
     } catch (error) {
       console.error('[CHECKOUT_ERROR]', error);
@@ -33,7 +31,7 @@
 
 {#if cart.isOpen}
   <div
-    class="bg-content/80 fixed inset-0 z-40 backdrop-blur-sm transition-opacity"
+    class="bg-content/80 fixed inset-0 z-60 backdrop-blur-sm transition-opacity"    
     aria-hidden="true"
     onclick={() => cart.closeCart()}
     role="presentation"
@@ -41,8 +39,8 @@
 {/if}
 
 <div
-  class="bg-base border-outline fixed inset-y-0 right-0 z-50 flex w-full max-w-md transform flex-col border-l shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
-  style="transform: translateX({cart.isOpen ? '0%' : '100%'})"        
+  class="bg-base border-outline fixed inset-y-0 right-0 z-70 flex w-full max-w-md transform flex-col border-l shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+  style="transform: translateX({cart.isOpen ? '0%' : '100%'})"
 >
   <div
     class="border-outline bg-surface flex items-center justify-between border-b px-6 py-6"
@@ -55,10 +53,10 @@
     </h2>
     <button
       onclick={() => cart.closeCart()}
-      class="text-content-muted hover:text-brand p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+      class="text-content-muted hover:text-brand flex min-h-[44px] min-w-[44px] items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       aria-label="Close cart"
     >
-      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"    
         ><path
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -83,11 +81,11 @@
             stroke-linecap="round"
             stroke-linejoin="round"
             stroke-width="1"
-            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"    
           /></svg
         >
         <p
-          class="text-content-muted font-mono text-sm tracking-widest uppercase"
+          class="text-content-muted font-mono text-sm tracking-widest uppercase"    
         >
           Cart is empty
         </p>
@@ -98,7 +96,7 @@
           class="bg-surface border-outline group flex gap-4 rounded-xl border p-4 shadow-sm"
         >
           <div
-            class="bg-base border-outline/50 flex h-20 w-20 items-center justify-center rounded-md border"
+            class="bg-base border-outline/50 flex h-20 w-20 items-center justify-center rounded-md border shrink-0"
           >
             <span
               class="text-content-muted font-mono text-[8px] tracking-widest uppercase opacity-50"
@@ -106,14 +104,15 @@
             >
           </div>
           <div class="flex flex-1 flex-col">
-            <div class="mb-1 flex items-start justify-between">       
+            <div class="mb-1 flex items-start justify-between">
               <span
                 class="text-brand max-w-[150px] truncate font-mono text-xs tracking-widest uppercase"
                 >{item.productId}</span
               >
               <button
                 onclick={() => cart.removeItem(item.id)}
-                class="text-content-muted hover:text-brand-alert transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-alert rounded-sm"
+                disabled={isProcessing}
+                class="text-content-muted hover:text-brand-alert flex min-h-[44px] min-w-[44px] items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-alert rounded-sm disabled:opacity-50 disabled:cursor-not-allowed -mt-2 -mr-2"
                 aria-label="Remove"
               >
                 <svg
@@ -138,23 +137,23 @@
               >
             {/if}
 
-            <div class="mt-auto flex items-center justify-between">   
+            <div class="mt-auto flex items-center justify-between">
               <div
-                class="bg-base border-outline flex items-center gap-3 rounded-md border p-1"
+                class="bg-base border-outline flex items-center rounded-md border p-0.5"
               >
                 <button
-                  onclick={() =>
-                    cart.updateQuantity(item.id, item.quantity - 1)}  
-                  class="text-content-muted hover:text-content flex h-6 w-6 items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded-sm"
+                  onclick={() => cart.updateQuantity(item.id, item.quantity - 1)}
+                  disabled={isProcessing}
+                  class="text-content-muted hover:text-content flex min-h-[44px] min-w-[44px] items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-label="Decrease">&minus;</button
                 >
-                <span class="text-content w-4 text-center font-mono text-xs"
+                <span class="text-content w-6 text-center font-mono text-xs"        
                   >{item.quantity}</span
                 >
                 <button
-                  onclick={() =>
-                    cart.updateQuantity(item.id, item.quantity + 1)}  
-                  class="text-content-muted hover:text-content flex h-6 w-6 items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded-sm"
+                  onclick={() => cart.updateQuantity(item.id, item.quantity + 1)}
+                  disabled={isProcessing}
+                  class="text-content-muted hover:text-content flex min-h-[44px] min-w-[44px] items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-label="Increase">&plus;</button
                 >
               </div>
@@ -166,19 +165,19 @@
   </div>
 
   {#if cart.items.length > 0}
-    <div class="bg-surface border-outline space-y-4 border-t p-6">    
-      <div class="mb-4 flex items-center justify-between font-mono text-sm">
-        <span class="text-content-muted tracking-widest uppercase"    
+    <div class="bg-surface border-outline space-y-4 border-t p-6">
+      <div class="mb-4 flex items-center justify-between font-mono text-sm">        
+        <span class="text-content-muted tracking-widest uppercase"
           >Total Operators:</span
         >
-        <span class="text-brand font-bold">{cart.totalItems}</span>   
+        <span class="text-brand font-bold">{cart.totalItems}</span>
       </div>
       <button
         onclick={initializeCheckout}
         disabled={isProcessing}
-        class="bg-brand text-brand-dark w-full rounded-md py-4 text-sm font-bold tracking-widest uppercase shadow-[0_0_15px_var(--color-brand)] transition-all duration-300 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark"
+        class="bg-brand text-brand-dark w-full min-h-[44px] rounded-md py-4 text-sm font-bold tracking-widest uppercase shadow-[0_0_15px_var(--color-brand)] transition-all duration-300 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark"
       >
-        {isProcessing ? 'Establishing Secure Link...' : 'Proceed to Checkout'}
+        {isProcessing ? 'Establishing Secure Link...' : 'Proceed to Checkout'}      
       </button>
       <p
         class="text-content-muted mt-4 text-center font-mono text-[9px] tracking-widest uppercase"

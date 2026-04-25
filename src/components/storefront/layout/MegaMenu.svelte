@@ -12,14 +12,23 @@
       activeMenu = null;
     }, 150);
   }
+
+  // KEYBOARD LOCK: Allow users to dismiss the menu instantly
+  function handleKeyDown(e: KeyboardEvent) {
+    if (e.key === 'Escape' && activeMenu) {
+      activeMenu = null;
+    }
+  }
 </script>
+
+<svelte:window onkeydown={handleKeyDown} />
 
 <nav class="flex h-full" onmouseleave={handleLeave}>
   <ul
     class="flex h-full items-center space-x-8 text-xs font-bold tracking-widest text-content uppercase"
   >
     <li
-      class="flex h-full items-center border-b-2 transition-colors {activeMenu ===
+      class="flex h-full items-center border-b-2 transition-colors {activeMenu ===  
       'shop'
         ? 'border-brand text-brand'
         : 'border-transparent'}"
@@ -27,6 +36,9 @@
       <button
         class="flex h-full items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
         onmouseenter={() => handleEnter('shop')}
+        onfocus={() => handleEnter('shop')}
+        aria-expanded={activeMenu === 'shop'}
+        aria-haspopup="true"
       >
         Shop
         <svg
@@ -48,7 +60,7 @@
     </li>
 
     <li
-      class="flex h-full items-center border-b-2 transition-colors {activeMenu ===
+      class="flex h-full items-center border-b-2 transition-colors {activeMenu ===  
       'brands'
         ? 'border-brand text-brand'
         : 'border-transparent'}"
@@ -56,6 +68,9 @@
       <button
         class="flex h-full items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
         onmouseenter={() => handleEnter('brands')}
+        onfocus={() => handleEnter('brands')}
+        aria-expanded={activeMenu === 'brands'}
+        aria-haspopup="true"
       >
         Brands
         <svg
@@ -80,14 +95,16 @@
       <a
         href="/sale"
         class="text-brand-alert transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-alert rounded-sm"
-        onmouseenter={handleLeave}>Deals</a
+        onmouseenter={handleLeave}
+        onfocus={handleLeave}>Deals</a
       >
     </li>
     <li class="flex h-full items-center">
       <a
         href="/new-arrivals"
         class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
-        onmouseenter={handleLeave}>New In</a
+        onmouseenter={handleLeave}
+        onfocus={handleLeave}>New In</a
       >
     </li>
   </ul>
@@ -96,14 +113,14 @@
 {#if activeMenu}
   <div
     role="region"
-    aria-label="Mega Menu"
+    aria-label="Mega Menu Categories"
     class="absolute top-full left-0 z-40 w-full border-b border-outline bg-base shadow-[0_20px_40px_rgba(0,0,0,0.08)]"
     onmouseenter={() => clearTimeout(timeout)}
     onmouseleave={handleLeave}
   >
     <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       {#if activeMenu === 'shop'}
-        <div class="grid animate-[fade-in_0.2s_ease-out] grid-cols-4 gap-12">
+        <div class="grid animate-[fade-in_0.2s_ease-out] grid-cols-4 gap-12">       
           <div class="col-span-1">
             <h3
               class="mb-4 font-mono text-[10px] tracking-widest text-content-muted uppercase"
@@ -114,28 +131,28 @@
               <li>
                 <a
                   href="/shop/audio"
-                  class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+                  class="block transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                   >Audio & Acoustics</a
                 >
               </li>
               <li>
                 <a
                   href="/shop/displays"
-                  class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+                  class="block transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                   >Displays & Monitors</a
                 >
               </li>
               <li>
                 <a
                   href="/shop/peripherals"
-                  class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+                  class="block transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                   >Peripherals & Input</a
                 >
               </li>
               <li>
                 <a
                   href="/shop/components"
-                  class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+                  class="block transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                   >Core Components</a
                 >
               </li>
@@ -149,21 +166,21 @@
             </h3>
             <ul class="space-y-3 text-sm font-bold text-content">
               <li>
-                <a href="/shop" class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+                <a href="/shop" class="block transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                   >Shop All Inventory &rarr;</a
                 >
               </li>
               <li>
                 <a
                   href="/new-arrivals"
-                  class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+                  class="block transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                   >Latest Deployments</a
                 >
               </li>
               <li>
                 <a
                   href="/sale"
-                  class="text-brand-alert transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-alert rounded-sm"
+                  class="block text-brand-alert transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-alert rounded-sm" 
                   >Live Arbitrage Deals</a
                 >
               </li>
@@ -188,7 +205,7 @@
                 Sony WH-1000XM5
               </h4>
               <div class="mb-4 flex items-baseline gap-2 font-mono">
-                <span class="text-sm font-bold text-brand-alert">$249.00</span>
+                <span class="text-sm font-bold text-brand-alert">$249.00</span>     
                 <span class="text-[10px] text-content-muted line-through"
                   >$399.00</span
                 >
@@ -221,7 +238,7 @@
             {#each ['Apple', 'Dell', 'Keychron', 'LG', 'Logitech', 'Razer', 'Samsung', 'Sony'] as brand}
               <a
                 href={`/brands/${brand.toLowerCase()}`}
-                class="border border-transparent bg-surface py-2 text-center text-sm font-bold text-content transition-colors hover:border-outline hover:bg-base hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+                class="block border border-transparent bg-surface py-2 text-center text-sm font-bold text-content transition-colors hover:border-outline hover:bg-base hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                 >{brand}</a
               >
             {/each}

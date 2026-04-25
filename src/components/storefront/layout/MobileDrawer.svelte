@@ -20,7 +20,7 @@
 </script>
 
 <div
-  class="fixed inset-0 z-[100] bg-base/60 backdrop-blur-sm transition-opacity duration-300 md:hidden {ui.isMobileNavOpen
+  class="fixed inset-0 z-60 bg-base/60 backdrop-blur-sm transition-opacity duration-300 md:hidden {ui.isMobileNavOpen
     ? 'opacity-100'
     : 'pointer-events-none opacity-0'}"
   onclick={closeMenu}
@@ -28,7 +28,7 @@
 ></div>
 
 <div
-  class="fixed inset-y-0 left-0 z-[101] flex w-full max-w-[300px] transform flex-col border-r border-outline bg-base shadow-2xl transition-transform duration-300 ease-in-out md:hidden {ui.isMobileNavOpen
+  class="fixed inset-y-0 left-0 z-70 flex w-full max-w-[300px] transform flex-col border-r border-outline bg-base shadow-2xl transition-transform duration-300 ease-in-out md:hidden {ui.isMobileNavOpen
     ? 'translate-x-0'
     : '-translate-x-full'}"
 >
@@ -41,7 +41,7 @@
     <button
       onclick={closeMenu}
       aria-label="Close menu"
-      class="text-content-muted transition-colors hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm p-1"
+      class="text-content-muted transition-colors hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm flex min-h-[44px] min-w-[44px] items-center justify-center"
     >
       <svg
         class="h-6 w-6"
@@ -59,17 +59,17 @@
   </div>
 
   <div class="flex-1 space-y-6 overflow-y-auto px-6 py-8">
-    <div class="flex flex-col space-y-4 border-b border-outline pb-6">
+    <div class="flex flex-col space-y-2 border-b border-outline pb-6">
       <a
         href="/sale"
         onclick={closeMenu}
-        class="flex items-center justify-between text-sm font-bold tracking-widest text-brand-alert uppercase focus-visible:outline-none focus-visible:underline"
+        class="flex min-h-[44px] items-center justify-between text-sm font-bold tracking-widest text-brand-alert uppercase focus-visible:outline-none focus-visible:underline"        
         >Live Arbitrage Deals <span class="text-lg">&rarr;</span></a
       >
       <a
         href="/new-arrivals"
         onclick={closeMenu}
-        class="flex items-center justify-between text-sm font-bold tracking-widest text-content uppercase focus-visible:outline-none focus-visible:text-brand"
+        class="flex min-h-[44px] items-center justify-between text-sm font-bold tracking-widest text-content uppercase focus-visible:outline-none focus-visible:text-brand"
         >New Deployments <span class="text-lg">&rarr;</span></a
       >
     </div>
@@ -77,7 +77,7 @@
     <div class="border-b border-outline pb-2">
       <button
         onclick={() => toggleSection('shop')}
-        class="flex w-full items-center justify-between py-2 text-sm font-bold tracking-widest text-content uppercase focus-visible:outline-none focus-visible:text-brand rounded-sm"
+        class="flex w-full min-h-[44px] items-center justify-between py-2 text-sm font-bold tracking-widest text-content uppercase focus-visible:outline-none focus-visible:text-brand rounded-sm"
       >
         Hardware Matrix <svg
           class="h-4 w-4 transition-transform duration-200 {openSection ===
@@ -97,13 +97,13 @@
       </button>
       {#if openSection === 'shop'}
         <ul
-          class="ml-2 animate-[slide-down_0.2s_ease-out] space-y-4 border-l-2 border-brand py-4 pl-4"
+          class="ml-2 animate-[slide-down_0.2s_ease-out] space-y-2 border-l-2 border-brand py-2 pl-4"
         >
           <li>
             <a
               href="/shop/audio"
               onclick={closeMenu}
-              class="block font-mono text-sm text-content-muted hover:text-content focus-visible:outline-none focus-visible:text-brand"
+              class="flex min-h-[44px] items-center font-mono text-sm text-content-muted hover:text-content focus-visible:outline-none focus-visible:text-brand"
               >Audio &amp; Acoustics</a
             >
           </li>
@@ -111,7 +111,7 @@
             <a
               href="/shop/displays"
               onclick={closeMenu}
-              class="block font-mono text-sm text-content-muted hover:text-content focus-visible:outline-none focus-visible:text-brand"
+              class="flex min-h-[44px] items-center font-mono text-sm text-content-muted hover:text-content focus-visible:outline-none focus-visible:text-brand"
               >Displays &amp; Monitors</a
             >
           </li>
@@ -119,7 +119,7 @@
             <a
               href="/shop/peripherals"
               onclick={closeMenu}
-              class="block font-mono text-sm text-content-muted hover:text-content focus-visible:outline-none focus-visible:text-brand"
+              class="flex min-h-[44px] items-center font-mono text-sm text-content-muted hover:text-content focus-visible:outline-none focus-visible:text-brand"
               >Peripherals &amp; Input</a
             >
           </li>
@@ -127,7 +127,7 @@
             <a
               href="/shop"
               onclick={closeMenu}
-              class="mt-2 block font-mono text-sm font-bold text-content focus-visible:outline-none focus-visible:text-brand"
+              class="mt-2 flex min-h-[44px] items-center font-mono text-sm font-bold text-content focus-visible:outline-none focus-visible:text-brand"
               >View All Inventory &rarr;</a
             >
           </li>
@@ -138,7 +138,7 @@
     <div class="border-b border-outline pb-2">
       <button
         onclick={() => toggleSection('brands')}
-        class="flex w-full items-center justify-between py-2 text-sm font-bold tracking-widest text-content uppercase focus-visible:outline-none focus-visible:text-brand rounded-sm"
+        class="flex w-full min-h-[44px] items-center justify-between py-2 text-sm font-bold tracking-widest text-content uppercase focus-visible:outline-none focus-visible:text-brand rounded-sm"
       >
         Authorized Brands <svg
           class="h-4 w-4 transition-transform duration-200 {openSection ===
@@ -158,14 +158,14 @@
       </button>
       {#if openSection === 'brands'}
         <ul
-          class="ml-2 animate-[slide-down_0.2s_ease-out] space-y-4 border-l-2 border-brand py-4 pl-4"
+          class="ml-2 animate-[slide-down_0.2s_ease-out] space-y-2 border-l-2 border-brand py-2 pl-4"
         >
           {#each ['Apple', 'Logitech', 'Sony', 'Keychron'] as brand}
             <li>
               <a
                 href={`/brands/${brand.toLowerCase()}`}
                 onclick={closeMenu}
-                class="block font-mono text-sm text-content-muted hover:text-content focus-visible:outline-none focus-visible:text-brand"
+                class="flex min-h-[44px] items-center font-mono text-sm text-content-muted hover:text-content focus-visible:outline-none focus-visible:text-brand"
                 >{brand}</a
               >
             </li>
@@ -174,7 +174,7 @@
             <a
               href="/brands"
               onclick={closeMenu}
-              class="mt-2 block font-mono text-sm font-bold text-content focus-visible:outline-none focus-visible:text-brand"
+              class="mt-2 flex min-h-[44px] items-center font-mono text-sm font-bold text-content focus-visible:outline-none focus-visible:text-brand"
               >View Brand Directory &rarr;</a
             >
           </li>
@@ -187,7 +187,7 @@
     <a
       href="/account"
       onclick={closeMenu}
-      class="flex w-full items-center justify-center gap-2 border border-outline bg-base px-4 py-3 text-xs font-bold tracking-widest text-content uppercase transition-colors hover:border-brand focus-visible:outline-none focus-visible:border-brand"
+      class="flex w-full min-h-[44px] items-center justify-center gap-2 border border-outline bg-base px-4 py-3 text-xs font-bold tracking-widest text-content uppercase transition-colors hover:border-brand focus-visible:outline-none focus-visible:border-brand"      
     >
       My Account
     </a>

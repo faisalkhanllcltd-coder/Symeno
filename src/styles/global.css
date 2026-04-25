@@ -1,4 +1,4 @@
-﻿@import 'tailwindcss';
+@import 'tailwindcss';
 
 /* The dynamic theme engine driven by CSS variables */
 @theme {
@@ -27,6 +27,12 @@
     --theme-content: #0f172a;
     --theme-content-muted: #64748b;
     --theme-outline: #e2e8f0;
+
+    /* Safe Area Matrix */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
   }
 
   .dark {

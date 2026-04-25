@@ -19,8 +19,9 @@
     children?: Snippet;
   } = $props();
 
+  // FIX: Injected min-h-[44px] and min-w-[44px] for strict WCAG/Apple touch target compliance
   const baseClass =
-    'px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+    'min-h-[44px] min-w-[44px] px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
 
   // Sharp, operations-focused styling. Fully tokenized.
   const variants = {
