@@ -40,10 +40,10 @@
         variables: {
           fontFamily:
             'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-          colorPrimary: '#36f4a4',
-          colorBackground: '#1A1D23',
-          colorText: '#ffffff',
-          colorDanger: '#fb7185',
+          colorPrimary: 'var(--color-brand)',
+          colorBackground: 'var(--color-base)',
+          colorText: 'var(--color-content)',
+          colorDanger: 'var(--color-brand-alert)',
           spacingUnit: '4px',
           borderRadius: '0px',
         },

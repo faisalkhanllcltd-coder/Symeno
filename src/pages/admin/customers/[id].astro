@@ -45,30 +45,30 @@ const breadcrumbs = [
   currentPath="/admin/customers"
 >
   <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-    <div class="col-span-1 h-fit border border-white/10 bg-[#111318] p-6">
+    <div class="col-span-1 h-fit border border-outline bg-base p-6">
       <h3
-        class="mb-4 border-b border-white/10 pb-2 font-mono text-[10px] tracking-widest text-white/40 uppercase"
+        class="mb-4 border-b border-outline pb-2 font-mono text-[10px] tracking-widest text-content-muted uppercase"
       >
         Identity Matrix
       </h3>
       <div class="space-y-4 font-mono text-xs">
         <div>
-          <span class="mb-1 block text-white/40">Internal ID</span>
-          <span class="text-[#36f4a4]">{customer.id}</span>
+          <span class="mb-1 block text-content-muted">Internal ID</span>
+          <span class="text-brand">{customer.id}</span>
         </div>
         <div>
-          <span class="mb-1 block text-white/40">Email Address</span>
-          <span class="text-white">{customer.email}</span>
+          <span class="mb-1 block text-content-muted">Email Address</span>
+          <span class="text-content">{customer.email}</span>
         </div>
       </div>
     </div>
 
     <div
-      class="col-span-1 overflow-hidden border border-white/10 bg-[#111318] lg:col-span-2"
+      class="col-span-1 overflow-hidden border border-outline bg-base lg:col-span-2"
     >
-      <div class="border-b border-white/10 bg-white/[0.02] p-4">
+      <div class="border-b border-outline bg-surface p-4">
         <h2
-          class="font-mono text-xs font-bold tracking-widest text-white uppercase"
+          class="font-mono text-xs font-bold tracking-widest text-content uppercase"
         >
           Acquisition History
         </h2>
@@ -76,32 +76,32 @@ const breadcrumbs = [
       <div class="overflow-x-auto">
         <table class="w-full border-collapse text-left">
           <thead>
-            <tr class="border-b border-white/10 bg-black/40">
+            <tr class="border-b border-outline bg-surface">
               <th
-                class="px-6 py-4 font-mono text-[10px] font-normal tracking-widest text-white/40 uppercase"
+                class="px-6 py-4 font-mono text-[10px] font-normal tracking-widest text-content-muted uppercase"
                 >Order ID</th
               >
               <th
-                class="px-6 py-4 font-mono text-[10px] font-normal tracking-widest text-white/40 uppercase"
+                class="px-6 py-4 font-mono text-[10px] font-normal tracking-widest text-content-muted uppercase"
                 >Status</th
               >
               <th
-                class="px-6 py-4 text-right font-mono text-[10px] font-normal tracking-widest text-white/40 uppercase"
+                class="px-6 py-4 text-right font-mono text-[10px] font-normal tracking-widest text-content-muted uppercase"
                 >Total</th
               >
             </tr>
           </thead>
-          <tbody class="divide-y divide-white/[0.04]">
+          <tbody class="divide-y divide-outline">
             {
               orders.map((order) => (
-                <tr class="transition-colors hover:bg-white/[0.02]">
-                  <td class="px-6 py-4 font-mono text-xs text-[#36f4a4]">
+                <tr class="transition-colors hover:bg-surface">
+                  <td class="px-6 py-4 font-mono text-xs text-brand">
                     <a href={`/admin/orders/${order.id}`}>{order.id}</a>
                   </td>
-                  <td class="px-6 py-4 font-mono text-[10px] font-bold tracking-widest text-white/80 uppercase">
+                  <td class="px-6 py-4 font-mono text-[10px] font-bold tracking-widest text-content uppercase">
                     {order.status}
                   </td>
-                  <td class="px-6 py-4 text-right font-mono text-xs text-white">
+                  <td class="px-6 py-4 text-right font-mono text-xs text-content">
                     ${(order.amount_total || 0).toFixed(2)}
                   </td>
                 </tr>
@@ -112,7 +112,7 @@ const breadcrumbs = [
                 <tr>
                   <td
                     colspan="3"
-                    class="px-6 py-12 text-center font-mono text-[10px] tracking-widest text-white/30 uppercase"
+                    class="px-6 py-12 text-center font-mono text-[10px] tracking-widest text-content-muted uppercase"
                   >
                     No orders found for this identity.
                   </td>

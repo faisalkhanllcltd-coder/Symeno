@@ -17,27 +17,27 @@ const brands = [
   <div class="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-20 lg:px-8">
     <div
       class="pointer-events-none absolute inset-0 opacity-[0.02]"
-      style="background-image: linear-gradient(#dae5e6 1px, transparent 1px), linear-gradient(90deg, #dae5e6 1px, transparent 1px); background-size: 32px 32px;"
+      style="background-image: linear-gradient(var(--color-outline) 1px, transparent 1px), linear-gradient(90deg, var(--color-outline) 1px, transparent 1px); background-size: 32px 32px;"
     >
     </div>
 
     <nav
-      class="relative z-10 mb-8 flex font-mono text-[10px] tracking-widest text-[#dae5e6]/40 uppercase"
+      class="relative z-10 mb-8 flex font-mono text-[10px] tracking-widest text-content-muted uppercase"
     >
-      <a href="/" class="transition-colors hover:text-white focus:outline-none"
+      <a href="/" class="transition-colors hover:text-content focus:outline-none"
         >Base</a
       >
       <span class="mx-2">/</span>
-      <span class="text-[#36f4a4]">Directory</span>
+      <span class="text-brand">Directory</span>
     </nav>
 
-    <div class="relative z-10 mb-12 border-b border-[#dae5e6]/10 pb-8">
+    <div class="relative z-10 mb-12 border-b border-outline pb-8">
       <h1
-        class="mb-4 text-4xl font-bold tracking-tighter text-white uppercase md:text-6xl"
+        class="mb-4 text-4xl font-bold tracking-tighter text-content uppercase md:text-6xl"
       >
-        Supplier <span class="text-[#36f4a4]">Nodes.</span>
+        Supplier <span class="text-brand">Nodes.</span>
       </h1>
-      <p class="max-w-xl font-mono text-sm text-[#dae5e6]/60">
+      <p class="max-w-xl font-mono text-sm text-content-muted">
         We only interface with tier-1 manufacturers. Every brand listed here is
         cryptographically verified and subject to our zero-markup wholesale
         guarantee.
@@ -51,29 +51,29 @@ const brands = [
         brands.map((brand) => (
           <a
             href={`/brands/${brand.slug}`}
-            class="group flex items-center justify-between border border-[#dae5e6]/10 bg-[#0b1516] p-6 transition-colors hover:border-[#36f4a4]/50 focus:outline-none"
+            class="group flex items-center justify-between border border-outline bg-surface p-6 transition-colors hover:border-brand/50 focus:outline-none"
           >
             <div class="flex items-center gap-4">
-              <div class="flex h-12 w-12 items-center justify-center border border-[#dae5e6]/5 bg-[#131d1e] font-mono text-[8px] text-[#dae5e6]/30 transition-colors group-hover:text-[#36f4a4]">
+              <div class="flex h-12 w-12 items-center justify-center border border-outline bg-base font-mono text-[8px] text-content-muted transition-colors group-hover:text-brand">
                 LOGO
               </div>
               <div>
-                <h2 class="text-lg font-bold tracking-tight text-white uppercase transition-colors group-hover:text-[#36f4a4]">
+                <h2 class="text-lg font-bold tracking-tight text-content uppercase transition-colors group-hover:text-brand">
                   {brand.name}
                 </h2>
                 <div class="mt-1 flex items-center gap-2">
-                  <span class="h-1.5 w-1.5 bg-[#36f4a4]" />
-                  <span class="font-mono text-[10px] tracking-widest text-[#dae5e6]/50 uppercase">
+                  <span class="h-1.5 w-1.5 bg-brand" />
+                  <span class="font-mono text-[10px] tracking-widest text-content-muted uppercase">
                     {brand.status}
                   </span>
                 </div>
               </div>
             </div>
             <div class="flex flex-col items-end">
-              <span class="font-mono text-xs font-bold text-white">
+              <span class="font-mono text-xs font-bold text-content">
                 {brand.nodes} SKUs
               </span>
-              <span class="mt-1 font-mono text-[10px] tracking-widest text-[#dae5e6]/30 uppercase transition-colors group-hover:text-white">
+              <span class="mt-1 font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors group-hover:text-content">
                 Access &rarr;
               </span>
             </div>

@@ -159,8 +159,8 @@ const breadcrumbs = [
   <div class="max-w-4xl space-y-6">
     {
       errorMessage && (
-        <div class="border border-rose-500/30 bg-rose-500/10 p-4">
-          <p class="font-mono text-xs font-bold tracking-widest text-rose-400 uppercase">
+        <div class="border border-brand-alert/30 bg-brand-alert/10 p-4">
+          <p class="font-mono text-xs font-bold tracking-widest text-brand-alert uppercase">
             {errorMessage}
           </p>
         </div>
@@ -170,8 +170,8 @@ const breadcrumbs = [
     {
       product && (
         <form method="POST" class="space-y-6">
-          <div class="border border-white/10 bg-[#111318] p-6 sm:p-8">
-            <h2 class="mb-6 border-b border-white/10 pb-2 font-mono text-xs font-bold tracking-widest text-white uppercase">
+          <div class="border border-outline bg-base p-6 sm:p-8">
+            <h2 class="mb-6 border-b border-outline pb-2 font-mono text-xs font-bold tracking-widest text-content uppercase">
               Core Telemetry
             </h2>
 
@@ -179,7 +179,7 @@ const breadcrumbs = [
               <div class="sm:col-span-3">
                 <label
                   for="brand"
-                  class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+                  class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
                 >
                   Brand
                 </label>
@@ -189,14 +189,14 @@ const breadcrumbs = [
                   id="brand"
                   value={product.brand}
                   required
-                  class="block w-full rounded-none border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white transition-colors focus:border-[#36f4a4]/50 focus:outline-none"
+                  class="block w-full rounded-none border border-outline bg-surface px-3 py-2 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none"
                 />
               </div>
 
               <div class="sm:col-span-6">
                 <label
                   for="title"
-                  class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+                  class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
                 >
                   Product Title
                 </label>
@@ -206,14 +206,14 @@ const breadcrumbs = [
                   id="title"
                   value={product.title}
                   required
-                  class="block w-full rounded-none border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white transition-colors focus:border-[#36f4a4]/50 focus:outline-none"
+                  class="block w-full rounded-none border border-outline bg-surface px-3 py-2 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none"
                 />
               </div>
 
               <div class="sm:col-span-6">
                 <label
                   for="description"
-                  class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+                  class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
                 >
                   Description / Editorial
                 </label>
@@ -222,7 +222,7 @@ const breadcrumbs = [
                   name="description"
                   rows="4"
                   required
-                  class="block w-full rounded-none border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white transition-colors focus:border-[#36f4a4]/50 focus:outline-none"
+                  class="block w-full rounded-none border border-outline bg-surface px-3 py-2 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none"
                 >
                   {product.description}
                 </textarea>
@@ -230,8 +230,8 @@ const breadcrumbs = [
             </div>
           </div>
 
-          <div class="border border-white/10 bg-[#111318] p-6 sm:p-8">
-            <h2 class="mb-6 border-b border-white/10 pb-2 font-mono text-xs font-bold tracking-widest text-white uppercase">
+          <div class="border border-outline bg-base p-6 sm:p-8">
+            <h2 class="mb-6 border-b border-outline pb-2 font-mono text-xs font-bold tracking-widest text-content uppercase">
               Financials & Status
             </h2>
 
@@ -239,11 +239,11 @@ const breadcrumbs = [
               <div class="relative sm:col-span-2">
                 <label
                   for="basePrice"
-                  class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+                  class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
                 >
                   Base Price
                 </label>
-                <span class="absolute top-[30px] left-3 font-mono text-white/40">
+                <span class="absolute top-[30px] left-3 font-mono text-content-muted">
                   $
                 </span>
                 <input
@@ -253,18 +253,18 @@ const breadcrumbs = [
                   id="basePrice"
                   value={product.basePrice}
                   required
-                  class="block w-full rounded-none border border-white/10 bg-[#1A1D23] py-2 pr-3 pl-7 font-mono text-sm text-white transition-colors focus:border-[#36f4a4]/50 focus:outline-none"
+                  class="block w-full rounded-none border border-outline bg-surface py-2 pr-3 pl-7 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none"
                 />
               </div>
 
               <div class="relative sm:col-span-2">
                 <label
                   for="retailPrice"
-                  class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+                  class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
                 >
                   Retail Price (RRP)
                 </label>
-                <span class="absolute top-[30px] left-3 font-mono text-white/40">
+                <span class="absolute top-[30px] left-3 font-mono text-content-muted">
                   $
                 </span>
                 <input
@@ -273,21 +273,21 @@ const breadcrumbs = [
                   name="retailPrice"
                   id="retailPrice"
                   value={product.retailPrice || ''}
-                  class="block w-full rounded-none border border-white/10 bg-[#1A1D23] py-2 pr-3 pl-7 font-mono text-sm text-white transition-colors focus:border-[#36f4a4]/50 focus:outline-none"
+                  class="block w-full rounded-none border border-outline bg-surface py-2 pr-3 pl-7 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none"
                 />
               </div>
 
               <div class="sm:col-span-2">
                 <label
                   for="stockStatus"
-                  class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-white/50 uppercase"
+                  class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
                 >
                   Global Status
                 </label>
                 <select
                   id="stockStatus"
                   name="stockStatus"
-                  class="block w-full cursor-pointer rounded-none border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white transition-colors focus:border-[#36f4a4]/50 focus:outline-none"
+                  class="block w-full cursor-pointer rounded-none border border-outline bg-surface px-3 py-2 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none"
                 >
                   <option
                     value="IN_STOCK"
@@ -312,20 +312,20 @@ const breadcrumbs = [
             </div>
           </div>
 
-          <div class="border border-white/10 bg-[#111318] p-6 sm:p-8">
+          <div class="border border-outline bg-base p-6 sm:p-8">
             <VariantManager client:load initialVariants={variants} />
           </div>
 
           <div class="flex justify-end gap-4 pt-4">
             <a
               href="/admin/products"
-              class="border border-white/10 px-6 py-3 text-xs font-bold tracking-widest text-white uppercase transition-colors hover:bg-white/5 focus:outline-none"
+              class="border border-outline px-6 py-3 text-xs font-bold tracking-widest text-content uppercase transition-colors hover:bg-surface focus:outline-none"
             >
               Abort
             </a>
             <button
               type="submit"
-              class="bg-[#36f4a4] px-8 py-3 text-xs font-bold tracking-widest text-[#003822] uppercase shadow-[0_0_15px_rgba(54,244,164,0.15)] transition-colors hover:bg-white focus:outline-none"
+              class="bg-brand px-8 py-3 text-xs font-bold tracking-widest text-black uppercase shadow-[0_0_15px_var(--color-brand)] transition-colors hover:opacity-80 focus:outline-none"
             >
               Commit Changes
             </button>

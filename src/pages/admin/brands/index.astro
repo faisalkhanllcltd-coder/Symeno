@@ -20,13 +20,13 @@ const brands = [
   primaryAction={{ label: 'Add Brand', url: '/admin/brands/new' }}
 >
   <div
-    class="flex h-full flex-col overflow-hidden border border-white/10 bg-[#111318]"
+    class="flex h-full flex-col overflow-hidden border border-outline bg-base"
   >
     <div class="flex-1 overflow-x-auto">
       <table class="w-full border-collapse text-left whitespace-nowrap">
         <thead>
           <tr
-            class="border-b border-white/10 bg-black/40 font-mono text-[10px] tracking-widest text-white/40 uppercase"
+            class="border-b border-outline bg-surface font-mono text-[10px] tracking-widest text-content-muted uppercase"
           >
             <th class="px-4 py-4 font-normal">Brand ID</th>
             <th class="px-4 py-4 font-normal">Name</th>
@@ -34,21 +34,21 @@ const brands = [
             <th class="px-4 py-4 text-right font-normal">Status</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-white/[0.04]">
+        <tbody class="divide-y divide-outline">
           {
             brands.map((brand) => (
-              <tr class="group transition-colors hover:bg-white/[0.02]">
-                <td class="px-4 py-3 font-mono text-xs text-white/60">
+              <tr class="group transition-colors hover:bg-surface">
+                <td class="px-4 py-3 font-mono text-xs text-content-muted">
                   {brand.id}
                 </td>
-                <td class="px-4 py-3 text-xs font-bold text-white transition-colors group-hover:text-[#36f4a4]">
+                <td class="px-4 py-3 text-xs font-bold text-content transition-colors group-hover:text-brand">
                   {brand.name}
                 </td>
-                <td class="px-4 py-3 font-mono text-xs text-white">
+                <td class="px-4 py-3 font-mono text-xs text-content">
                   {brand.skuCount}
                 </td>
                 <td class="px-4 py-3 text-right">
-                  <span class="inline-block border border-[#36f4a4]/30 bg-[#36f4a4]/10 px-2 py-1 text-[9px] font-bold tracking-widest text-[#36f4a4] uppercase">
+                  <span class="inline-block border border-brand/30 bg-brand/10 px-2 py-1 text-[9px] font-bold tracking-widest text-brand uppercase">
                     {brand.status}
                   </span>
                 </td>

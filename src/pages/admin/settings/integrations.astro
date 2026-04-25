@@ -6,19 +6,19 @@ if (!user || user.role !== 'admin') return Astro.redirect('/auth/admin/login');
 
 <AdminLayout title="Integrations Matrix | Admin">
   <div class="mx-auto max-w-5xl p-8">
-    <h1 class="mb-2 text-2xl font-bold tracking-widest text-white uppercase">
+    <h1 class="mb-2 text-2xl font-bold tracking-widest text-content uppercase">
       External Integrations
     </h1>
-    <p class="mb-8 font-mono text-xs text-white/50">
+    <p class="mb-8 font-mono text-xs text-content-muted">
       Manage Webhooks, ERP connections, and API keys.
     </p>
-    <div class="border border-white/10 bg-[#111318] p-6">
+    <div class="border border-outline bg-base p-6">
       <h3
-        class="mb-4 border-b border-white/10 pb-4 text-sm font-bold tracking-widest text-white uppercase"
+        class="mb-4 border-b border-outline pb-4 text-sm font-bold tracking-widest text-content uppercase"
       >
         Active Webhooks
       </h3>
-      <p class="font-mono text-xs text-white/50">
+      <p class="font-mono text-xs text-content-muted">
         No external payload delivery configured.
       </p>
     </div>

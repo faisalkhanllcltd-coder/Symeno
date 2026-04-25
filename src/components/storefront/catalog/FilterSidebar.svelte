@@ -132,12 +132,12 @@
     width: 4px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: var(--color-base, #111318);
+    background: var(--color-base);
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: var(--color-outline, rgba(255, 255, 255, 0.1));
+    background: var(--color-outline);
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: var(--color-brand, rgba(54, 244, 164, 0.5));
+    background: var(--color-brand);
   }
 </style>

@@ -20,52 +20,52 @@ const breadcrumbs = [
 >
   <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
     <div class="space-y-6 lg:col-span-2">
-      <div class="border border-white/10 bg-[#111318] p-6">
+      <div class="border border-outline bg-base p-6">
         <FulfillmentTracker status="processing" client:load />
       </div>
 
-      <div class="border border-white/10 bg-[#111318] p-6">
+      <div class="border border-outline bg-base p-6">
         <h3
-          class="mb-4 border-b border-white/10 pb-3 font-mono text-xs font-bold tracking-widest text-white uppercase"
+          class="mb-4 border-b border-outline pb-3 font-mono text-xs font-bold tracking-widest text-content uppercase"
         >
           Manifest
         </h3>
         <div
-          class="flex items-center justify-between border-b border-white/[0.04] py-3"
+          class="flex items-center justify-between border-b border-outline py-3"
         >
           <div class="flex items-center gap-4">
-            <div class="h-12 w-12 shrink-0 border border-white/10 bg-[#1A1D23]">
+            <div class="h-12 w-12 shrink-0 border border-outline bg-surface">
             </div>
             <div>
-              <p class="text-sm font-bold text-white">Sony WH-1000XM5</p>
-              <p class="font-mono text-[10px] text-white/40">
+              <p class="text-sm font-bold text-content">Sony WH-1000XM5</p>
+              <p class="font-mono text-[10px] text-content-muted">
                 SKU: SNY-XM5-BLK
               </p>
             </div>
           </div>
           <div class="text-right">
-            <p class="font-mono text-sm font-bold text-white">$299.00</p>
-            <p class="font-mono text-[10px] text-white/40">Qty: 1</p>
+            <p class="font-mono text-sm font-bold text-content">$299.00</p>
+            <p class="font-mono text-[10px] text-content-muted">Qty: 1</p>
           </div>
         </div>
       </div>
     </div>
 
     <div class="space-y-6">
-      <div class="border border-white/10 bg-[#111318] p-6">
+      <div class="border border-outline bg-base p-6">
         <h3
-          class="mb-4 border-b border-white/10 pb-3 font-mono text-xs font-bold tracking-widest text-white uppercase"
+          class="mb-4 border-b border-outline pb-3 font-mono text-xs font-bold tracking-widest text-content uppercase"
         >
           Execute Action
         </h3>
         <form class="space-y-4">
           <div class="space-y-1.5">
             <label
-              class="font-mono text-[10px] tracking-widest text-white/50 uppercase"
+              class="font-mono text-[10px] tracking-widest text-content-muted uppercase"
               >Update Status</label
             >
             <select
-              class="w-full cursor-pointer rounded-none border border-white/10 bg-[#1A1D23] px-3 py-2 text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+              class="w-full cursor-pointer rounded-none border border-outline bg-surface px-3 py-2 text-sm text-content focus:border-brand/50 focus:outline-none"
             >
               <option value="pending">Pending</option>
               <option value="processing" selected>Processing</option>
@@ -74,18 +74,18 @@ const breadcrumbs = [
           </div>
           <div class="space-y-1.5">
             <label
-              class="font-mono text-[10px] tracking-widest text-white/50 uppercase"
+              class="font-mono text-[10px] tracking-widest text-content-muted uppercase"
               >Inject Tracking Number</label
             >
             <input
               type="text"
-              class="w-full rounded-none border border-white/10 bg-[#1A1D23] px-3 py-2 font-mono text-sm text-white focus:border-[#36f4a4]/50 focus:outline-none"
+              class="w-full rounded-none border border-outline bg-surface px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none"
               placeholder="1Z9999999999999999"
             />
           </div>
           <button
             type="button"
-            class="w-full bg-[#36f4a4] px-4 py-3 text-xs font-bold tracking-widest text-[#003822] uppercase transition-colors hover:bg-white focus:outline-none"
+            class="w-full bg-brand px-4 py-3 text-xs font-bold tracking-widest text-black uppercase transition-colors hover:opacity-80 focus:outline-none"
           >
             Commit Changes
           </button>

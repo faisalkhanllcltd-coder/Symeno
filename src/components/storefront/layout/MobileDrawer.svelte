@@ -20,7 +20,7 @@
 </script>
 
 <div
-  class="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm transition-opacity duration-300 md:hidden {$isMobileNavOpen
+  class="fixed inset-0 z-[100] bg-base/60 backdrop-blur-sm transition-opacity duration-300 md:hidden {$isMobileNavOpen
     ? 'opacity-100'
     : 'pointer-events-none opacity-0'}"
   onclick={closeMenu}

@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
   import { onMount } from 'svelte';
 
   type Category = {
@@ -87,24 +87,24 @@
 <div class="mx-auto max-w-4xl space-y-8">
   {#if errorMessage}
     <div
-      class="rounded border-l-4 border-red-500 bg-red-50 p-4 text-red-700 shadow-sm"
+      class="rounded border-l-4 border-brand-alert bg-brand-alert/10 p-4 text-brand-alert shadow-sm"
     >
       <p class="font-medium">{errorMessage}</p>
     </div>
   {/if}
   {#if successMessage}
     <div
-      class="rounded border-l-4 border-emerald-500 bg-emerald-50 p-4 text-emerald-700 shadow-sm"
+      class="rounded border-l-4 border-brand bg-brand/10 p-4 text-brand shadow-sm"
     >
       <p class="font-medium">{successMessage}</p>
     </div>
   {/if}
 
-  <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-    <h2 class="mb-4 text-lg font-bold text-gray-900">Create New Category</h2>
-    <form on:submit={handleAddCategory} class="flex items-end gap-4">
+  <div class="rounded-xl border border-outline bg-surface p-6 shadow-sm">
+    <h2 class="mb-4 text-lg font-bold text-content">Create New Category</h2>
+    <form onsubmit={handleAddCategory} class="flex items-end gap-4">
       <div class="flex-1">
-        <label for="name" class="mb-1 block text-sm font-medium text-gray-700"
+        <label for="name" class="mb-1 block text-sm font-medium text-content-muted"
           >Category Name</label
         >
         <input
@@ -112,14 +112,14 @@
           id="name"
           bind:value={newCategoryName}
           placeholder="e.g. Desk Organization"
-          class="w-full rounded-lg border border-gray-300 px-4 py-2 transition-all outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
+          class="w-full rounded-lg border border-outline bg-base px-4 py-2 text-content transition-all outline-none focus:border-brand focus:ring-2 focus:ring-brand"
           disabled={isSubmitting}
         />
       </div>
       <button
         type="submit"
         disabled={isSubmitting || !newCategoryName.trim()}
-        class="rounded-lg bg-emerald-600 px-6 py-2 font-medium text-white transition-all hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        class="rounded-lg bg-brand px-6 py-2 font-medium text-black transition-all hover:opacity-80 focus:ring-2 focus:ring-brand focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isSubmitting ? 'Saving...' : 'Add Category'}
       </button>
@@ -127,13 +127,13 @@
   </div>
 
   <div
-    class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+    class="overflow-hidden rounded-xl border border-outline bg-surface shadow-sm"
   >
     <div
-      class="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-4"
+      class="flex items-center justify-between border-b border-outline bg-base px-6 py-4"
     >
-      <h2 class="text-lg font-bold text-gray-900">Active Categories</h2>
-      <span class="text-sm font-medium text-gray-500"
+      <h2 class="text-lg font-bold text-content">Active Categories</h2>
+      <span class="text-sm font-medium text-content-muted"
         >{categories.length} Total</span
       >
     </div>
@@ -142,40 +142,40 @@
       <table class="w-full border-collapse text-left">
         <thead>
           <tr
-            class="bg-gray-50/50 text-sm tracking-wider text-gray-500 uppercase"
+            class="bg-base/50 text-sm tracking-wider text-content-muted uppercase"
           >
             <th class="px-6 py-3 font-medium">Name</th>
             <th class="px-6 py-3 font-medium">URL Slug</th>
             <th class="px-6 py-3 text-right font-medium">Actions</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200">
+        <tbody class="divide-y divide-outline">
           {#if isLoading}
             <tr>
-              <td colspan="3" class="px-6 py-8 text-center text-gray-500"
+              <td colspan="3" class="px-6 py-8 text-center text-content-muted"
                 >Loading categories...</td
               >
             </tr>
           {:else if categories.length === 0}
             <tr>
-              <td colspan="3" class="px-6 py-8 text-center text-gray-500"
+              <td colspan="3" class="px-6 py-8 text-center text-content-muted"
                 >No categories found. Create one above.</td
               >
             </tr>
           {:else}
             {#each categories as category}
-              <tr class="transition-colors hover:bg-gray-50">
-                <td class="px-6 py-4 font-medium text-gray-900"
+              <tr class="transition-colors hover:bg-base">
+                <td class="px-6 py-4 font-medium text-content"
                   >{category.name}</td
                 >
-                <td class="px-6 py-4 font-mono text-sm text-gray-500"
+                <td class="px-6 py-4 font-mono text-sm text-content-muted"
                   >/{category.slug}</td
                 >
                 <td class="px-6 py-4 text-right">
                   <button
-                    on:click={() =>
+                    onclick={() =>
                       handleDeleteCategory(category.id, category.name)}
-                    class="text-sm font-medium text-red-500 transition-colors hover:text-red-700"
+                    class="text-sm font-medium text-brand-alert transition-colors hover:opacity-80"
                   >
                     Delete
                   </button>

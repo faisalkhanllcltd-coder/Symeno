@@ -3,23 +3,23 @@ import StorefrontLayout from '../../layouts/Storefront.astro';
 ---
 
 <StorefrontLayout title="Privacy Policy">
-  <div class="min-h-screen bg-[#0b1516] py-16 md:py-24">
+  <div class="min-h-screen bg-base py-16 md:py-24">
     <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
       <div class="mb-12">
         <h1
-          class="mb-4 text-4xl font-bold tracking-tighter text-white md:text-5xl"
+          class="mb-4 text-4xl font-bold tracking-tighter text-content md:text-5xl"
         >
           Privacy Policy.
         </h1>
-        <p class="font-mono text-xs tracking-widest text-[#36f4a4] uppercase">
+        <p class="font-mono text-xs tracking-widest text-brand uppercase">
           Last Updated: October 15, 2025
         </p>
       </div>
 
-      <div class="space-y-12 leading-relaxed font-light text-[#dae5e6]/70">
+      <div class="space-y-12 leading-relaxed font-light text-content-muted">
         <section>
           <h2
-            class="mb-4 border-b border-[#dae5e6]/10 pb-2 text-xl font-bold text-white"
+            class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content"
           >
             Data Minimization Doctrine
           </h2>
@@ -34,23 +34,23 @@ import StorefrontLayout from '../../layouts/Storefront.astro';
 
         <section>
           <h2
-            class="mb-4 border-b border-[#dae5e6]/10 pb-2 text-xl font-bold text-white"
+            class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content"
           >
             What We Collect
           </h2>
           <ul class="mb-4 list-disc space-y-2 pl-5">
             <li>
-              <strong class="font-medium text-white">Transactional Data:</strong
+              <strong class="font-medium text-content">Transactional Data:</strong
               > Name, shipping address, and email (for order receipts and tracking).
             </li>
             <li>
-              <strong class="font-medium text-white">Payment Data:</strong> Handled
-              securely at the edge via Stripe. <span class="text-[#36f4a4]"
+              <strong class="font-medium text-content">Payment Data:</strong> Handled
+              securely at the edge via Stripe. <span class="text-brand"
                 >Symeno servers never see, touch, or store your raw credit card
                 numbers.</span>
             </li>
             <li>
-              <strong class="font-medium text-white">Telemetry:</strong> Anonymized
+              <strong class="font-medium text-content">Telemetry:</strong> Anonymized
               session data to track site performance and detect bot attacks.
             </li>
           </ul>
@@ -58,7 +58,7 @@ import StorefrontLayout from '../../layouts/Storefront.astro';
 
         <section>
           <h2
-            class="mb-4 border-b border-[#dae5e6]/10 pb-2 text-xl font-bold text-white"
+            class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content"
           >
             Third-Party Subprocessors
           </h2>

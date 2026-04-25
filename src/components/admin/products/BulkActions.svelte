@@ -73,7 +73,7 @@
 
   {#if showPriceModal}
     <div
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-base/80"
     >
       <div class="w-96 border border-outline bg-surface p-6">
         <h3 class="mb-4 font-mono text-sm text-content">Adjust Prices (Bulk)</h3>

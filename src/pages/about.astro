@@ -6,29 +6,29 @@ import StorefrontLayout from '../layouts/Storefront.astro';
   title="Our Thesis"
   description="How Symeno leverages volume to collapse retail margins."
 >
-  <div class="min-h-screen bg-[#0b1516]">
+  <div class="min-h-screen bg-base">
     <section
-      class="relative overflow-hidden border-b border-[#dae5e6]/5 py-24 md:py-32"
+      class="relative overflow-hidden border-b border-outline py-24 md:py-32"
     >
       <div
-        class="pointer-events-none absolute top-0 right-0 h-[500px] w-[500px] rounded-full bg-[#36f4a4] opacity-[0.03] blur-[100px]"
+        class="pointer-events-none absolute top-0 right-0 h-[500px] w-[500px] rounded-full bg-brand opacity-[0.03] blur-[100px]"
       >
       </div>
 
       <div class="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <span
-          class="mb-6 block font-mono text-[10px] tracking-[0.2em] text-[#36f4a4] uppercase"
+          class="mb-6 block font-mono text-[10px] tracking-[0.2em] text-brand uppercase"
           >The Symeno Thesis</span
         >
         <h1
-          class="mb-8 text-4xl leading-tight font-bold tracking-tighter text-white md:text-6xl"
+          class="mb-8 text-4xl leading-tight font-bold tracking-tighter text-content md:text-6xl"
         >
           Retail margins are a tax on the uninformed. <span
-            class="text-[#dae5e6]/40">We refuse to pay it.</span
+            class="text-content-muted">We refuse to pay it.</span
           >
         </h1>
         <div
-          class="space-y-6 text-lg leading-relaxed font-light text-[#dae5e6]/70"
+          class="space-y-6 text-lg leading-relaxed font-light text-content-muted"
         >
           <p>
             Symeno LLC was not founded by traditional retailers. We are data
@@ -50,25 +50,25 @@ import StorefrontLayout from '../layouts/Storefront.astro';
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 gap-16 md:grid-cols-2 lg:gap-24">
           <div class="flex flex-col justify-center">
-            <h2 class="mb-12 text-2xl font-bold tracking-tight text-white">
+            <h2 class="mb-12 text-2xl font-bold tracking-tight text-content">
               How the math works.
             </h2>
 
-            <div class="relative space-y-12 border-l border-[#dae5e6]/10 pl-8">
+            <div class="relative space-y-12 border-l border-outline pl-8">
               <div class="relative">
                 <span
-                  class="absolute top-1 -left-[37px] h-2 w-2 rounded-full bg-[#36f4a4] shadow-[0_0_10px_rgba(54,244,164,0.5)]"
+                  class="absolute top-1 -left-[37px] h-2 w-2 rounded-full bg-brand shadow-[0_0_10px_var(--color-brand)]"
                 ></span>
                 <span
-                  class="mb-2 block font-mono text-4xl font-bold tracking-tighter text-white"
+                  class="mb-2 block font-mono text-4xl font-bold tracking-tighter text-content"
                   >01</span
                 >
                 <h3
-                  class="mb-3 text-sm font-bold tracking-widest text-white uppercase"
+                  class="mb-3 text-sm font-bold tracking-widest text-content uppercase"
                 >
                   Volume Aggregation
                 </h3>
-                <p class="text-sm leading-relaxed font-light text-[#dae5e6]/60">
+                <p class="text-sm leading-relaxed font-light text-content-muted">
                   We pool capital to execute massive wholesale orders directly
                   with authorized distributors. Buying in volume grants us
                   pricing tiers inaccessible to standard retailers.
@@ -77,18 +77,18 @@ import StorefrontLayout from '../layouts/Storefront.astro';
 
               <div class="relative">
                 <span
-                  class="absolute top-1 -left-[37px] h-2 w-2 rounded-full border border-[#dae5e6]/30 bg-[#131d1e]"
+                  class="absolute top-1 -left-[37px] h-2 w-2 rounded-full border border-outline bg-surface"
                 ></span>
                 <span
-                  class="mb-2 block font-mono text-4xl font-bold tracking-tighter text-white"
+                  class="mb-2 block font-mono text-4xl font-bold tracking-tighter text-content"
                   >02</span
                 >
                 <h3
-                  class="mb-3 text-sm font-bold tracking-widest text-white uppercase"
+                  class="mb-3 text-sm font-bold tracking-widest text-content uppercase"
                 >
                   Minimal Overhead
                 </h3>
-                <p class="text-sm leading-relaxed font-light text-[#dae5e6]/60">
+                <p class="text-sm leading-relaxed font-light text-content-muted">
                   No physical storefronts. No massive ad campaigns. Our
                   operations are lean, entirely cloud-based, and highly
                   automated. We don't need a 40% margin to survive.
@@ -97,18 +97,18 @@ import StorefrontLayout from '../layouts/Storefront.astro';
 
               <div class="relative">
                 <span
-                  class="absolute top-1 -left-[37px] h-2 w-2 rounded-full border border-[#dae5e6]/30 bg-[#131d1e]"
+                  class="absolute top-1 -left-[37px] h-2 w-2 rounded-full border border-outline bg-surface"
                 ></span>
                 <span
-                  class="mb-2 block font-mono text-4xl font-bold tracking-tighter text-white"
+                  class="mb-2 block font-mono text-4xl font-bold tracking-tighter text-content"
                   >03</span
                 >
                 <h3
-                  class="mb-3 text-sm font-bold tracking-widest text-white uppercase"
+                  class="mb-3 text-sm font-bold tracking-widest text-content uppercase"
                 >
                   Margin Compression
                 </h3>
-                <p class="text-sm leading-relaxed font-light text-[#dae5e6]/60">
+                <p class="text-sm leading-relaxed font-light text-content-muted">
                   We take a flat, sustainable fractional margin on wholesale
                   cost. The entire remaining delta between our cost and the RRP
                   stays in your bank account.
@@ -118,47 +118,47 @@ import StorefrontLayout from '../layouts/Storefront.astro';
           </div>
 
           <div
-            class="flex flex-col justify-center border border-[#dae5e6]/10 bg-[#131d1e] p-8 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.4)] md:p-12"
+            class="flex flex-col justify-center border border-outline bg-surface p-8 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.4)] md:p-12"
           >
-            <h3 class="mb-8 text-lg font-bold tracking-tight text-white">
+            <h3 class="mb-8 text-lg font-bold tracking-tight text-content">
               Corporate Integrity
             </h3>
 
             <ul class="space-y-6 font-mono text-sm">
-              <li class="flex justify-between border-b border-[#dae5e6]/5 pb-4">
-                <span class="text-[#dae5e6]/50 uppercase">Legal Entity</span>
-                <span class="text-right text-white">Symeno LLC</span>
+              <li class="flex justify-between border-b border-outline pb-4">
+                <span class="text-content-muted uppercase">Legal Entity</span>
+                <span class="text-right text-content">Symeno LLC</span>
               </li>
-              <li class="flex justify-between border-b border-[#dae5e6]/5 pb-4">
-                <span class="text-[#dae5e6]/50 uppercase">Inventory Status</span
+              <li class="flex justify-between border-b border-outline pb-4">
+                <span class="text-content-muted uppercase">Inventory Status</span
                 >
-                <span class="text-right text-[#36f4a4]"
+                <span class="text-right text-brand"
                   >100% Owned & Stocked<br /><span
-                    class="text-[10px] text-[#dae5e6]/40"
+                    class="text-[10px] text-content-muted"
                     >(No Dropshipping)</span
                   ></span
                 >
               </li>
-              <li class="flex justify-between border-b border-[#dae5e6]/5 pb-4">
-                <span class="text-[#dae5e6]/50 uppercase"
+              <li class="flex justify-between border-b border-outline pb-4">
+                <span class="text-content-muted uppercase"
                   >Payment Processing</span
                 >
-                <span class="text-right text-white"
+                <span class="text-right text-content"
                   >Stripe (PCI DSS Level 1)</span
                 >
               </li>
               <li class="flex justify-between pb-2">
-                <span class="text-[#dae5e6]/50 uppercase"
+                <span class="text-content-muted uppercase"
                   >Customer Guarantee</span
                 >
-                <span class="text-right text-white"
+                <span class="text-right text-content"
                   >30-Day Returns<br />Authenticity Verified</span
                 >
               </li>
             </ul>
 
-            <div class="mt-12 border-t border-[#dae5e6]/10 pt-8">
-              <p class="text-xs leading-relaxed text-[#dae5e6]/50 italic">
+            <div class="mt-12 border-t border-outline pt-8">
+              <p class="text-xs leading-relaxed text-content-muted italic">
                 "Trust is earned through transparency and execution. We don't
                 ask you to trust our marketing; we ask you to verify our
                 prices."

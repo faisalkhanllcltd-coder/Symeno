@@ -29,11 +29,11 @@ const renderStars = (rating: number) =>
 
 <AccountLayout title="My Field Reports" currentPath="/account/reviews">
   <div class="mx-auto max-w-4xl space-y-6">
-    <div class="border-b border-white/10 pb-4">
-      <h1 class="text-xl font-bold tracking-widest text-white uppercase">
+    <div class="border-b border-outline pb-4">
+      <h1 class="text-xl font-bold tracking-widest text-content uppercase">
         Submitted Reports
       </h1>
-      <p class="mt-1 font-mono text-xs text-white/50">
+      <p class="mt-1 font-mono text-xs text-content-muted">
         Manage your product evaluations.
       </p>
     </div>
@@ -41,18 +41,18 @@ const renderStars = (rating: number) =>
     <div class="space-y-4">
       {
         myReviews.map((review) => (
-          <div class="flex flex-col justify-between gap-6 border border-white/10 bg-[#111318] p-6 transition-colors hover:border-white/30 sm:flex-row">
+          <div class="flex flex-col justify-between gap-6 border border-outline bg-base p-6 transition-colors hover:border-brand/30 sm:flex-row">
             <div class="flex-1">
               <div class="mb-2 flex items-center gap-3">
                 <span class="text-sm tracking-widest text-amber-400">
                   {renderStars(review.rating)}
                 </span>
                 {review.status === 'APPROVED' ? (
-                  <span class="border border-[#36f4a4]/30 bg-[#36f4a4]/10 px-2 py-0.5 text-[9px] tracking-widest text-[#36f4a4] uppercase">
+                  <span class="border border-brand/30 bg-brand/10 px-2 py-0.5 text-[9px] tracking-widest text-brand uppercase">
                     Published
                   </span>
                 ) : review.status === 'REJECTED' ? (
-                  <span class="border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[9px] tracking-widest text-rose-400 uppercase">
+                  <span class="border border-brand-alert/30 bg-brand-alert/10 px-2 py-0.5 text-[9px] tracking-widest text-brand-alert uppercase">
                     Rejected
                   </span>
                 ) : (
@@ -61,19 +61,19 @@ const renderStars = (rating: number) =>
                   </span>
                 )}
               </div>
-              <h3 class="mb-1 text-sm font-bold text-white">{review.title}</h3>
-              <p class="mb-2 font-mono text-[10px] text-white/50">
+              <h3 class="mb-1 text-sm font-bold text-content">{review.title}</h3>
+              <p class="mb-2 font-mono text-[10px] text-content-muted">
                 For:{' '}
                 <a
                   href={`/shop/product/${review.slug}`}
-                  class="text-[#36f4a4] hover:underline"
+                  class="text-brand hover:underline"
                 >
                   {review.product_title}
                 </a>
               </p>
             </div>
             <div class="flex flex-col items-end justify-between text-right">
-              <span class="font-mono text-[10px] text-white/30">
+              <span class="font-mono text-[10px] text-content-muted">
                 {new Date(review.created_at).toLocaleDateString()}
               </span>
             </div>
@@ -83,8 +83,8 @@ const renderStars = (rating: number) =>
 
       {
         myReviews.length === 0 && (
-          <div class="border border-white/10 bg-[#111318] p-12 text-center">
-            <p class="font-mono text-xs text-white/40 uppercase">
+          <div class="border border-outline bg-base p-12 text-center">
+            <p class="font-mono text-xs text-content-muted uppercase">
               No field reports submitted.
             </p>
           </div>

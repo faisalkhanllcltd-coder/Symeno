@@ -68,16 +68,16 @@ if (db) {
   <div class="max-w-7xl space-y-6">
     
     <div class="flex flex-wrap gap-4 items-center">
-      <a href="/admin/products/new" class="bg-[#36f4a4] text-black px-6 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-colors">
+      <a href="/admin/products/new" class="bg-brand text-black px-6 py-2 text-[10px] font-bold uppercase tracking-widest hover:opacity-80 transition-colors">
         + New Product
       </a>
       {#if metrics.pendingFulfillment > 0}
-        <a href="/admin/orders" class="border border-white/10 bg-white/5 text-white px-4 py-2 text-[10px] font-mono tracking-widest flex items-center gap-2 hover:border-white/30 transition-colors">
+        <a href="/admin/orders" class="border border-outline bg-surface text-content px-4 py-2 text-[10px] font-mono tracking-widest flex items-center gap-2 hover:border-brand/30 transition-colors">
           <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
           Pending Orders: {metrics.pendingFulfillment}
         </a>
       {/if}
-      <a href="/admin/returns" class="border border-white/10 text-white/50 px-4 py-2 text-[10px] font-mono tracking-widest hover:text-white transition-colors">
+      <a href="/admin/returns" class="border border-outline text-content-muted px-4 py-2 text-[10px] font-mono tracking-widest hover:text-content transition-colors">
         Process Returns
       </a>
     </div>

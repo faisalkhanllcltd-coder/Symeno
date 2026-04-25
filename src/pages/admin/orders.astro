@@ -39,19 +39,19 @@ const orders = [
   currentPath="/admin/orders"
 >
   <div
-    class="flex h-full flex-col overflow-hidden border border-white/10 bg-[#111318]"
+    class="flex h-full flex-col overflow-hidden border border-outline bg-base"
   >
     <div
-      class="flex items-center justify-between border-b border-white/10 bg-white/[0.02] p-4"
+      class="flex items-center justify-between border-b border-outline bg-surface p-4"
     >
       <input
         type="text"
         placeholder="Search orders by ID or email..."
-        class="w-64 border border-white/10 bg-[#1A1D23] px-3 py-1.5 font-mono text-xs text-white placeholder:text-white/30 focus:border-[#36f4a4]/50 focus:outline-none"
+        class="w-64 border border-outline bg-surface px-3 py-1.5 font-mono text-xs text-content placeholder:text-content-muted focus:border-brand/50 focus:outline-none"
       />
       <div class="flex gap-2">
         <button
-          class="border border-white/10 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white/60 uppercase transition-colors hover:text-white focus:outline-none"
+          class="border border-outline px-3 py-1.5 font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors hover:text-content focus:outline-none"
           >Export CSV</button
         >
       </div>

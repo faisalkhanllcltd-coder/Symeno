@@ -11,11 +11,11 @@
   ];
 </script>
 
-<div class="flex w-full overflow-hidden border-y border-gray-800 bg-black py-4">
+<div class="flex w-full overflow-hidden border-y border-outline bg-base py-4">
   <div class="flex animate-[marquee_20s_linear_infinite] whitespace-nowrap">
     {#each [...brands, ...brands, ...brands] as brand}
       <span
-        class="mx-8 cursor-default font-mono text-sm font-bold tracking-[0.2em] text-gray-500 uppercase transition-colors hover:text-white"
+        class="mx-8 cursor-default font-mono text-sm font-bold tracking-[0.2em] text-content-muted uppercase transition-colors hover:text-content"
         >{brand}</span
       >
     {/each}

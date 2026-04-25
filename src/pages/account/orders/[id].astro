@@ -29,21 +29,21 @@ if (!order) return Astro.redirect('/404');
 >
   <div class="mx-auto max-w-4xl space-y-8">
     <div
-      class="flex flex-col items-start justify-between gap-4 border-b border-white/10 pb-6 md:flex-row md:items-center"
+      class="flex flex-col items-start justify-between gap-4 border-b border-outline pb-6 md:flex-row md:items-center"
     >
       <div>
         <div class="flex items-center gap-3">
           <h1
-            class="font-mono text-xl font-bold tracking-widest text-white uppercase"
+            class="font-mono text-xl font-bold tracking-widest text-content uppercase"
           >
             #{id.substring(0, 8)}
           </h1>
           <span
-            class="border border-white/10 px-2 py-0.5 text-[9px] tracking-widest text-white/70 uppercase"
+            class="border border-outline px-2 py-0.5 text-[9px] tracking-widest text-content-muted uppercase"
             >{order.status}</span
           >
         </div>
-        <p class="mt-1 font-mono text-xs text-white/50">
+        <p class="mt-1 font-mono text-xs text-content-muted">
           Placed on {new Date(order.created_at).toLocaleDateString()}
         </p>
       </div>
@@ -51,40 +51,40 @@ if (!order) return Astro.redirect('/404');
         <a
           href={`/api/account/orders/${id}/invoice`}
           target="_blank"
-          class="flex-1 border border-white/10 px-4 py-2 text-center font-mono text-[10px] tracking-widest text-white/70 uppercase transition-colors hover:text-white md:flex-none"
+          class="flex-1 border border-outline px-4 py-2 text-center font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors hover:text-content md:flex-none"
           >Get Invoice</a
         >
       </div>
     </div>
 
-    <div class="mb-8 hidden border border-white/10 bg-[#111318] p-6 sm:block">
+    <div class="mb-8 hidden border border-outline bg-base p-6 sm:block">
       <CustomerOrderTimeline client:load status={order.status} />
     </div>
 
     <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
       <div class="space-y-6 md:col-span-2">
-        <div class="border border-white/10 bg-[#111318] p-6">
+        <div class="border border-outline bg-base p-6">
           <h2
-            class="mb-4 border-b border-white/10 pb-2 font-mono text-xs font-bold tracking-widest text-white/50 uppercase"
+            class="mb-4 border-b border-outline pb-2 font-mono text-xs font-bold tracking-widest text-content-muted uppercase"
           >
             Manifest
           </h2>
           <div class="space-y-4">
             <div class="flex items-center gap-4">
-              <div class="h-16 w-16 border border-white/5 bg-[#1A1D23]"></div>
+              <div class="h-16 w-16 border border-outline bg-surface"></div>
               <div class="flex-1">
-                <h3 class="text-sm font-bold text-white">
+                <h3 class="text-sm font-bold text-content">
                   Example Product Name
                 </h3>
-                <p class="mt-0.5 font-mono text-[10px] text-white/40">
+                <p class="mt-0.5 font-mono text-[10px] text-content-muted">
                   Variant: Default
                 </p>
               </div>
               <div class="text-right">
-                <p class="font-mono text-sm font-bold text-[#36f4a4]">
+                <p class="font-mono text-sm font-bold text-brand">
                   ${order.total.toFixed(2)}
                 </p>
-                <p class="font-mono text-[10px] text-white/40">Qty: 1</p>
+                <p class="font-mono text-[10px] text-content-muted">Qty: 1</p>
               </div>
             </div>
           </div>
@@ -92,34 +92,34 @@ if (!order) return Astro.redirect('/404');
       </div>
 
       <div class="space-y-6">
-        <div class="border border-white/10 bg-[#111318] p-6">
+        <div class="border border-outline bg-base p-6">
           <h2
-            class="mb-4 border-b border-white/10 pb-2 font-mono text-xs font-bold tracking-widest text-white/50 uppercase"
+            class="mb-4 border-b border-outline pb-2 font-mono text-xs font-bold tracking-widest text-content-muted uppercase"
           >
             Logistics
           </h2>
-          <p class="font-mono text-xs whitespace-pre-wrap text-white/80">
+          <p class="font-mono text-xs whitespace-pre-wrap text-content">
             {order.shipping_address || 'No address provided.'}
           </p>
         </div>
 
-        <div class="border border-white/10 bg-[#111318] p-6">
+        <div class="border border-outline bg-base p-6">
           <h2
-            class="mb-4 border-b border-white/10 pb-2 font-mono text-xs font-bold tracking-widest text-white/50 uppercase"
+            class="mb-4 border-b border-outline pb-2 font-mono text-xs font-bold tracking-widest text-content-muted uppercase"
           >
             Summary
           </h2>
           <div class="space-y-2 font-mono text-xs">
-            <div class="flex justify-between text-white/70">
+            <div class="flex justify-between text-content-muted">
               <span>Subtotal</span><span>${order.total.toFixed(2)}</span>
             </div>
-            <div class="flex justify-between text-white/70">
+            <div class="flex justify-between text-content-muted">
               <span>Shipping</span><span>$0.00</span>
             </div>
             <div
-              class="flex justify-between border-t border-white/5 pt-2 font-bold text-white"
+              class="flex justify-between border-t border-outline pt-2 font-bold text-content"
             >
-              <span>Total</span><span class="text-[#36f4a4]"
+              <span>Total</span><span class="text-brand"
                 >${order.total.toFixed(2)}</span>
             </div>
           </div>

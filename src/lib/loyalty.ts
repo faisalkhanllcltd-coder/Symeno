@@ -29,9 +29,9 @@ export const TIERS = [
     id: 'PLATINUM',
     name: 'Platinum Elite',
     threshold: 2000,
-    color: 'text-[#36f4a4]',
-    bg: 'bg-[#36f4a4]/10',
-    border: 'border-[#36f4a4]/30',
+    color: 'text-brand',
+    bg: 'bg-brand/10',
+    border: 'border-brand/30',
   },
 ];
 

@@ -39,7 +39,7 @@ if (db) {
   currentPath="/admin/inventory"
   primaryAction={{ label: 'New Product', url: '/admin/inventory/new' }}
 >
-  <div class="border border-white/10 bg-[#111318]">
+  <div class="border border-outline bg-base">
     <InventoryTable client:load inventory={inventoryData} />
   </div>
 </AdminLayout>

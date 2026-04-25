@@ -21,30 +21,30 @@ if (env.DB) {
 
 <AccountLayout title="Returns & RMAs" currentPath="/account/returns">
   <div class="max-w-4xl mx-auto space-y-6">
-    <div class="border-b border-white/10 pb-4 flex justify-between items-end">
+    <div class="border-b border-outline pb-4 flex justify-between items-end">
       <div>
-        <h1 class="text-xl font-bold text-white uppercase tracking-widest">Active RMAs</h1>
-        <p class="text-xs text-white/50 font-mono mt-1">Track your return requests</p>
+        <h1 class="text-xl font-bold text-content uppercase tracking-widest">Active RMAs</h1>
+        <p class="text-xs text-content-muted font-mono mt-1">Track your return requests</p>
       </div>
-      <a href="/support/start-return" class="bg-[#36f4a4] text-black px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-colors">Start New Return</a>
+      <a href="/support/start-return" class="bg-brand text-black px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:opacity-80 transition-colors">Start New Return</a>
     </div>
 
     <div class="space-y-4">
       {#each returns as rma}
-        <div class="bg-[#111318] border border-white/10 p-4 flex justify-between items-center hover:border-white/30 transition-colors">
+        <div class="bg-base border border-outline p-4 flex justify-between items-center hover:border-brand/30 transition-colors">
           <div>
             <div class="flex items-center gap-3 mb-1">
-              <span class="text-xs font-bold text-white font-mono">RMA-{rma.id.substring(0,6).toUpperCase()}</span>
+              <span class="text-xs font-bold text-content font-mono">RMA-{rma.id.substring(0,6).toUpperCase()}</span>
               <span class="text-[9px] px-2 py-0.5 border border-amber-500/30 text-amber-400 bg-amber-500/10 uppercase tracking-widest">{rma.status.replace('_', ' ')}</span>
             </div>
-            <p class="text-[10px] font-mono text-white/40">Reason: {rma.rma_reason || 'Standard Return'}</p>
+            <p class="text-[10px] font-mono text-content-muted">Reason: {rma.rma_reason || 'Standard Return'}</p>
           </div>
-          <a href={`/account/returns/${rma.id}`} class="border border-white/10 text-white/70 px-4 py-2 text-[10px] font-mono uppercase tracking-widest hover:text-white transition-colors">View Status</a>
+          <a href={`/account/returns/${rma.id}`} class="border border-outline text-content-muted px-4 py-2 text-[10px] font-mono uppercase tracking-widest hover:text-content transition-colors">View Status</a>
         </div>
       {/each}
       {returns.length === 0 && (
-        <div class="p-12 border border-white/10 text-center bg-[#111318]">
-          <p class="text-xs font-mono text-white/40 uppercase mb-4">No active return authorizations.</p>
+        <div class="p-12 border border-outline text-center bg-base">
+          <p class="text-xs font-mono text-content-muted uppercase mb-4">No active return authorizations.</p>
         </div>
       )}
     </div>
