@@ -1,6 +1,6 @@
 name = "symeno-store"
 # Entry point for Astro's SSR bundle
-# main = "./dist/_worker.js/index.js"
+main = "./dist/_worker.js/index.js"
 compatibility_date = "2024-09-23"
 compatibility_flags = [ "nodejs_compat_v2" ]
 
