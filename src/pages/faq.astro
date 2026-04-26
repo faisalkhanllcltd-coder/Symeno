@@ -4,19 +4,34 @@ import FaqAccordion from '../components/storefront/support/FaqAccordion.svelte';
 
 const faqItems = [
   {
-    question: 'How does your pricing work?',
+    question: 'How are your prices so much lower than standard retail?',
     answer:
-      'Symeno utilizes automated arbitrage algorithms to source authorized inventory from regions with lower wholesale costs. We pass those savings directly to you by maintaining a low-overhead operational model.',
+      'We utilize a data-driven arbitrage model to source inventory from regions and authorized distributors with lower wholesale costs. Unlike traditional retailers, we have zero physical storefronts and minimal overhead. We take a flat, small margin and pass the remaining savings directly to you.',
   },
   {
-    question: 'Are the products authentic?',
+    question: 'Are these products authentic and brand new?',
     answer:
-      'Every unit is serial-verified and sourced through authorized distributors. We do not engage with third-party marketplaces or grey-market sellers.',
+      'Yes. 100% of our inventory is factory-sealed, brand new, and serial-verified. We procure directly from Tier-1 authorized distributors and never engage with third-party marketplaces, grey-market sellers, or refurbished units.',
+  },
+  {
+    question: 'Do the products come with a manufacturer warranty?',
+    answer:
+      'Absolutely. Because our hardware is sourced through official distributor channels, every product carries the full, standard manufacturer warranty (e.g., Apple Care eligible, Sony 1-year standard).',
+  },
+  {
+    question: 'Do you actually hold stock, or is this dropshipping?',
+    answer:
+      'We are strictly anti-dropshipping. We purchase, own, and physically hold 100% of the inventory listed on our site in our secure logistics hubs. If you can add it to your cart, it is sitting on a shelf ready to ship to you immediately.',
   },
   {
     question: 'What is your return policy?',
     answer:
-      'Unopened hardware can be returned within 30 days of delivery. Once the factory seal is broken, items are subject to a 15% restocking fee unless a verifiable technical defect is present.',
+      'We offer a hassle-free 30-day return window. Unopened, factory-sealed hardware can be returned for a full refund. Because we sell hardware at such tight margins, opened items without a technical defect are subject to a 15% restocking fee to cover the loss of "brand new" value.',
+  },
+  {
+    question: 'I need to procure hardware for my company. Do you do B2B bulk orders?',
+    answer:
+      'Yes. Our B2B operations team frequently handles volume procurement for startups, studios, and corporate offices. We can often negotiate even deeper discounts on large volume orders. Please email wholesale@symeno.com to open a dialogue.',
   },
 ];
 ---
@@ -25,11 +40,11 @@ const faqItems = [
   <div class="mx-auto max-w-4xl px-4 py-20">
     <div class="mb-12">
       <h1
-        class="mb-4 text-4xl font-bold tracking-tighter text-gray-900 uppercase"
+        class="mb-4 text-4xl font-bold tracking-tighter text-content uppercase"
       >
         Operational Intelligence.
       </h1>
-      <p class="font-mono text-sm tracking-widest text-gray-500 uppercase">
+      <p class="font-mono text-sm tracking-widest text-content-muted uppercase">
         Frequently Asked Questions & Protocols
       </p>
     </div>

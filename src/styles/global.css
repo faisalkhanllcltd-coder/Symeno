@@ -42,22 +42,69 @@
     --theme-content: #ffffff;
     --theme-content-muted: rgba(218, 229, 230, 0.6);
     --theme-outline: rgba(218, 229, 230, 0.1);
-  }
-
-  /* Global Scrollbar Purge */
-  *::-webkit-scrollbar {
-    display: none;
-  }
-
-  * {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    /* Informs the browser engine to use dark defaults before custom CSS kicks in */
+    color-scheme: dark;
   }
 
   html,
   body {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
     scroll-behavior: smooth;
+    /* Edge Case Defense: Hard-lock horizontal scroll, allow vertical */
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: var(--theme-base);
+    color: var(--theme-content);
+  }
+
+  /* * MOBILE & TABLET: The "Native App" Feel
+   * Purge scrollbars entirely for touch devices.
+   */
+  @media (max-width: 1023px) {
+    *::-webkit-scrollbar {
+      display: none;
+    }
+
+    * {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  }
+
+  /* * DESKTOP: Premium Visual Feedback
+   * Custom, slim scrollbars dynamically linked to the active theme.
+   */
+  @media (min-width: 1024px) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--theme-outline) var(--theme-base);
+    }
+
+    *::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    *::-webkit-scrollbar-track {
+      background: var(--theme-base);
+    }
+
+    *::-webkit-scrollbar-thumb {
+      background-color: var(--theme-outline);
+      border-radius: 8px;
+    }
+
+    *::-webkit-scrollbar-thumb:hover {
+      background-color: var(--theme-content-muted);
+    }
+  }
+}
+
+@layer components {
+
+  /* * PREMIUM BUTTON PHYSICS
+   * Use this instead of aggressive transform scales to convey high-end UI.
+   */
+  .btn-premium {
+    @apply transition-all duration-200 ease-out active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand focus-visible:ring-offset-base;
   }
 }

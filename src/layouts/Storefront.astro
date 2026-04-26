@@ -1,18 +1,13 @@
 ---
 import '../styles/global.css';
 import CartDrawer from '../components/storefront/cart/CartDrawer.svelte';
-// TELEMETRY UPGRADE: Injecting orphaned marketing scripts
-import GoogleTag from '../components/analytics/GoogleTag.astro';
-import MetaPixel from '../components/analytics/MetaPixel.astro';
+import GoogleTag from '../components/analytics/GoogleTag.astro';     
+import MetaPixel from '../components/analytics/MetaPixel.astro';     
 
-// MARKETING & SCALE MATRIX UPGRADES
-import SEOHead from '../components/storefront/seo/SEOHead.astro';
-import PromoBanner from '../components/storefront/marketing/PromoBanner.svelte';
-import NewsletterCapture from '../components/storefront/marketing/NewsletterCapture.svelte';
+import SEOHead from '../components/storefront/seo/SEOHead.astro';    
 
-// ASSEMBLY: Wiring extracted layout components
-import TopNav from '../components/storefront/layout/TopNav.astro';
-import Footer from '../components/storefront/layout/Footer.astro';
+import TopNav from '../components/storefront/layout/TopNav.astro';   
+import Footer from '../components/storefront/layout/Footer.astro';   
 import GlobalSearch from '../components/storefront/search/GlobalSearch.svelte';
 
 interface Props {
@@ -24,7 +19,6 @@ const { title, description = 'Top Brands. Real Prices. No Games.' } =
   Astro.props;
 const currentYear = new Date().getFullYear();
 
-// SEO Schema Generation for Edge Injection
 const schema = JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'Organization',
@@ -37,15 +31,15 @@ const schema = JSON.stringify({
 ---
 
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth overflow-x-hidden w-full">
   <head>
     <SEOHead title={`${title} | Symeno`} description={description} />
 
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />     
+    <link rel="preconnect" href="https://fonts.googleapis.com" />    
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"  
       rel="stylesheet"
     />
 
@@ -78,15 +72,11 @@ const schema = JSON.stringify({
   </head>
 
   <body
-    class="bg-base text-content selection:bg-brand/20 selection:text-brand flex min-h-screen flex-col font-sans antialiased transition-colors duration-300"
+    class="bg-base text-content selection:bg-brand/20 selection:text-brand flex min-h-screen w-full flex-col font-sans antialiased transition-colors duration-300 overflow-x-hidden"
   >
-    <PromoBanner client:load />
-
     <TopNav />
 
-    <div class="bg-base relative z-30 mx-auto hidden w-full max-w-4xl px-4 py-6 sm:px-6 md:block lg:px-8">
-      <GlobalSearch client:load />
-    </div>
+    <GlobalSearch client:load />
 
     <main class="relative flex w-full flex-grow flex-col">
       <slot />
@@ -95,13 +85,6 @@ const schema = JSON.stringify({
     <footer
       class="bg-surface text-content-muted mt-auto transition-colors duration-300"
     >
-      <div class="border-outline border-t pt-8 pb-0">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div class="mb-8">
-            <NewsletterCapture client:load />
-          </div>
-        </div>
-      </div>
       <Footer />
     </footer>
 

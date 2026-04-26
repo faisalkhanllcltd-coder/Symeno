@@ -4,7 +4,7 @@ import StorefrontLayout from '../layouts/Storefront.astro';
 
 <StorefrontLayout
   title="Contact Operations"
-  description="Get in touch with Symeno support or B2B sourcing."
+  description="Get direct access to the Symeno operations and support team."  
 >
   <div class="min-h-screen bg-base py-12 md:py-24">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -12,11 +12,10 @@ import StorefrontLayout from '../layouts/Storefront.astro';
         <h1
           class="mb-4 text-4xl font-bold tracking-tighter text-content md:text-5xl"
         >
-          Operations & Support.
+          Real humans. Real answers.
         </h1>
         <p class="text-lg font-light text-content-muted">
-          We maintain strict SLA times. Expect a response within 4 hours during
-          business operations.
+          We don't use AI chatbots to deflect your questions. Whether you need an update on a single order or want to negotiate a 50-unit B2B procurement, you get direct access to our operations team in London.
         </p>
       </div>
 
@@ -25,7 +24,7 @@ import StorefrontLayout from '../layouts/Storefront.astro';
           <form
             class="space-y-6 border border-outline bg-surface p-6 md:p-8"
           >
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">      
               <div>
                 <label
                   class="mb-2 block font-mono text-[10px] tracking-widest text-content-muted uppercase"
@@ -34,7 +33,7 @@ import StorefrontLayout from '../layouts/Storefront.astro';
                 <input
                   type="text"
                   required
-                  class="w-full rounded-none border border-outline bg-base px-4 py-3.5 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none"
+                  class="w-full rounded-sm border border-outline bg-base px-4 py-3.5 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </div>
               <div>
@@ -45,7 +44,7 @@ import StorefrontLayout from '../layouts/Storefront.astro';
                 <input
                   type="email"
                   required
-                  class="w-full rounded-none border border-outline bg-base px-4 py-3.5 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none"
+                  class="w-full rounded-sm border border-outline bg-base px-4 py-3.5 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none focus:ring-1 focus:ring-brand"
                 />
               </div>
             </div>
@@ -57,7 +56,7 @@ import StorefrontLayout from '../layouts/Storefront.astro';
               >
               <input
                 type="text"
-                class="w-full rounded-none border border-outline bg-base px-4 py-3.5 font-mono text-sm text-content transition-colors placeholder:text-content-muted focus:border-brand/50 focus:outline-none"
+                class="w-full rounded-sm border border-outline bg-base px-4 py-3.5 font-mono text-sm text-content transition-colors placeholder:text-content-muted/50 focus:border-brand/50 focus:outline-none focus:ring-1 focus:ring-brand" 
                 placeholder="e.g. SYM-A8F29"
               />
             </div>
@@ -70,13 +69,14 @@ import StorefrontLayout from '../layouts/Storefront.astro';
               <textarea
                 required
                 rows="5"
-                class="w-full rounded-none border border-outline bg-base px-4 py-3.5 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none"
+                placeholder="How can we help?"
+                class="w-full rounded-sm border border-outline bg-base px-4 py-3.5 font-mono text-sm text-content placeholder:text-content-muted/50 transition-colors focus:border-brand/50 focus:outline-none focus:ring-1 focus:ring-brand"
               ></textarea>
             </div>
 
             <button
               type="button"
-              class="w-full bg-brand py-4 text-sm font-bold tracking-widest text-black uppercase shadow-none transition-colors duration-300 hover:opacity-80"
+              class="btn-premium w-full rounded-sm bg-brand py-4 text-sm font-bold tracking-widest text-brand-dark uppercase"
             >
               Transmit Message
             </button>
@@ -127,14 +127,14 @@ import StorefrontLayout from '../layouts/Storefront.astro';
             >
               Operating Hours
             </h3>
-            <ul class="space-y-2 font-mono text-sm text-content">
+            <ul class="space-y-2 font-mono text-sm text-content">   
               <li class="flex justify-between">
                 <span>Mon - Fri:</span>
-                <span class="text-content">09:00 - 18:00 (EST)</span>
+                <span class="text-content">09:00 - 18:00 (GMT)</span>
               </li>
               <li class="flex justify-between">
                 <span>Saturday:</span>
-                <span class="text-content">10:00 - 14:00 (EST)</span>
+                <span class="text-content">10:00 - 14:00 (GMT)</span>
               </li>
               <li class="flex justify-between">
                 <span>Sunday:</span>

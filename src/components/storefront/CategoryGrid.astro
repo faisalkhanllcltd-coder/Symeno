@@ -1,5 +1,4 @@
 ---
-// src/components/storefront/CategoryGrid.astro
 const categories = [
   { name: 'Audio', count: '143', discount: '35%' },
   { name: 'Smart Home', count: '89', discount: '20%' },
@@ -13,31 +12,29 @@ const categories = [
 <section class="relative w-full bg-base py-24">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="mb-12 flex items-end justify-between">
-      <h2 class="text-3xl font-bold tracking-tight text-content">
+      <h2 class="text-3xl font-bold tracking-tight text-content">    
         Shop by Category
       </h2>
       <a
         href="/shop"
         class="group hidden items-center gap-1 text-sm font-medium text-content-muted transition-colors hover:text-brand sm:flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       >
-        View All Catalog <span
-          class="transition-transform group-hover:translate-x-1">&rarr;</span
-        >
+        View All Catalog <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
       </a>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">
+    <div class="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">     
       {
         categories.map((cat) => (
           <a
-            href={/shop/ + cat.name.toLowerCase().replace(' ', '-')}
-            class="group relative block aspect-[4/3] overflow-hidden rounded-xl border border-outline bg-surface transition-all duration-500 hover:-translate-y-1 hover:border-content-muted hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)]"
+            href={`/shop/${cat.name.toLowerCase().replace(' ', '-')}`} 
+            class="group relative block aspect-[4/3] overflow-hidden rounded-xl border border-outline bg-surface transition-all duration-300 hover:border-content-muted hover:shadow-[0_0_15px_rgba(0,0,0,0.1)]"
           >
-            <div class="absolute top-4 right-4 z-20 -rotate-2 transform rounded border border-outline bg-base/90 px-3 py-1.5 shadow-xl backdrop-blur-sm">
-              <span class="mb-0.5 block font-mono text-[10px] leading-none tracking-wider text-content-muted uppercase">
+            <div class="absolute top-2 right-2 md:top-4 md:right-4 z-20 -rotate-2 transform rounded border border-outline bg-base/90 px-2 py-1 md:px-3 md:py-1.5 shadow-xl backdrop-blur-sm">
+              <span class="mb-[1px] block font-mono text-[7px] md:text-[10px] leading-none tracking-wider text-content-muted uppercase">
                 Up to
               </span>
-              <span class="font-mono text-sm leading-none font-bold text-brand">
+              <span class="font-mono text-[10px] md:text-sm leading-none font-bold text-brand">
                 {cat.discount} Off
               </span>
             </div>
@@ -48,20 +45,20 @@ const categories = [
               </span>
             </div>
 
-            <div class="absolute inset-0 z-10 bg-gradient-to-t from-base via-base/60 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-75" />
+            <div class="absolute inset-0 z-10 bg-gradient-to-t from-base via-base/60 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-80" />
 
-            <div class="absolute bottom-0 left-0 z-20 w-full translate-y-0 transform p-5">
-              <h3 class="mb-1.5 text-lg font-bold tracking-wider text-content uppercase transition-colors group-hover:text-brand">
+            <div class="absolute bottom-0 left-0 z-20 w-full p-3 md:p-5">
+              <h3 class="mb-1 text-base md:text-lg font-bold tracking-wider text-content uppercase transition-colors group-hover:text-brand">        
                 {cat.name}
               </h3>
-              <div class="flex items-center gap-3">
-                <span class="font-mono text-xs tracking-wide text-content-muted">
+              <div class="flex items-center gap-2 md:gap-3">
+                <span class="font-mono text-[10px] md:text-xs tracking-wide text-content-muted">
                   {cat.count} Products
                 </span>
                 {cat.lowStock && (
-                  <div class="flex items-center gap-1.5 rounded border border-brand-alert/20 bg-base/80 px-2 py-0.5">
+                  <div class="flex items-center gap-1.5 rounded border border-brand-alert/20 bg-base/80 px-1.5 py-0.5">
                     <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-alert" />
-                    <span class="font-mono text-[10px] tracking-widest text-brand-alert uppercase">
+                    <span class="font-mono text-[8px] md:text-[10px] tracking-widest text-brand-alert uppercase">
                       Low Stock
                     </span>
                   </div>

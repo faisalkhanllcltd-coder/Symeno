@@ -1,83 +1,56 @@
 ---
-// src/components/storefront/Testimonials.astro
 const testimonials = [
   {
-    name: 'Marcus T.',
-    city: 'London',
-    text: 'I was skeptical about the price of the Sony headphones, but they arrived in two days, fully sealed. Saved $102 compared to the high street.',
-    savings: '102',
-    product: 'Sony WH-1000XM5',
+    name: 'Michael V.',
+    role: 'Logistics Director',
+    text: 'Procured 40 units of Sony WH-1000XM5s for our sales floor. Shipping manifested within 6 hours. Zero retail markup. Exactly what the market needed.',
+    savings: '4,080',
+    product: 'Bulk Audio Order',
   },
   {
     name: 'Sarah J.',
-    city: 'New York',
-    text: "Finally a store that doesn't hide fees until checkout. The price you see is the price you pay. Exceptional service.",
-    savings: '45',
-    product: 'Dyson V15',
+    role: 'Independent Developer',
+    text: "The arbitrage model is flawless. Acquired an LG OLED display at 18% below retail. Box arrived factory-sealed with full manufacturer warranty intact.",
+    savings: '145',
+    product: 'LG C3 42" OLED',
   },
   {
     name: 'David L.',
-    city: 'Singapore',
-    text: 'The shipping speed is insane for a volume-based model. Received my monitor in 48 hours. Absolute professional operation.',
-    savings: '310',
-    product: 'Samsung Odyssey G9',
+    role: 'Studio Manager',
+    text: 'Transferred our entire peripheral supply chain to Symeno. The 14-day price lock guarantee eliminates the risk of market volatility.',     
+    savings: '890',
+    product: 'Keychron Keyboards (x12)',
   },
 ];
 ---
 
-<section class="w-full bg-base py-24">
+<section class="w-full bg-base py-24 border-y border-outline">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="mb-20 flex flex-col items-center text-center">
-      <div
-        class="mb-6 inline-flex items-center justify-center rounded-full border border-outline bg-surface px-6 py-3 shadow-[0_10px_30px_-10px_var(--color-brand,rgba(54,244,164,0.05))]"
-      >
-        <span
-          class="mr-3 font-mono text-3xl font-bold tracking-tighter text-content md:text-4xl"
-          >4.8</span
-        >
-        <div class="flex flex-col items-start">
-          <div class="flex text-brand">
-            {
-              [1, 2, 3, 4, 5].map(() => (
-                <svg class="h-4 w-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                </svg>
-              ))
-            }
-          </div>
-          <span
-            class="mt-0.5 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
-            >2,400+ Verified Purchases</span
-          >
-        </div>
+    <div class="mb-20 flex flex-col items-center text-center">       
+      <div class="mb-6 inline-flex items-center justify-center gap-3 rounded-sm border border-outline bg-surface px-4 py-2">
+        <span class="flex h-2 w-2 relative">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-brand"></span>
+        </span>
+        <span class="font-mono text-[10px] font-bold tracking-widest text-content uppercase">Operations Verified</span>
       </div>
-      <h2 class="text-3xl font-bold tracking-tight text-content">
-        Trust is our only currency.
+      <h2 class="max-w-2xl text-3xl font-bold tracking-tight text-content md:text-4xl">    
+        Volume pricing without the volume requirements.
       </h2>
     </div>
 
     <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
       {
         testimonials.map((t) => (
-          <div class="group relative flex flex-col rounded-none border border-outline bg-surface p-8 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1 hover:border-content-muted hover:shadow-[0_20px_40px_-15px_var(--color-brand,rgba(54,244,164,0.05))]">
-            <div class="mb-5 flex items-center gap-2 font-mono text-sm font-bold text-brand">
-              <svg
-                class="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                />
+          <div class="group relative flex flex-col rounded-sm border border-outline bg-surface p-8 transition-colors hover:border-content-muted">
+            <div class="mb-6 flex items-center gap-2 font-mono text-xs font-bold text-brand">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
               </svg>
-              Saved ${t.savings} vs. Retail
+              ${t.savings} Saved vs. Retail
             </div>
 
-            <p class="mb-8 flex-grow text-sm leading-relaxed font-light text-content-muted">
+            <p class="mb-8 flex-grow text-sm leading-relaxed text-content-muted">
               "{t.text}"
             </p>
 
@@ -87,10 +60,10 @@ const testimonials = [
                   {t.name}
                 </span>
                 <span class="mt-1 block font-mono text-[10px] tracking-widest text-content-muted uppercase">
-                  {t.city}
+                  {t.role}
                 </span>
               </div>
-              <span class="max-w-[100px] text-right font-mono text-[10px] leading-tight text-content-muted/30 uppercase">
+              <span class="max-w-[120px] text-right font-mono text-[10px] leading-tight text-content-muted uppercase">
                 {t.product}
               </span>
             </div>

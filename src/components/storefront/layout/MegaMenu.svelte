@@ -27,8 +27,17 @@
   <ul
     class="flex h-full items-center space-x-8 text-xs font-bold tracking-widest text-content uppercase"
   >
+    <li class="flex h-full items-center">
+      <a
+        href="/"
+        class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+        onmouseenter={handleLeave}
+        onfocus={handleLeave}>Home</a
+      >
+    </li>
+
     <li
-      class="flex h-full items-center border-b-2 transition-colors {activeMenu ===  
+      class="flex h-full items-center border-b-2 transition-colors {activeMenu ===
       'shop'
         ? 'border-brand text-brand'
         : 'border-transparent'}"
@@ -60,7 +69,7 @@
     </li>
 
     <li
-      class="flex h-full items-center border-b-2 transition-colors {activeMenu ===  
+      class="flex h-full items-center border-b-2 transition-colors {activeMenu ===
       'brands'
         ? 'border-brand text-brand'
         : 'border-transparent'}"
@@ -93,7 +102,7 @@
 
     <li class="flex h-full items-center">
       <a
-        href="/sale"
+        href="/deals"
         class="text-brand-alert transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-alert rounded-sm"
         onmouseenter={handleLeave}
         onfocus={handleLeave}>Deals</a
@@ -120,7 +129,7 @@
   >
     <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       {#if activeMenu === 'shop'}
-        <div class="grid animate-[fade-in_0.2s_ease-out] grid-cols-4 gap-12">       
+        <div class="grid animate-[fade-in_0.2s_ease-out] grid-cols-4 gap-12">
           <div class="col-span-1">
             <h3
               class="mb-4 font-mono text-[10px] tracking-widest text-content-muted uppercase"
@@ -166,7 +175,9 @@
             </h3>
             <ul class="space-y-3 text-sm font-bold text-content">
               <li>
-                <a href="/shop" class="block transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+                <a
+                  href="/shop"
+                  class="block transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                   >Shop All Inventory &rarr;</a
                 >
               </li>
@@ -179,8 +190,8 @@
               </li>
               <li>
                 <a
-                  href="/sale"
-                  class="block text-brand-alert transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-alert rounded-sm" 
+                  href="/deals"
+                  class="block text-brand-alert transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-alert rounded-sm"
                   >Live Arbitrage Deals</a
                 >
               </li>
@@ -205,7 +216,7 @@
                 Sony WH-1000XM5
               </h4>
               <div class="mb-4 flex items-baseline gap-2 font-mono">
-                <span class="text-sm font-bold text-brand-alert">$249.00</span>     
+                <span class="text-sm font-bold text-brand-alert">$249.00</span>
                 <span class="text-[10px] text-content-muted line-through"
                   >$399.00</span
                 >

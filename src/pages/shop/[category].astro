@@ -1,10 +1,11 @@
 ---
 import StorefrontLayout from '../../layouts/Storefront.astro';
+import { env } from 'cloudflare:workers';
 
 // FORCE EDGE SSR: Remove getStaticPaths so dynamic D1 pricing and edge caching can operate.
 export const prerender = false;
 
-// PERFORMANCE UPGRADE: Cloudflare CDN Caching Strategy (1 Hour Edge Cache, 24 Hour Stale Revalidate)
+// PERFORMANCE UPGRADE: Cloudflare CDN Caching Strategy
 Astro.response.headers.set(
   'Cache-Control',
   'public, s-maxage=3600, stale-while-revalidate=86400'
@@ -13,7 +14,7 @@ Astro.response.headers.set(
 const { category } = Astro.params;
 if (!category) return Astro.redirect('/404');
 
-// Category Metadata mapping (moved from getStaticPaths)
+// Category Metadata mapping
 const categoryMeta: Record<string, { name: string; desc: string }> = {
   audio: {
     name: 'Audio & Acoustics',
@@ -25,7 +26,7 @@ const categoryMeta: Record<string, { name: string; desc: string }> = {
   },
   peripherals: {
     name: 'Peripherals & Input',
-    desc: 'Precision tactile interfaces and mechanical switches.',
+    desc: 'Precision tactile interfaces and mechanical switches.',   
   },
   components: {
     name: 'Core Components',
@@ -36,8 +37,8 @@ const categoryMeta: Record<string, { name: string; desc: string }> = {
 const meta = categoryMeta[category as string];
 if (!meta) return Astro.redirect('/404');
 
-// D1 Query for active products in this category
-const db = (Astro.locals as any).runtime?.env?.DB;
+// Upgraded Astro v6 D1 Binding
+const db = env.DB;
 let activeProducts: any[] = [];
 
 if (db) {
@@ -45,8 +46,8 @@ if (db) {
     const { results } = await db
       .prepare(
         `
-      SELECT slug, title as name, base_price as price, retail_price as retail, brand 
-      FROM products 
+      SELECT slug, title as name, base_price as price, retail_price as retail, brand
+      FROM products
       WHERE category = ?1 AND stock_status != 'OUT_OF_STOCK'
     `
       )
@@ -65,7 +66,7 @@ if (db) {
 >
   <div class="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-20 lg:px-8">
     <div
-      class="pointer-events-none absolute inset-0 opacity-[0.02]"
+      class="pointer-events-none absolute inset-0 opacity-[0.02]"    
       style="background-image: linear-gradient(var(--color-outline) 1px, transparent 1px), linear-gradient(90deg, var(--color-outline) 1px, transparent 1px); background-size: 32px 32px;"
     >
     </div>
@@ -85,7 +86,7 @@ if (db) {
       <span class="text-brand">{meta.name}</span>
     </nav>
 
-    <div class="relative z-10 mb-12 border-b border-outline pb-8">
+    <div class="relative z-10 mb-12 border-b border-outline pb-8">   
       <h1
         class="group mb-4 text-4xl font-bold tracking-tighter text-content uppercase md:text-5xl"
       >
@@ -96,7 +97,7 @@ if (db) {
       >
         <p class="max-w-xl font-mono text-sm text-content-muted">{meta.desc}</p>
         <span
-          class="border border-outline bg-surface px-3 py-1 font-mono text-[10px] tracking-widest text-content-muted uppercase shadow-lg"
+          class="border border-outline bg-surface px-3 py-1 font-mono text-[10px] tracking-widest text-content-muted uppercase shadow-lg" 
         >
           {activeProducts.length} Units Secured
         </span>
