@@ -1,10 +1,10 @@
-﻿import type { APIRoute } from 'astro';
+import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { hashPassword } from '../../../lib/crypto';
 import { z } from 'zod';
 
 const registerSchema = z.object({
-  email: z.string().email('Invalid email format').toLowerCase().trim(),
+  email: z.string().email('Invalid email format').transform(val => val.toLowerCase().trim()),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   firstName: z.string().trim().optional().default(''),
   lastName: z.string().trim().optional().default(''),

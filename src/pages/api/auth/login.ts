@@ -4,7 +4,7 @@ import { hashPassword } from '../../../lib/crypto';
 import { z } from 'zod';
 
 const loginSchema = z.object({
-  email: z.string().email().toLowerCase().trim(),
+  email: z.string().email().transform(val => val.toLowerCase().trim()),
   password: z.string().min(1),
 });
 
@@ -28,7 +28,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     if (!user || !user.password_hash)
       return new Response('Authentication failed.', { status: 401 });
 
-    const [saltHex, storedHash] = (user.password_hash as string).split(':');
+    const [saltHex] = (user.password_hash as string).split(':');
     const saltBytes = new Uint8Array(
       saltHex.match(/.{1,2}/g)!.map((byte: string) => parseInt(byte, 16))
     );
