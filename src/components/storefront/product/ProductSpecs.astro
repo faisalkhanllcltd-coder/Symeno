@@ -5,20 +5,20 @@ interface Props {
 const { specs } = Astro.props;
 ---
 
-<div class="border border-gray-200 bg-white">
-  <div class="border-b border-gray-200 bg-gray-50 px-4 py-3">
+<div class="border border-outline bg-surface">
+  <div class="border-b border-outline bg-base px-4 py-3">
     <h3
-      class="font-mono text-xs font-bold tracking-widest text-gray-900 uppercase"
+      class="font-mono text-xs font-bold tracking-widest text-content uppercase"
     >
       Hardware Specifications
     </h3>
   </div>
-  <div class="divide-y divide-gray-100">
+  <div class="divide-y divide-outline">
     {
       Object.entries(specs).map(([key, value]) => (
         <div class="grid grid-cols-3 px-4 py-3 text-sm">
-          <dt class="col-span-1 font-bold text-gray-900">{key}</dt>
-          <dd class="col-span-2 font-mono text-gray-600">{value}</dd>
+          <dt class="col-span-1 font-bold text-content">{key}</dt>
+          <dd class="col-span-2 font-mono text-content-muted">{value}</dd>
         </div>
       ))
     }

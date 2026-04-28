@@ -15,8 +15,7 @@ interface Props {
   description?: string;
 }
 
-const { title, description = 'Top Brands. Real Prices. No Games.' } =
-  Astro.props;
+const { title, description = 'Top Brands. Real Prices. No Games.' } = Astro.props;
 const currentYear = new Date().getFullYear();
 
 const schema = JSON.stringify({
@@ -49,25 +48,20 @@ const schema = JSON.stringify({
     <MetaPixel id="XXXXXXXXXX" part="head" />
 
     <script is:inline>
-      const theme = (() => {
-        if (
-          typeof localStorage !== 'undefined' &&
-          localStorage.getItem('theme')
-        ) {
+      const getThemePreference = () => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
           return localStorage.getItem('theme');
         }
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          return 'dark';
-        }
-        return 'light';
-      })();
+        // Hard-locked default: sever OS preference, enforce dark mode universally
+        return 'dark';
+      };
+      const theme = getThemePreference();
       if (theme === 'dark') {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
       }
-      if (typeof localStorage !== 'undefined')
-        localStorage.setItem('theme', theme);
+      if (typeof localStorage !== 'undefined') localStorage.setItem('theme', theme);
     </script>
   </head>
 

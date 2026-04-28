@@ -44,3 +44,14 @@
     <span class="mt-0.5 font-mono text-[10px] tracking-wide text-brand-alert uppercase">{error}</span>
   {/if}
 </div>
+
+<style>
+  /* HARDENING: Override browser native autofill backgrounds to respect CSS Variables */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover, 
+  input:-webkit-autofill:focus, 
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px var(--theme-surface) inset !important;
+    -webkit-text-fill-color: var(--theme-content) !important;
+  }
+</style>

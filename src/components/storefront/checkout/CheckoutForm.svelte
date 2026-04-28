@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { ui } from '../../../stores/ui.svelte';
 
   // Svelte 5 Runes for incoming props
   let { publicKey = '' } = $props<{ publicKey: string }>();
@@ -36,7 +37,7 @@
       // Kept explicit hex values here because Stripe's external iframe is notoriously 
       // strict about dynamic CSS variable parsing during initial load.
       const appearance = {
-        theme: 'night',
+        theme: ui.theme === 'dark' ? 'night' : 'stripe',
         variables: {
           fontFamily:
             'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
@@ -68,6 +69,26 @@
     } catch (e: any) {
       errorMessage = e.message || 'Failed to initialize payment gateway.';
       isLoading = false;
+    }
+  });
+
+  $effect(() => {
+    if (elements) {
+      elements.update({
+        appearance: {
+          theme: ui.theme === 'dark' ? 'night' : 'stripe',
+          variables: {
+            fontFamily:
+              'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+            colorPrimary: 'var(--color-brand)',
+            colorBackground: 'var(--color-base)',
+            colorText: 'var(--color-content)',
+            colorDanger: 'var(--color-brand-alert)',
+            spacingUnit: '4px',
+            borderRadius: '0px',
+          },
+        }
+      });
     }
   });
 

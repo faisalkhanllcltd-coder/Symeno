@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { ui } from '../../stores/ui.svelte';
+
   // HARDENING: Allow environment variable injection for production
   // Fallback to testing key only if the environment variable is missing
   let { 
@@ -7,11 +9,13 @@
 </script>
 
 <div class="my-4">
-  <div 
-    class="cf-turnstile" 
-    data-sitekey={sitekey} 
-    data-theme="dark"
-  ></div>
+  {#key ui.theme}
+    <div 
+      class="cf-turnstile" 
+      data-sitekey={sitekey} 
+      data-theme={ui.theme}
+    ></div>
+  {/key}
 </div>
 
 <svelte:head>

@@ -39,7 +39,7 @@
 {/if}
 
 <div
-  class="bg-base border-outline fixed inset-y-0 right-0 z-70 flex w-full max-w-md transform flex-col border-l shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+  class="bg-base border-outline fixed inset-y-0 right-0 z-70 flex w-full max-w-md transform flex-col border-l shadow-ambient transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
   style="transform: translateX({cart.isOpen ? '0%' : '100%'})"
 >
   <div

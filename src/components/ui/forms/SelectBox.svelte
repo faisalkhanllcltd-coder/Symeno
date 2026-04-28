@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
   let {
     id,
     label = '',
@@ -41,7 +41,7 @@
       {required}
       class="w-full border bg-surface {error
         ? 'border-brand-alert text-brand-alert'
-        : 'border-outline text-content'} cursor-pointer appearance-none rounded-none px-3 py-2 text-sm transition-colors focus:border-brand focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand"   
+        : 'border-outline text-content'} cursor-pointer appearance-none rounded-none px-3 py-2 text-sm transition-colors focus:border-brand focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand dark:[color-scheme:dark]"   
     >
       <option value="" disabled>Select an option...</option>
       {#each options as option}
