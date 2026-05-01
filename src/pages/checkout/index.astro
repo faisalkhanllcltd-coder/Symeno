@@ -1,4 +1,4 @@
----
+﻿---
 import StorefrontLayout from '../../layouts/Storefront.astro';
 import CheckoutForm from '../../components/storefront/checkout/CheckoutForm.svelte';
 import OrderSummary from '../../components/storefront/checkout/OrderSummary.svelte';
@@ -6,67 +6,46 @@ import OrderSummary from '../../components/storefront/checkout/OrderSummary.svel
 // ASSEMBLY: Wiring CheckoutStickyBar for mobile checkout CTA
 import CheckoutStickyBar from '../../components/storefront/cart/CheckoutStickyBar.svelte';
 
-// Load Stripe Public Key from Environment Variables securely
-const STRIPE_PUBLIC_KEY = import.meta.env.PUBLIC_STRIPE_KEY || '';
+// --- SERVER-SIDE AUTHENTICATION GATE ---
+// If you want to allow Guest Checkout, you can comment this block out.
+// But based on standard enterprise setups, we enforce login to tie the order to a customer record.
+const user = Astro.locals.user;
+if (!user) {
+  // Save the intended destination so we can redirect them back after login
+  return Astro.redirect('/auth/login?redirect=/checkout');
+}
+// ----------------------------------------
+
 ---
 
 <StorefrontLayout title="Checkout | Secure Gateway | Symeno">
-  <script is:inline src="https://js.stripe.com/v3/"></script>
-
   <main class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
     <div class="mb-12">
-      <h1
-        class="text-content flex items-center gap-3 text-3xl font-bold tracking-tighter uppercase"
-      >
-        <span class="bg-brand h-2 w-2 animate-pulse rounded-full"></span> Acquisition
-        Protocol
+      <h1 class="text-content flex items-center gap-3 text-3xl font-bold tracking-tighter uppercase">
+        <span class="bg-brand h-2 w-2 animate-pulse rounded-full"></span> Acquisition Protocol
       </h1>
-      <p
-        class="text-content-muted mt-2 font-mono text-xs tracking-widest uppercase"
-      >
-        128-bit Encrypted Connection Established
+      <p class="text-content-muted mt-2 font-mono text-xs tracking-widest uppercase">
+        Encrypted Local Session Established
       </p>
     </div>
 
     <div class="relative grid grid-cols-1 items-start gap-12 lg:grid-cols-12">
+      
+      <!-- NATIVE CHECKOUT ENGINE -->
       <div class="lg:col-span-7 xl:col-span-8">
-        {
-          STRIPE_PUBLIC_KEY ? (
-            <CheckoutForm client:only="svelte" publicKey={STRIPE_PUBLIC_KEY} />
-          ) : (
-            <div class="border border-rose-500/30 bg-rose-500/10 p-8 text-center">
-              <p class="font-mono text-xs tracking-widest text-rose-400 uppercase">
-                CRITICAL SYSTEM FAILURE
-              </p>
-              <p class="mt-2 font-mono text-[10px] text-rose-400/70">
-                Stripe Public Key is missing from Environment Variables.
-              </p>
-            </div>
-          )
-        }
+        <CheckoutForm client:only="svelte" />
       </div>
 
+      <!-- ORDER SUMMARY -->
       <aside class="lg:col-span-5 xl:col-span-4">
         <OrderSummary client:only="svelte" />
 
-        <div
-          class="text-content-muted mt-6 flex items-center justify-center gap-4 font-mono text-[10px]"
-        >
+        <div class="text-content-muted mt-6 flex items-center justify-center gap-4 font-mono text-[10px]">
           <span class="flex items-center gap-1">
-            <svg
-              class="h-3 w-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-              ></path>
+            <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
             </svg>
-            SSL Secured
+            Internal Authorization
           </span>
           <span>•</span>
           <span>Zero Logging</span>

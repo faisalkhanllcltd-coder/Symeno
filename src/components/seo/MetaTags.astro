@@ -1,38 +1,64 @@
 ---
-interface Props {
+// src/components/seo/MetaTags.astro
+
+export interface Props {
   title: string;
-  description: string;
+  description?: string;
   image?: string;
-  canonicalURL?: URL;
+  canonicalUrl?: string | URL;
+  type?: 'website' | 'article' | 'product';
+  price?: string; // Ported from MetaSchema.astro for product pages
 }
 
 const {
   title,
-  description,
+  description = 'Symeno - Premium Wholesale Arbitrage and Electronics Distribution.',
   image = '/og-image.webp',
-  canonicalURL = Astro.url,
+  canonicalUrl = Astro.url,
+  type = 'website',
+  price,
 } = Astro.props;
+
+const siteOrigin = Astro.site || Astro.url.origin;
+const imageUrl = new URL(image, siteOrigin);
 ---
 
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover" />
 <meta name="generator" content={Astro.generator} />
-
-<link rel="canonical" href={canonicalURL} />
 
 <title>{title}</title>
 <meta name="title" content={title} />
 <meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
 
-<meta property="og:type" content="website" />
-<meta property="og:url" content={Astro.url} />
+{/* Open Graph */}
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonicalUrl} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image, Astro.url)} />
+<meta property="og:image" content={imageUrl} />
 
-<meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:url" content={Astro.url} />
-<meta property="twitter:title" content={title} />
-<meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={new URL(image, Astro.url)} />
+{/* Twitter */}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content={canonicalUrl} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+
+{/* Auto-inject Product Rich Snippets if type is product and price is provided */}
+{
+  type === 'product' && price && (
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org/',
+        '@type': 'Product',
+        name: title,
+        description: description,
+        offers: { '@type': 'Offer', price: price, priceCurrency: 'USD' },
+      })}
+    />
+  )
+}

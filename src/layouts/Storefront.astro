@@ -1,13 +1,10 @@
----
+﻿---
 import '../styles/global.css';
 import CartDrawer from '../components/storefront/cart/CartDrawer.svelte';
-import GoogleTag from '../components/analytics/GoogleTag.astro';     
-import MetaPixel from '../components/analytics/MetaPixel.astro';     
+import MetaTags from '../components/seo/MetaTags.astro';  
 
-import SEOHead from '../components/storefront/seo/SEOHead.astro';    
-
-import TopNav from '../components/storefront/layout/TopNav.astro';   
-import Footer from '../components/storefront/layout/Footer.astro';   
+import TopNav from '../components/storefront/layout/TopNav.astro';
+import Footer from '../components/storefront/layout/Footer.astro';
 import GlobalSearch from '../components/storefront/search/GlobalSearch.svelte';
 
 interface Props {
@@ -16,72 +13,29 @@ interface Props {
 }
 
 const { title, description = 'Top Brands. Real Prices. No Games.' } = Astro.props;
-const currentYear = new Date().getFullYear();
-
-const schema = JSON.stringify({
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'Symeno',
-  url: 'https://symeno.com',
-  description:
-    'Operational efficiency applied to consumer electronics. We leverage global arbitrage to secure premium hardware at zero-markup wholesale rates.',
-  sameAs: ['https://twitter.com/symeno', 'https://linkedin.com/company/symeno'],
-});
+const isLoggedIn = !!Astro.locals.user;
 ---
-
 <!doctype html>
 <html lang="en" class="scroll-smooth overflow-x-hidden w-full">
   <head>
-    <SEOHead title={`${title} | Symeno`} description={description} />
-
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />     
-    <link rel="preconnect" href="https://fonts.googleapis.com" />    
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"  
-      rel="stylesheet"
-    />
-
-    <script type="application/ld+json" is:inline set:html={schema} />
-
-    <GoogleTag id="G-XXXXXXXXXX" part="head" />
-    <MetaPixel id="XXXXXXXXXX" part="head" />
-
+    <MetaTags title={`${title} | Symeno`} description={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script is:inline>
-      const getThemePreference = () => {
-        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-          return localStorage.getItem('theme');
-        }
-        // Hard-locked default: sever OS preference, enforce dark mode universally
-        return 'dark';
-      };
-      const theme = getThemePreference();
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-      if (typeof localStorage !== 'undefined') localStorage.setItem('theme', theme);
+      const theme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.classList.toggle('dark', theme === 'dark');
     </script>
   </head>
-
-  <body
-    class="bg-base text-content selection:bg-brand/20 selection:text-brand flex min-h-screen w-full flex-col font-sans antialiased transition-colors duration-300 overflow-x-hidden"
-  >
+  <body class="bg-base text-content flex min-h-screen w-full flex-col font-sans antialiased">
     <TopNav />
-
     <GlobalSearch client:load />
-
-    <main class="relative flex w-full flex-grow flex-col">
-      <slot />
-    </main>
-
-    <footer
-      class="bg-surface text-content-muted mt-auto transition-colors duration-300"
-    >
-      <Footer />
-    </footer>
-
+    <main class="relative flex w-full flex-grow flex-col"><slot /></main>
+    <footer class="bg-surface mt-auto"><Footer /></footer>
     <CartDrawer client:load />
+    <script is:inline define:vars={{ isLoggedIn }}>window.SYMENO_IS_LOGGED_IN = isLoggedIn;</script>
+    <script>
+      import { wishlist } from '../stores/wishlist.svelte'; 
+      // Typecast to bypass strict Window interface checking
+      wishlist.init((window as any).SYMENO_IS_LOGGED_IN);
+    </script>
   </body>
 </html>

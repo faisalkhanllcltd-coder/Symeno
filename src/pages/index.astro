@@ -1,4 +1,4 @@
----
+﻿---
 import StorefrontLayout from '../layouts/Storefront.astro';
 import Hero from '../components/storefront/Hero.astro';
 import TrustBar from '../components/storefront/TrustBar.astro';
@@ -8,9 +8,53 @@ import FeaturedProducts from '../components/storefront/FeaturedProducts.astro';
 import DealTicker from '../components/storefront/DealTicker.astro';
 import Testimonials from '../components/storefront/Testimonials.astro';
 import Newsletter from '../components/storefront/Newsletter.astro';
-
-// ASSEMBLY: Wiring BrandStory into homepage narrative flow
 import BrandStory from '../components/storefront/BrandStory.astro';
+
+// FORCE EDGE SSR: Required for reading from D1 dynamically
+export const prerender = false;
+
+let featured: any[] = [];
+let dynamicDeals: string[] = [];
+const cities = ['London, UK', 'Dubai, UAE', 'Toronto, CA', 'New York, US', 'Sydney, AU'];
+
+try {
+  const db = Astro.locals.runtime?.env?.DB;
+  
+  if (db) {
+    // Fetch top 10 in-stock items for homepage features
+    const { results } = await db.prepare("SELECT * FROM rapidapi_cache WHERE stock_status = 'IN_STOCK' ORDER BY last_fetched DESC LIMIT 10").all();
+    
+    // Map D1 columns to standard schema expected by Svelte components
+    const mappedProducts = results.map((p: any) => ({
+      id: p.sku,
+      slug: p.sku,
+      brand: p.category || 'Symeno Select',
+      title: p.title,
+      description: p.description || p.title,
+      basePrice: p.price,
+      retailPrice: p.price * 1.2, // Visual strike-through RRP padding
+      stockStatus: p.stock_status,
+      images: p.image_url ? [p.image_url] : [],
+    }));
+
+    featured = mappedProducts.slice(0, 4);
+
+    dynamicDeals = mappedProducts
+      .slice(0, 5)
+      .map((p: any, i: number) => {
+        const city = cities[i % cities.length];
+        const savings = Math.floor(p.retailPrice - p.basePrice);
+        return `${city} — A customer just saved $${savings} on ${p.brand} hardware`;
+      });
+  }
+} catch (e) {
+  console.error('[HOMEPAGE_D1_ERROR]', e);
+}
+
+// Fallback if D1 is empty or offline
+if (dynamicDeals.length === 0) {
+  dynamicDeals.push('Global — Customers are saving up to 40% on premium hardware daily');
+}
 ---
 
 <StorefrontLayout
@@ -22,8 +66,8 @@ import BrandStory from '../components/storefront/BrandStory.astro';
   <CategoryGrid />
   <BrandStory />
   <Manifesto />
-  <FeaturedProducts />
-  <DealTicker />
+  <FeaturedProducts products={featured} />
+  <DealTicker deals={dynamicDeals} />
   <Testimonials />
   <Newsletter />
 </StorefrontLayout>

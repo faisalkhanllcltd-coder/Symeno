@@ -1,0 +1,47 @@
+﻿---
+import StorefrontLayout from '../layouts/Storefront.astro';
+
+// Astro automatically passes the thrown error as a prop to 500.astro
+interface Props {
+  error: unknown;
+}
+
+const { error } = Astro.props;
+---
+
+<StorefrontLayout title="System Error | Symeno" description="An unexpected error occurred.">
+  <main class="mx-auto flex max-w-2xl flex-col items-center justify-center px-4 py-32 text-center sm:px-6 lg:px-8">
+    <div class="mb-8 inline-flex h-16 w-16 items-center justify-center rounded-full bg-rose-500/10 text-rose-500">
+      <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+    </div>
+    
+    <h1 class="text-content text-4xl font-bold tracking-tighter uppercase sm:text-5xl">
+      Critical System Failure
+    </h1>
+    
+    <p class="text-content-muted mt-4 font-mono text-sm tracking-widest uppercase">
+      Error 500: Internal Server Exception
+    </p>
+    
+    <p class="text-content-muted mt-6 max-w-md text-base">
+      Our edge nodes encountered an unexpected anomaly while processing your request. The system has logged the event and the engineering team has been notified.
+    </p>
+    
+    <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+      <a
+        href="/"
+        class="bg-brand text-base-100 hover:bg-brand/90 inline-flex items-center justify-center px-8 py-3 font-mono text-sm font-medium tracking-widest uppercase transition-colors"
+      >
+        Reboot Session
+      </a>
+      <a
+        href="/contact"
+        class="border-outline text-content hover:bg-surface inline-flex items-center justify-center border px-8 py-3 font-mono text-sm font-medium tracking-widest uppercase transition-colors"
+      >
+        Report Anomaly
+      </a>
+    </div>
+  </main>
+</StorefrontLayout>

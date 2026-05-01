@@ -1,0 +1,56 @@
+﻿---
+import StorefrontLayout from '../../layouts/Storefront.astro';
+---
+
+<StorefrontLayout title="Transaction Aborted | Symeno Secure">
+  <main class="flex min-h-[70vh] items-center justify-center px-6">
+    <div class="w-full max-w-2xl border border-outline bg-surface p-8 md:p-12">
+      <!-- Terminal Header -->
+      <div class="mb-8 flex items-center gap-4 border-b border-outline pb-6">
+        <div class="h-3 w-3 animate-pulse bg-brand-alert"></div>
+        <h1 class="font-mono text-sm font-bold tracking-[0.2em] text-content uppercase">
+          Signal Interrupted: Transaction Terminated
+        </h1>
+      </div>
+
+      <div class="space-y-6">
+        <p class="font-mono text-xs leading-relaxed text-content-muted uppercase">
+          The settlement process was not finalized. No funds have been requested, and your allocation has been released back to the general pool. 
+        </p>
+
+        <div class="border-l-2 border-brand-alert bg-brand-alert/5 p-4">
+          <p class="font-mono text-[10px] tracking-widest text-brand-alert uppercase">
+            Status: SESSION_CANCELLED_BY_USER
+          </p>
+        </div>
+
+        <div class="pt-6">
+          <p class="mb-6 font-mono text-[10px] text-content-muted uppercase">
+            Your cart data remains cached in your local session. You may resume the authorization or modify your logistics parameters below.
+          </p>
+          
+          <div class="flex flex-col gap-4 sm:flex-row">
+            <a 
+              href="/cart" 
+              class="flex-1 border border-outline bg-base px-6 py-4 text-center font-mono text-[10px] font-bold tracking-widest text-content uppercase transition-colors hover:bg-surface"
+            >
+              Return to Cart
+            </a>
+            <a 
+              href="/shop" 
+              class="flex-1 bg-brand px-6 py-4 text-center font-mono text-[10px] font-bold tracking-widest text-brand-dark uppercase transition-opacity hover:opacity-90"
+            >
+              Resume Shopping
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer Decoration -->
+      <div class="mt-12 flex justify-between border-t border-outline pt-6 font-mono text-[8px] text-content-muted uppercase tracking-[0.3em]">
+        <span>Symeno_Recovery_Protocol_v1.0</span>
+        <span>Secure Terminal</span>
+      </div>
+    </div>
+  </main>
+</StorefrontLayout>

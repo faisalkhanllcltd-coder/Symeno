@@ -1,6 +1,6 @@
 ---
 import AccountLayout from '../../layouts/Account.astro';
-import AccountSettingsOrchestrator from '../../components/storefront/account/settings/AccountSettingsOrchestrator.svelte';
+import AccountSettingsOrchestrator from '../../components/account/settings/AccountSettingsOrchestrator.svelte';
 
 const user = Astro.locals.user;
 if (!user) return Astro.redirect('/auth/login');

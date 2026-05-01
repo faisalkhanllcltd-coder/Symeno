@@ -19,7 +19,7 @@
       No Hardware Acquired
     </h3>
     <p class="mx-auto max-w-sm font-mono text-[10px] text-content-muted">
-      Your exact query yielded zero results in the current D1 database snapshot.
+      Your exact query yielded zero results in the current network snapshot.
     </p>
   </div>
 {:else}
@@ -34,12 +34,21 @@
         ></div>
 
         <div
-          class="relative flex aspect-square items-center justify-center border-b border-outline bg-base transition-colors" 
+          class="relative flex aspect-square items-center justify-center border-b border-outline bg-base transition-colors overflow-hidden"
         >
-          <span
-            class="font-mono text-[10px] tracking-widest text-content-muted/50 uppercase"
-            >Image Matrix</span
-          >
+          {#if product.image_url}
+            <img
+              src={product.image_url}
+              alt={product.title}
+              class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+            />
+          {:else}
+            <span
+              class="font-mono text-[10px] tracking-widest text-content-muted/50 uppercase"
+              >Image Matrix</span
+            >
+          {/if}
 
           {#if product.retail_price > product.base_price}
             <div
@@ -64,7 +73,7 @@
           <div class="mt-auto flex items-end justify-between">
             <div>
               <span class="block font-mono text-lg font-bold text-content transition-colors group-hover:text-brand"
-                >${product.base_price.toFixed(2)}</span 
+                >${product.base_price.toFixed(2)}</span
               >
               {#if product.retail_price > product.base_price}
                 <span class="font-mono text-[10px] text-content-muted line-through"
@@ -74,7 +83,7 @@
             </div>
 
             <button
-              class="flex h-8 w-8 items-center justify-center border border-outline text-content-muted transition-all group-hover:border-brand group-hover:bg-brand group-hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              class="flex h-8 w-8 items-center justify-center border border-outline text-content-muted transition-all group-hover:border-brand group-hover:bg-brand group-hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand z-20"
               aria-label="Quick Add"
               onclick={(e) => e.preventDefault()}
             >

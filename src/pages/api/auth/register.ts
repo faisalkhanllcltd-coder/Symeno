@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { hashPassword } from '../../../lib/crypto';
+import { createSession } from '../../../lib/auth';
 import { z } from 'zod';
 
 const registerSchema = z.object({
@@ -18,12 +19,13 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     if (!parsedData.success) {
       return new Response(
         JSON.stringify({ error: parsedData.error.issues[0].message }),
-        { status: 400 }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
     const { email, password, firstName, lastName } = parsedData.data;
     const db = env.DB;
+
     if (!db) return new Response('Database missing. Check wrangler.toml bindings.', { status: 500 });
 
     const existing = await db.prepare('SELECT id FROM customers WHERE email = ?1').bind(email).first();
@@ -37,24 +39,8 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
       .bind(userId, email, firstName, lastName, passwordHash)
       .run();
 
-    const sessionId = crypto.randomUUID();
-    const kv = env.KV;
-
-    if (kv && kv.put) {
-      await kv.put(
-        `session:${sessionId}`,
-        JSON.stringify({ id: userId, email, role: 'customer' }),
-        { expirationTtl: 604800 }
-      );
-    }
-
-    cookies.set('auth_session', sessionId, {
-      path: '/',
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      maxAge: 604800,
-    });
+    // Delegate KV storage and cookie creation to the central library
+    await createSession(env, cookies, { id: userId, email, role: 'customer' });
 
     return redirect('/account/orders');
   } catch (err: unknown) {

@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { cart } from '../../../stores/cart.svelte.ts';
+  // FIX: Corrected directory traversal to stay within src/
+  import { cart } from '../../stores/cart.svelte.ts';
 
   let { orderId } = $props<{ orderId: string }>();      
   let isProcessing = $state(false);
@@ -12,7 +13,7 @@
       });
       if (res.ok) {
         const { items } = await res.json();
-        
+
         // Wire natively to Svelte 5 Cart Store
         items.forEach((item: any) => {
           cart.addItem({
@@ -23,15 +24,15 @@
             price: item.base_price,
             was: item.retail_price,
             stock: item.stock || 10,
-            image: item.image_url || '/placeholder.webp'
+            image: item.image_url || '/placeholder.webp'  
           }, item.quantity || 1);
         });
 
         // Trigger the cart drawer explicitly
-        if (typeof cart.toggleCart === 'function') {
+        if (typeof cart.toggleCart === 'function') {      
           cart.toggleCart();
         } else {
-          // Fallback if toggleCart isn't standard
+          // Fallback if toggleCart isn't standard        
           window.dispatchEvent(new CustomEvent('open-cart'));
         }
       }
@@ -46,5 +47,5 @@
   disabled={isProcessing}
   class="w-full border border-brand/30 bg-base px-6 py-3 text-xs font-bold tracking-widest text-brand uppercase transition-colors hover:bg-brand/10 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
 >
-  {isProcessing ? 'Hydrating Cart...' : 'Buy Again'}    
+  {isProcessing ? 'Hydrating Cart...' : 'Buy Again'}      
 </button>

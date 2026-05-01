@@ -1,8 +1,7 @@
 ---
 import StorefrontLayout from '../../layouts/Storefront.astro';
-import { env } from 'cloudflare:workers';
 
-// FORCE EDGE SSR: Remove getStaticPaths so dynamic D1 pricing and edge caching can operate.
+// FORCE EDGE SSR
 export const prerender = false;
 
 // PERFORMANCE UPGRADE: Cloudflare CDN Caching Strategy
@@ -34,29 +33,29 @@ const categoryMeta: Record<string, { name: string; desc: string }> = {
   },
 };
 
-const meta = categoryMeta[category as string];
-if (!meta) return Astro.redirect('/404');
+const meta = categoryMeta[category as string] || {
+  name: category.toString().replace(/-/g, ' ').toUpperCase(),
+  desc: `Premium ${category} hardware sourced directly from our verified independent supply chain.`,
+};
 
-// Upgraded Astro v6 D1 Binding
-const db = env.DB;
 let activeProducts: any[] = [];
 
-if (db) {
-  try {
-    const { results } = await db
-      .prepare(
-        `
-      SELECT slug, title as name, base_price as price, retail_price as retail, brand
-      FROM products
-      WHERE category = ?1 AND stock_status != 'OUT_OF_STOCK'
-    `
-      )
-      .bind(category)
-      .all();
-    activeProducts = results || [];
-  } catch (error) {
-    console.error('[D1_CATEGORY_QUERY_ERROR]', error);
+try {
+  const db = Astro.locals.runtime?.env?.DB;
+  if (db) {
+    const { results } = await db.prepare("SELECT * FROM rapidapi_cache WHERE category LIKE ?1 LIMIT 50").bind(`%${category}%`).all();
+    
+    activeProducts = results.map((p: any) => ({
+      slug: p.sku,
+      title: p.title,
+      brand: p.category || 'Hardware',
+      basePrice: p.price,
+      retailPrice: p.price * 1.2,
+      images: p.image_url ? [p.image_url] : []
+    }));
   }
+} catch (e) {
+  console.error('[CATEGORY_EDGE_ERROR]', e);
 }
 ---
 
@@ -66,7 +65,7 @@ if (db) {
 >
   <div class="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-20 lg:px-8">
     <div
-      class="pointer-events-none absolute inset-0 opacity-[0.02]"    
+      class="pointer-events-none absolute inset-0 opacity-[0.02]"   
       style="background-image: linear-gradient(var(--color-outline) 1px, transparent 1px), linear-gradient(90deg, var(--color-outline) 1px, transparent 1px); background-size: 32px 32px;"
     >
     </div>
@@ -109,7 +108,7 @@ if (db) {
     >
       {
         activeProducts.length > 0 ? (
-          activeProducts.map((product) => (
+          activeProducts.map((product: any) => (
             <a
               href={`/shop/product/${product.slug}`}
               class="group relative flex flex-col focus:outline-none"
@@ -118,14 +117,23 @@ if (db) {
                 <div class="absolute top-0 left-0 h-2 w-2 border-t border-l border-outline" />
                 <div class="absolute right-0 bottom-0 h-2 w-2 border-r border-b border-outline" />
 
-                {product.retail > product.price && (
+                {product.retailPrice && product.retailPrice > product.basePrice && (
                   <div class="absolute top-3 left-3 z-10 border border-brand/30 bg-brand/10 px-2 py-1 text-[9px] font-bold tracking-widest text-brand uppercase">
-                    Save ${Math.floor(product.retail - product.price)}
+                    Save ${Math.floor(product.retailPrice - product.basePrice)}
                   </div>
                 )}
-                <span class="font-mono text-[10px] text-content-muted">
-                  Hardware Array
-                </span>
+                
+                {/* FIX 2: Wired the Amazon images natively */}
+                {product.images && product.images[0] ? (
+                  <img 
+                    src={product.images[0]} 
+                    alt={product.title} 
+                    loading="lazy"
+                    class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <span class="font-mono text-[10px] text-content-muted">Hardware Array</span>
+                )}
               </div>
 
               <span class="mb-1 font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors group-hover:text-content">
@@ -133,16 +141,16 @@ if (db) {
               </span>
 
               <h2 class="mb-1 truncate text-sm font-bold text-content transition-colors group-hover:text-brand">
-                {product.name}
+                {product.title}
               </h2>
 
               <div class="mt-auto flex items-baseline gap-2 font-mono">
                 <span class="text-sm font-bold text-brand">
-                  ${product.price.toFixed(2)}
+                  ${product.basePrice.toFixed(2)}
                 </span>
-                {product.retail > product.price && (
+                {product.retailPrice && product.retailPrice > product.basePrice && (
                   <span class="text-[10px] text-content-muted line-through">
-                    ${product.retail.toFixed(2)}
+                    ${product.retailPrice.toFixed(2)}
                   </span>
                 )}
               </div>

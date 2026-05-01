@@ -1,17 +1,9 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
+import { destroySession } from '../../../lib/auth';
 
 export const POST: APIRoute = async ({ cookies, redirect }) => {
-  const sessionId = cookies.get('auth_session')?.value;
-
-  if (sessionId) {
-    const kv = (env as any).KV;
-    if (kv) {
-      await kv.delete(`session:${sessionId}`);
-    }
-  }
-
-  cookies.delete('auth_session', { path: '/' });
+  await destroySession(env, cookies);
   return redirect('/auth/login');
 };
 

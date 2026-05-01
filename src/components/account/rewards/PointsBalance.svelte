@@ -1,10 +1,11 @@
 ﻿<script lang="ts">
+  // FIX: Corrected directory traversal to stay within src/
   import {
     calculateTier,
     calculateNextTier,
     pointsToCurrency,
-  } from '../../../../lib/loyalty';
-  
+  } from '../../../lib/loyalty';
+
   let { stats = { current_balance: 0, lifetime_earned: 0 }, onRedeem } =
     $props<{ stats?: any; onRedeem: (pts: number) => void }>();
 
@@ -15,9 +16,9 @@
   let redeemInput = $state(100);
 </script>
 
-<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">     
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">        
   <div
-    class="border bg-surface border-outline relative flex h-full flex-col justify-between overflow-hidden p-6 transition-colors duration-300" 
+    class="border bg-surface border-outline relative flex h-full flex-col justify-between overflow-hidden p-6 transition-colors duration-300"
   >
     <div
       class="absolute -top-10 -right-10 h-32 w-32 {tier.bg} rounded-full blur-2xl opacity-50"
@@ -28,8 +29,9 @@
       >
         {tier.name}
       </h3>
-      <p class="font-mono text-[10px] text-content-muted">   
-        Lifetime Earned: {stats.lifetime_earned} pts    
+      <p class="font-mono text-[10px] text-content-muted">
+
+        Lifetime Earned: {stats.lifetime_earned} pts      
       </p>
     </div>
 
@@ -45,13 +47,13 @@
         >
         <span class="mb-1 font-mono text-sm text-content-muted">pts</span>
       </div>
-      <p class="mt-2 font-mono text-xs text-brand"> 
-        ≈ ${redeemValue.toFixed(2)} AED Checkout Value  
+      <p class="mt-2 font-mono text-xs text-brand">        
+        ≈ ${redeemValue.toFixed(2)} AED Checkout Value    
       </p>
     </div>
 
     {#if nextTier}
-      <div class="mt-8 border-t border-outline pt-4 relative z-10">  
+      <div class="mt-8 border-t border-outline pt-4 relative z-10">
         <div class="mb-2 flex justify-between font-mono text-[10px]">
           <span class="text-content-muted"
             >Next Tier: <span class={nextTier.color}>{nextTier.name}</span
@@ -106,17 +108,17 @@
             >Max</button
           >
         </div>
-        <p class="mt-2 font-mono text-[9px] text-brand">
+        <p class="mt-2 font-mono text-[9px] text-brand">  
           Yields: ${(redeemInput / 100).toFixed(2)} AED Discount Code
         </p>
       </div>
 
       <button
         onclick={() => onRedeem(redeemInput)}
-        disabled={stats.current_balance < 100 ||        
+        disabled={stats.current_balance < 100 ||
           redeemInput < 100 ||
           redeemInput > stats.current_balance}
-        class="w-full bg-brand px-4 py-3 text-xs font-bold tracking-widest text-brand-dark uppercase shadow-[0_0_15px_var(--color-brand)] transition-colors hover:opacity-80 disabled:bg-outline disabled:text-content-muted disabled:opacity-30 disabled:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+        class="w-full bg-brand px-4 py-3 text-xs font-bold tracking-widest text-brand-dark uppercase shadow-[0_0_15px_var(--color-brand)] transition-colors hover:opacity-80 disabled:bg-outline disabled:text-content-muted disabled:opacity-30 disabled:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"  
       >
         Initialize Conversion
       </button>

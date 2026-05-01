@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { cart } from '../../../stores/cart.svelte.ts';
+  import { cart } from '../../stores/cart.svelte.ts';
 
   let { initialItems = [], shareId = '' } = $props<{    
     initialItems?: any[];
@@ -12,8 +12,8 @@
     items = items.filter((i) => i.product_id !== productId); // Optimistic
     await fetch('/api/account/wishlist', {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },  
-      body: JSON.stringify({ product_id: productId }),  
+      headers: { 'Content-Type': 'application/json' },    
+      body: JSON.stringify({ product_id: productId }),    
     });
   }
 
@@ -24,7 +24,7 @@
   ) {
     await fetch('/api/account/wishlist', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },  
+      headers: { 'Content-Type': 'application/json' },    
       body: JSON.stringify({
         product_id: productId,
         notify_price_drop: priceDrop,
@@ -33,7 +33,7 @@
     });
   }
 
-  async function moveToCart(item: any) {        
+  async function moveToCart(item: any) {
     // Wired to Svelte 5 Cart Store natively
     cart.addItem({
       id: item.product_id,
@@ -43,9 +43,9 @@
       price: item.base_price,
       was: item.retail_price,
       stock: item.stock,
-      image: item.image_url || '/placeholder.webp'
+      image: item.image_url || '/placeholder.webp'        
     }, 1);
-    
+
     await removeItem(item.product_id);
   }
 
@@ -53,16 +53,17 @@
     const url = `${window.location.origin}/wishlist/${shareId}`;
     navigator.clipboard.writeText(url);
     shareCopied = true;
-    setTimeout(() => (shareCopied = false), 2000);      
+    setTimeout(() => (shareCopied = false), 2000);        
   }
 </script>
 
-<div class="space-y-6 transition-colors duration-300">
+<div class="space-y-6 transition-colors duration-300">    
   {#if items.length > 0}
     <div
       class="flex items-center justify-between border border-outline bg-surface p-4"
     >
-      <div class="font-mono text-xs text-content-muted">      
+      <div class="font-mono text-xs text-content-muted">  
+
         {items.length} Items Saved
       </div>
       <button
@@ -81,24 +82,24 @@
             d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-5.368m0 5.368l5.662 3.146m-5.662-3.146l5.662-3.146m0 0a3 3 0 105.368-3.146 3 3 0 00-5.368 3.146z"
           /></svg
         >
-        {shareCopied ? 'Link Copied!' : 'Share Wishlist'}
+        {shareCopied ? 'Link Copied!' : 'Share Wishlist'} 
       </button>
     </div>
 
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       {#each items as item}
         <div
-          class="group flex flex-col border border-outline bg-surface transition-colors hover:border-content-muted"
+          class="group flex flex-col border border-outline bg-surface transition-colors hover:border-content-muted" 
         >
           <div class="relative aspect-square overflow-hidden bg-base">
             <img
-              src={item.image_url || '/placeholder.webp'}
+              src={item.image_url || '/placeholder.webp'} 
               alt={item.title}
               class="h-full w-full object-cover opacity-80 transition-opacity group-hover:opacity-100"
             />
             <button
-              onclick={() => removeItem(item.product_id)}
-              class="absolute top-2 right-2 rounded-full bg-base/50 p-2 text-content-muted transition-colors hover:bg-base hover:text-brand-alert focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-alert"
+              onclick={() => removeItem(item.product_id)} 
+              class="absolute top-2 right-2 rounded-full bg-base/50 p-2 text-content-muted transition-colors hover:bg-base hover:text-brand-alert focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-alert"       
             >
               <svg
                 class="h-4 w-4"
@@ -122,9 +123,9 @@
             {/if}
           </div>
 
-          <div class="flex flex-1 flex-col p-4">        
+          <div class="flex flex-1 flex-col p-4">
             <a
-              href={`/shop/product/${item.slug}`}        
+              href={`/shop/product/${item.slug}`}
               class="mb-1 block truncate text-xs font-bold text-content hover:text-brand focus-visible:outline-none focus-visible:underline rounded-sm"
               >{item.title}</a
             >
@@ -138,17 +139,18 @@
               >
                 <input
                   type="checkbox"
-                  bind:checked={item.notify_price_drop} 
+                  bind:checked={item.notify_price_drop}   
                   onchange={() =>
                     updateNotifications(
                       item.product_id,
                       item.notify_price_drop,
                       item.notify_restock
                     )}
-                  class="h-3 w-3 border-outline bg-base accent-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"      
+                  class="h-3 w-3 border-outline bg-base accent-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                 />
                 <span
-                  class="font-mono text-[9px] text-content-muted transition-colors group-hover/toggle:text-content"   
+                  class="font-mono text-[9px] text-content-muted transition-colors group-hover/toggle:text-content" 
+
                   >Notify on price drop</span
                 >
               </label>
@@ -158,18 +160,18 @@
                 >
                   <input
                     type="checkbox"
-                    bind:checked={item.notify_restock}  
+                    bind:checked={item.notify_restock}    
                     onchange={() =>
                       updateNotifications(
                         item.product_id,
                         item.notify_price_drop,
                         item.notify_restock
                       )}
-                    class="h-3 w-3 border-outline bg-base accent-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"    
+                    class="h-3 w-3 border-outline bg-base accent-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
                   />
                   <span
-                    class="font-mono text-[9px] text-content-muted transition-colors group-hover/toggle:text-content"  
-                    >Notify when restocked</span        
+                    class="font-mono text-[9px] text-content-muted transition-colors group-hover/toggle:text-content"
+                    >Notify when restocked</span
                   >
                 </label>
               {/if}
@@ -178,7 +180,7 @@
             <button
               onclick={() => moveToCart(item)}
               disabled={item.stock <= 0}
-              class="w-full border border-outline px-4 py-2 font-mono text-[10px] tracking-widest text-content uppercase transition-colors hover:bg-base disabled:opacity-30 disabled:hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+              class="w-full border border-outline px-4 py-2 font-mono text-[10px] tracking-widest text-content uppercase transition-colors hover:bg-base disabled:opacity-30 disabled:hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"   
             >
               {item.stock > 0 ? 'Move to Cart' : 'Unavailable'}
             </button>
@@ -189,7 +191,7 @@
   {:else}
     <div class="border border-outline bg-surface p-12 text-center">
       <svg
-        class="mx-auto mb-4 h-12 w-12 text-content-muted opacity-50"    
+        class="mx-auto mb-4 h-12 w-12 text-content-muted opacity-50"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -204,7 +206,7 @@
         Your wishlist is empty
       </h3>
       <p class="mb-6 font-mono text-[10px] text-content-muted">
-        Explore the matrix to find hardware and upgrades.
+        Explore the matrix to find hardware and upgrades. 
       </p>
       <a
         href="/shop"

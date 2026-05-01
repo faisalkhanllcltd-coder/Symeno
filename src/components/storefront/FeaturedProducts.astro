@@ -1,39 +1,9 @@
 ---
 // src/components/storefront/FeaturedProducts.astro
-const products = [
-  {
-    brand: 'Apple',
-    name: 'AirPods Pro (2nd Gen)',
-    was: 249.0,
-    now: 189.0,
-    rating: 4.9,
-    reviews: 1240,
-  },
-  {
-    brand: 'Dyson',
-    name: 'V15 Detect Absolute',
-    was: 749.0,
-    now: 599.0,
-    rating: 4.8,
-    reviews: 892,
-  },
-  {
-    brand: 'Samsung',
-    name: '49-Inch Odyssey G9 OLED',
-    was: 1799.0,
-    now: 1299.0,
-    rating: 4.7,
-    reviews: 415,
-  },
-  {
-    brand: 'Bose',
-    name: 'QuietComfort Ultra',
-    was: 429.0,
-    now: 349.0,
-    rating: 4.8,
-    reviews: 633,
-  },
-];
+export interface Props {
+  products?: any[];
+}
+const { products = [] } = Astro.props;
 ---
 
 <section class="w-full border-t border-outline/50 bg-base py-24">
@@ -77,7 +47,7 @@ const products = [
                 {product.brand}
               </span>
               <h3 class="mb-4 line-clamp-2 text-sm leading-snug font-medium text-content">
-                {product.name}
+                {product.title}
               </h3>
 
               <div class="mt-auto">
@@ -88,18 +58,20 @@ const products = [
                     </svg>
                   </div>
                   <span class="font-mono text-xs text-content-muted">
-                    {product.rating}{' '}
-                    <span class="text-content-muted/30">({product.reviews})</span>
+                    {product.rating || '5.0'}{' '}
+                    <span class="text-content-muted/30">({product.reviews || '100+'})</span>
                   </span>
                 </div>
 
                 <div class="mb-5 flex items-end gap-2.5">
                   <span class="font-mono text-xl font-bold tracking-tight text-brand">
-                    &dollar;{product.now.toFixed(2)}
+                    &dollar;{product.basePrice.toFixed(2)}
                   </span>
-                  <span class="mb-0.5 font-mono text-xs text-content-muted line-through">
-                    WAS &dollar;{product.was.toFixed(2)}
-                  </span>
+                  {product.retailPrice && product.retailPrice > product.basePrice && (
+                    <span class="mb-0.5 font-mono text-xs text-content-muted line-through">
+                      WAS &dollar;{product.retailPrice.toFixed(2)}
+                    </span>
+                  )}
                 </div>
 
                 <button class="w-full rounded-none border border-outline bg-surface py-3.5 text-xs font-bold tracking-widest text-content uppercase shadow-none transition-all duration-300 hover:border-brand hover:bg-brand hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm">

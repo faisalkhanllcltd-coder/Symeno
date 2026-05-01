@@ -1,22 +1,48 @@
+﻿# =========================
 # Node & Build Artifacts
+# =========================
 node_modules/
 dist/
 .astro/
+*.tsbuildinfo
 
-# Environment & Secrets
+# =========================
+# Environment & Secrets (CRITICAL)
+# =========================
 .env
 .env.*
 !.env.example
+.dev.vars
 
-# Cloudflare & Edge
+# =========================
+# Cloudflare & Edge State
+# =========================
 .wrangler/
 .mf/
 
-# OS & Editor
+# =========================
+# Logs & Caches
+# =========================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.eslintcache
+
+# =========================
+# OS & Editor Settings
+# =========================
 .DS_Store
+Thumbs.db
 .vscode/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# =========================
+# Local Utility Scripts
+# =========================
+scripts/*.cjs
+worker-configuration.d.ts
