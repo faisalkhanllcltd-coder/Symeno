@@ -1,10 +1,16 @@
-﻿import { logger } from '../lib/logger';
+import { logger } from '../lib/logger';
 
 export interface CartItem {
   id: string; // Composite key: productId + variantId
   productId: string;
   variantId?: string;
-  quantity: number;
+  qty: number;
+  brand: string;
+  name: string;
+  price: number;
+  was: number;
+  stock: number;
+  image: string;
 }
 
 function createCartStore() {
@@ -60,7 +66,15 @@ function createCartStore() {
     },
 
     get totalItems() {
-      return items.reduce((total, item) => total + item.quantity, 0);
+      return items.reduce((total, item) => total + item.qty, 0);
+    },
+
+    get subtotal() {
+      return items.reduce((total, item) => total + item.price * item.qty, 0);
+    },
+
+    get savings() {
+      return items.reduce((total, item) => total + (item.was - item.price) * item.qty, 0);
     },
 
     // 4. Expose Controlled Mutators
@@ -76,23 +90,35 @@ function createCartStore() {
       isOpen = false;
     },
 
-    addItem(productId: string, variantId?: string, quantity: number = 1) {
-      const id = variantId ? `${productId}_${variantId}` : productId;
-      const existingItem = items.find((i) => i.id === id);
+    addItem(
+      product: { id: string; productId: string; brand: string; name: string; price: number; was: number; stock: number; image: string },
+      quantity: number = 1
+    ) {
+      const existingItem = items.find((i) => i.id === product.id);
 
       if (existingItem) {
-        existingItem.quantity += quantity;
+        existingItem.qty += quantity;
       } else {
-        items.push({ id, productId, variantId, quantity });
+        items.push({
+          id: product.id,
+          productId: product.productId,
+          qty: quantity,
+          brand: product.brand,
+          name: product.name,
+          price: product.price,
+          was: product.was,
+          stock: product.stock,
+          image: product.image,
+        });
       }
 
       sync();
     },
 
-    updateQuantity(id: string, quantity: number) {
+    updateQuantity(id: string, qty: number) {
       const item = items.find((i) => i.id === id);
       if (item) {
-        item.quantity = Math.max(1, quantity);
+        item.qty = Math.max(1, qty);
         sync();
       }
     },

@@ -1,21 +1,23 @@
-﻿interface User {
+interface User {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
-  role: 'ADMIN' | 'CUSTOMER';
+  role: 'admin' | 'customer';
 }
 
 class AuthStore {
-  user = $state<User | null>(null);
-  isLoading = $state(true);
+  // @ts-ignore - Svelte 5 rune macro
+  user: User | null = $state(null);
+  // @ts-ignore - Svelte 5 rune macro
+  isLoading: boolean = $state(true);
 
   get isAuthenticated() {
     return this.user !== null;
   }
 
   get isAdmin() {
-    return this.user?.role === 'ADMIN';
+    return this.user?.role === 'admin';
   }
 
   // Verifies a secure HttpOnly cookie with the Astro SSR backend

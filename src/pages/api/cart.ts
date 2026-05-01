@@ -9,7 +9,7 @@ interface CartPayload {
 
 export const POST: APIRoute = async ({ request, cookies, locals }) => {
   try {
-    // 2. Safely typecast the unknown JSON response
+    // 2. Safely typecast the unknown JSON response       
     const payload = (await request.json()) as CartPayload;
     const items = payload.items;
 
@@ -28,7 +28,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
 
       if (!guestId) {
         guestId = crypto.randomUUID();
-        // Set a 7-day HttpOnly cookie for the guest
+        // Set a 7-day HttpOnly cookie for the guest      
         cookies.set('symeno_guest_cart', guestId, {
           path: '/',
           maxAge: 60 * 60 * 24 * 7,
@@ -42,8 +42,14 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       cartSessionId = `user_${cartSessionId}`;
     }
 
+    // Extract dynamic env from locals
+    const env = (locals as any).runtime?.env;
+    if (!env) {
+      throw new Error('Environment context missing.');
+    }
+
     // 4. Persist the state to Cloudflare KV Edge
-    await cacheCartState(cartSessionId, { items });
+    await cacheCartState(env, cartSessionId, { items });
 
     return new Response(JSON.stringify({ success: true, synced: true }), {
       status: 200,

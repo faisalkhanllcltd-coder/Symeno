@@ -6,6 +6,7 @@ export const GET: APIRoute = async ({ locals }) => {
     if (!locals.user) throw new Error('UNAUTHENTICATED');
 
     const db = env.DB;
+    if (!db) return new Response(JSON.stringify({ error: 'DB Offline' }), { status: 503 });
     // 1. Calculate Balances via Ledger Aggregation
     // 2. Fetch recent ledger history
     const [balanceReq, historyReq] = await db.batch([
@@ -53,6 +54,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     const db = env.DB;
+    if (!db) return new Response(JSON.stringify({ error: 'DB Offline' }), { status: 503 });
 
     // Safety Check: Verify current balance
     const { results } = await db

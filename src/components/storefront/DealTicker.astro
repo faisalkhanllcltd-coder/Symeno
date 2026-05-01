@@ -13,6 +13,7 @@ const { deals = [] } = Astro.props;
     class="flex w-max animate-[marquee_40s_linear_infinite] whitespace-nowrap hover:[animation-play-state:paused]"
   >
     {
+      deals.length > 0 ? (
       [1, 2].map(() => (
         <div class="flex items-center">
           {deals.map((deal) => {
@@ -34,6 +35,11 @@ const { deals = [] } = Astro.props;
           })}
         </div>
       ))
+      ) : (
+        <span class="px-8 font-mono text-xs tracking-wide text-content-muted">
+          New deals dropping soon — stay locked in.
+        </span>
+      )
     }
   </div>
 </section>

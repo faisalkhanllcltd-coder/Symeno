@@ -7,7 +7,7 @@ export const GET: APIRoute = async ({ site }) => {
   const staticPages = [
     '',
     'shop',
-    'sale',
+    'deals',
     'new-arrivals',
     'faq',
     'blog',

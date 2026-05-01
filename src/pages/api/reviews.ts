@@ -13,7 +13,7 @@ export const GET: APIRoute = async ({ request }) => {
       SELECT r.id, r.rating, r.title, r.comment, r.created_at, r.is_verified_buyer,
              u.first_name, u.last_name 
       FROM reviews r
-      LEFT JOIN users u ON r.customer_id = u.id
+      LEFT JOIN customers u ON r.customer_id = u.id
       WHERE r.product_id = ?1 AND r.status = 'APPROVED'
       ORDER BY r.created_at DESC
     `

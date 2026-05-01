@@ -13,7 +13,7 @@ export const POST: APIRoute = async ({ request }) => {
       `
       SELECT o.id, o.status, o.created_at, o.tracking_url 
       FROM orders o
-      JOIN users u ON o.customer_id = u.id
+      JOIN customers u ON o.customer_id = u.id
       WHERE o.id = ?1 AND LOWER(u.email) = LOWER(?2)
     `
     )

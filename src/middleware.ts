@@ -37,9 +37,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
             return redirect('/auth/login');
         }
 
-        // Safely extract KV from Cloudflare runtime. 
-        // Fallback accounts for the mismatch between wrangler.toml (SESSION) and login.ts (KV)
-        const env = context.locals.runtime?.env || (await import('cloudflare:workers')).env;
+        // Safely extract KV from Cloudflare runtime.
+        const env = (context.locals as any).runtime?.env;
+        if (!env) {
+            console.error('[AUTH_FATAL] Cloudflare runtime.env is not available in middleware.');
+            return new Response('Internal Server Error', { status: 500 });
+        }
         const kvStore = env.SESSION || env.KV;
 
         if (!kvStore) {
@@ -102,7 +105,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     // Baseline CSP. Allows Cloudflare Turnstile, local scripts, and standard assets.
     secureResponse.headers.set(
         'Content-Security-Policy',
-        "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https:;"
+        "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:;"
     );
 
     return secureResponse;

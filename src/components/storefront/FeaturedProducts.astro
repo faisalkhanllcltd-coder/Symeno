@@ -18,6 +18,7 @@ const { products = [] } = Astro.props;
       class="hide-scrollbar -mx-4 flex snap-x snap-mandatory gap-6 overflow-x-auto px-4 pb-8 sm:mx-0 sm:px-0 md:grid md:grid-cols-4"
     >
       {
+        products.length > 0 ? (
         products.map((product) => (
           <div class="group relative flex min-w-[75vw] snap-start flex-col border border-outline bg-surface transition-all duration-300 hover:border-content-muted hover:shadow-[0_15px_30px_-10px_rgba(0,0,0,0.5)] sm:min-w-[300px] md:min-w-0">
             <div class="relative flex aspect-[4/5] items-center justify-center overflow-hidden bg-surface p-6">
@@ -25,7 +26,7 @@ const { products = [] } = Astro.props;
                 Product Image
               </span>
 
-              <button class="absolute top-3 right-3 flex h-8 w-8 items-center justify-center border border-outline bg-base/80 text-content-muted opacity-0 backdrop-blur transition-all duration-300 group-hover:opacity-100 hover:border-brand hover:bg-brand hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm">
+              <button type="button" class="absolute top-3 right-3 flex h-8 w-8 items-center justify-center border border-outline bg-base/80 text-content-muted opacity-0 backdrop-blur transition-all duration-300 group-hover:opacity-100 hover:border-brand hover:bg-brand hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm">
                 <svg
                   class="h-4 w-4"
                   fill="none"
@@ -74,13 +75,20 @@ const { products = [] } = Astro.props;
                   )}
                 </div>
 
-                <button class="w-full rounded-none border border-outline bg-surface py-3.5 text-xs font-bold tracking-widest text-content uppercase shadow-none transition-all duration-300 hover:border-brand hover:bg-brand hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm">
-                  Add to Cart
-                </button>
+                <a href={`/shop/product/${product.slug}`} class="block w-full rounded-none border border-outline bg-surface py-3.5 text-center text-xs font-bold tracking-widest text-content uppercase shadow-none transition-all duration-300 hover:border-brand hover:bg-brand hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm">
+                  View & Add to Cart
+                </a>
               </div>
             </div>
           </div>
         ))
+        ) : (
+          <div class="col-span-full border border-outline bg-surface py-16 text-center md:col-span-4">
+            <p class="font-mono text-xs tracking-widest text-content-muted uppercase">
+              Inventory depleted. Restocking in progress.
+            </p>
+          </div>
+        )
       }
     </div>
   </div>

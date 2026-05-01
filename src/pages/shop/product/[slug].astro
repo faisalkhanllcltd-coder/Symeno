@@ -81,7 +81,7 @@ const productSpecs: Record<string, string> = {
             url: `https://symeno.com/shop/product/${product.slug}`,
             priceCurrency: 'USD',
             price: product.basePrice.toString(),
-            availability: 'https://schema.org/OutOfStock',
+            availability: product.stock_status === 'IN_STOCK' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
             itemCondition: 'https://schema.org/NewCondition',
           },
         })}
@@ -198,6 +198,7 @@ const productSpecs: Record<string, string> = {
                     class="bg-base border-outline text-content focus:ring-brand shadow-ambient w-full rounded-md border px-4 py-3 font-mono text-sm transition-colors duration-300 focus:ring-1 focus:outline-none" 
                   />
                   <button
+                    type="button"
                     id="join-waitlist-btn"
                     class="bg-brand text-brand-dark w-full rounded-md py-4 text-sm font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(54,244,164,0.15)] transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_25px_rgba(54,244,164,0.3)] focus:outline-none"
                     data-product-id={product.id}

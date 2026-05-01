@@ -1,15 +1,22 @@
 import type { APIRoute } from 'astro';
-import { env } from 'cloudflare:workers';
 import { getStripeClient } from '../../../../../lib/stripe';
 
 export const POST: APIRoute = async ({ request, params, locals }) => {
   try {
     if (!locals.user || locals.user.role !== 'admin')
       throw new Error('UNAUTHORIZED: Admin only.');
-    const { amount, reason, stripe_payment_id } = (await request.json()) as any;
 
-    // Process via Stripe
-    const stripe = getStripeClient();
+    // Removed unused 'reason' to clear TS warnings
+    const { amount, stripe_payment_id } = (await request.json()) as any;
+
+    // Extract dynamic env from locals safely
+    const env = (locals as any).runtime?.env;
+    if (!env || !env.DB) {
+      return new Response(JSON.stringify({ error: 'Database Offline' }), { status: 503 });
+    }
+
+    // Process via Stripe by injecting env
+    const stripe = getStripeClient(env);
     await stripe.refunds.create({
       payment_intent: stripe_payment_id,
       amount: Math.round(amount * 100), // Convert to cents

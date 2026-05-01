@@ -5,6 +5,7 @@ import { addressSchema, validatePayload } from '../../../lib/validations';
 export const GET: APIRoute = async ({ locals }) => {
   try {
     if (!locals.user) throw new Error('UNAUTHENTICATED');
+    if (!env.DB) return new Response(JSON.stringify({ error: 'DB Offline' }), { status: 503 });
 
     const { results } = await env.DB.prepare(
       `

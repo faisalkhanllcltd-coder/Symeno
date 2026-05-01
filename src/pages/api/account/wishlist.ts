@@ -1,4 +1,4 @@
-﻿import type { APIRoute } from 'astro';
+import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { z } from 'zod';
 
@@ -15,7 +15,7 @@ export const GET: APIRoute = async ({ locals }) => {
   try {
     const db = (env as any).DB;
     // We fetch all product IDs saved by this specific user
-    const results = await db.prepare('SELECT product_id FROM wishlists WHERE user_id = ?1').bind(user.id).all();
+    const results = await db.prepare('SELECT product_id FROM wishlists WHERE customer_id = ?1').bind(user.id).all();
     const items = results.results.map((row: any) => row.product_id);
     
     return new Response(JSON.stringify({ items }), { status: 200 });
@@ -35,11 +35,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     if (action === 'add') {
       // INSERT OR IGNORE prevents database crashes if they double-click the button
-      await db.prepare('INSERT OR IGNORE INTO wishlists (user_id, product_id) VALUES (?1, ?2)')
+      await db.prepare('INSERT OR IGNORE INTO wishlists (customer_id, product_id) VALUES (?1, ?2)')
         .bind(user.id, productId)
         .run();
     } else {
-      await db.prepare('DELETE FROM wishlists WHERE user_id = ?1 AND product_id = ?2')
+      await db.prepare('DELETE FROM wishlists WHERE customer_id = ?1 AND product_id = ?2')
         .bind(user.id, productId)
         .run();
     }

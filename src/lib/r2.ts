@@ -4,16 +4,15 @@ import {
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { env } from 'cloudflare:workers';
 
 /**
  * Lazy-loads the Cloudflare R2 Client to ensure Environment Variables
  * are fully hydrated by the Edge before instantiation.
  */
-function getR2Client() {
-  const accountId = (env as any).R2_ACCOUNT_ID;
-  const accessKeyId = (env as any).R2_ACCESS_KEY_ID;
-  const secretAccessKey = (env as any).R2_SECRET_ACCESS_KEY;
+function getR2Client(env: any) {
+  const accountId = env?.R2_ACCOUNT_ID;
+  const accessKeyId = env?.R2_ACCESS_KEY_ID;
+  const secretAccessKey = env?.R2_SECRET_ACCESS_KEY;
 
   if (!accountId || !accessKeyId || !secretAccessKey) {
     console.warn(
@@ -31,8 +30,8 @@ function getR2Client() {
   });
 }
 
-function getBucketName() {
-  return (env as any).R2_BUCKET_NAME || 'symeno-media';
+function getBucketName(env: any) {
+  return env?.R2_BUCKET_NAME || 'symeno-media';
 }
 
 /**
@@ -40,29 +39,30 @@ function getBucketName() {
  * Time-to-Live (TTL) is strictly 5 minutes.
  */
 export async function generateUploadUrl(
+  env: any,
   key: string,
   contentType: string
 ): Promise<string> {
   const command = new PutObjectCommand({
-    Bucket: getBucketName(),
+    Bucket: getBucketName(env),
     Key: key,
     ContentType: contentType,
   });
 
   // URL expires in 300 seconds (5 minutes)
-  return getSignedUrl(getR2Client(), command, { expiresIn: 300 });
+  return getSignedUrl(getR2Client(env), command, { expiresIn: 300 });
 }
 
 /**
  * Deletes an object from the R2 bucket. Used for catalog cleanup.
  */
-export async function deleteAsset(key: string): Promise<void> {
+export async function deleteAsset(env: any, key: string): Promise<void> {
   const command = new DeleteObjectCommand({
-    Bucket: getBucketName(),
+    Bucket: getBucketName(env),
     Key: key,
   });
 
-  await getR2Client().send(command);
+  await getR2Client(env).send(command);
 }
 
 /**

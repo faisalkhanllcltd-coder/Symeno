@@ -1,10 +1,9 @@
 // src/lib/stripe.ts
 import Stripe from 'stripe';
-import { env } from 'cloudflare:workers';
 
 // Exported function to ensure we capture the Cloudflare runtime bindings securely
 // per-request instead of at static file load.
-export const getStripeClient = (): Stripe => {
+export const getStripeClient = (env: any): Stripe => {
   if (!env.STRIPE_SECRET_KEY) {
     throw new Error(
       'FATAL: STRIPE_SECRET_KEY is missing in environment variables.'
@@ -25,6 +24,7 @@ export const getStripeClient = (): Stripe => {
 
 // Edge-safe Webhook validation using Web Crypto API instead of Node Buffer/Crypto
 export const verifyStripeWebhook = async (
+  env: any,
   payload: string,
   signature: string
 ): Promise<Stripe.Event> => {
@@ -35,7 +35,7 @@ export const verifyStripeWebhook = async (
     );
   }
 
-  const stripe = getStripeClient();
+  const stripe = getStripeClient(env);
 
   // constructEventAsync operates natively on the Edge using Web Crypto
   return await stripe.webhooks.constructEventAsync(payload, signature, secret);

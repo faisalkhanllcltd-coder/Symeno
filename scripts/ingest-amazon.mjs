@@ -1,4 +1,4 @@
-﻿import fs from 'node:fs';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -95,9 +95,9 @@ async function fetchCatalog() {
           title: cleanTitle,
           description: `Premium ${target.cat.toLowerCase()} hardware sourced directly from our verified independent supply chain. Authentic quality, factory sealed.`,
           basePrice: item.product_price ? parseFloat(item.product_price.replace('$', '')) : Math.floor(Math.random() * (49 - 15 + 1) + 15) + 0.99, // Fallback realistic pricing
-          retailPrice: item.product_original_price ? parseFloat(item.product_original_price.replace('$', '')) : null,
+          retailPrice: item.product_original_price ? parseFloat(item.product_original_price.replace('$', '')) : (item.product_price ? parseFloat(item.product_price.replace('$', '')) * 1.2 : null),
           stockStatus: 'OUT_OF_STOCK', // Preserved for Painted Door logic
-          images: [item.product_photo]
+          images: item.product_photo ? [item.product_photo] : []
         };
       });
 

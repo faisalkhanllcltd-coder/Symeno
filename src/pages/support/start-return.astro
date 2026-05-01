@@ -1,7 +1,8 @@
 ---
 import StorefrontLayout from '../../layouts/Storefront.astro';
 import ReturnRequestForm from '../../components/storefront/returns/ReturnRequestForm.svelte';
-import { env } from 'cloudflare:workers';
+
+export const prerender = false;
 
 const user = Astro.locals.user;
 if (!user) {
@@ -10,7 +11,7 @@ if (!user) {
 }
 
 let eligibleOrders: any[] = [];
-const db = (env as any).DB;
+const db = (Astro.locals as any).runtime?.env?.DB;
 
 if (db) {
   try {

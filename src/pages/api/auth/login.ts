@@ -38,7 +38,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
       return new Response('Authentication failed.', { status: 401 });
 
     const sessionId = crypto.randomUUID();
-    const kv = (env as any).KV;
+    const kv = (env as any).SESSION || (env as any).KV;
     const role = email.includes('@symeno.com') ? 'admin' : 'customer';
 
     if (kv && kv.put) {

@@ -25,6 +25,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     }
 
     const db = env.DB;
+    if (!db) return new Response(JSON.stringify({ error: 'DB Offline' }), { status: 503 });
 
     // Insert safely, ignoring if already subscribed (UNIQUE constraint handles this)
     await db

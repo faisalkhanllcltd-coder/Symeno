@@ -17,19 +17,13 @@
     isProcessing = true;
 
     try {
-      const method = isSaved ? 'POST' : 'DELETE';
-      const body = isSaved
-        ? {
-            product_id: productId,
-            notify_price_drop: true,
-            notify_restock: true,
-          }
-        : { product_id: productId };
-
       const res = await fetch('/api/account/wishlist', {
-        method,
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          productId,
+          action: isSaved ? 'add' : 'remove',
+        }),
       });
 
       if (!res.ok) {

@@ -8,7 +8,7 @@ export const GET: APIRoute = async ({ request }) => {
     const brand = url.searchParams.get('brand');
     const sort = url.searchParams.get('sort') || 'newest';
 
-    let query = `SELECT id, title, slug, base_price, retail_price, brand FROM products WHERE 1=1`;
+    let query = `SELECT sku AS id, title, sku AS slug, price AS base_price, category AS brand FROM rapidapi_cache WHERE 1=1`;
     const params: any[] = [];
 
     // Search Query Matrix

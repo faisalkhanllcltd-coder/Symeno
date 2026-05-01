@@ -10,6 +10,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const db = env.DB;
+    if (!db) return new Response(JSON.stringify({ error: 'DB Offline' }), { status: 503 });
     const id = crypto.randomUUID();
 
     await db

@@ -1,8 +1,6 @@
-﻿// src/lib/db.ts
-// @ts-ignore - Bypass TS warnings if cloudflare types aren't fully synced yet
-import { env } from 'cloudflare:workers';
+// src/lib/db.ts
 
-export function getDb(context: any) {
-  // The new Astro v6 / Cloudflare standard for accessing bindings
-  return (env as any).DB;
+export function getDb(env: any) {
+  // Accepts the per-request env object from context.locals.runtime?.env
+  return env?.DB;
 }

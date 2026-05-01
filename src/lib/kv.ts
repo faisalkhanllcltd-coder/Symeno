@@ -1,15 +1,14 @@
-import { env } from 'cloudflare:workers';
-
-export function getKV() {
-  return (env as any).KV;
+export function getKV(env: any) {
+  return env?.KV;
 }
 
 export async function cacheCartState(
+  env: any,
   sessionId: string,
   cartData: any,
   ttlInSeconds = 86400
 ) {
-  const kv = getKV();
+  const kv = getKV(env);
   if (!kv) {
     console.warn('[KV_SYSTEM] Binding missing. Edge caching aborted.');
     return;
@@ -21,8 +20,8 @@ export async function cacheCartState(
   });
 }
 
-export async function fetchCartState(sessionId: string) {
-  const kv = getKV();
+export async function fetchCartState(env: any, sessionId: string) {
+  const kv = getKV(env);
   if (!kv) return null;
 
   const data = await kv.get(`cart:${sessionId}`);

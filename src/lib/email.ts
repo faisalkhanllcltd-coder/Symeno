@@ -1,5 +1,4 @@
-﻿// src/lib/email.ts
-import { env } from 'cloudflare:workers';
+// src/lib/email.ts
 
 interface FetchTimeoutOptions extends RequestInit {
   timeout?: number;
@@ -44,9 +43,10 @@ export interface SendEmailOptions {
  * so the email finishes sending in the background after the response is sent to the user.
  */
 export const sendEmail = async (
+  env: any,
   options: SendEmailOptions
 ): Promise<boolean> => {
-  const apiKey = env.RESEND_API_KEY;
+  const apiKey = env?.RESEND_API_KEY;
 
   if (!apiKey) {
     console.error(
