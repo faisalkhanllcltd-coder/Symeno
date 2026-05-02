@@ -1,4 +1,12 @@
-﻿import { getViteConfig } from 'astro/config';
+import { getViteConfig } from 'astro/config';
+
 export default getViteConfig({
-  test: { globals: true, environment: 'jsdom' },
+  test: {
+    environment: 'node',
+    include: ['src/**/*.test.ts', 'src/**/*.spec.ts'],
+    exclude: ['node_modules', 'dist'],
+  },
+  resolve: {
+    conditions: ['workerd', 'worker', 'browser'],
+  }
 });

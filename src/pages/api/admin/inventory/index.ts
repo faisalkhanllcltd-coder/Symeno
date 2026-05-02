@@ -12,14 +12,14 @@ const enforceAdmin = (locals: App.Locals) => {
 export const GET: APIRoute = async ({ locals }) => {
   try {
     enforceAdmin(locals);
-    // Fetch SKU-level data by joining products and variants
+    // Fetch slug-level data by joining products and variants
     const { results } = await env.DB.prepare(
       `
-      SELECT v.id as variant_id, p.title as product_title, v.sku, v.title as variant_title, 
-             v.inventory_quantity as stock, p.is_active, p.id as product_id
+      SELECT v.id as variant_id, p.title as product_title, v.slug, v.title as variant_title, 
+             v.inventory_quantity as stock, p.is_active, p.id as product_id, p.category, p.brand
       FROM product_variants v
       JOIN products p ON v.product_id = p.id
-      ORDER BY p.title ASC, v.sku ASC
+      ORDER BY p.title ASC, v.slug ASC
     `
     ).all();
 

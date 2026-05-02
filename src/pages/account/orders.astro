@@ -10,7 +10,7 @@ let orders: any[] = [];
 if (env.DB) {
   try {
     const { results } = await env.DB.prepare(
-      'SELECT id, created_at, status, total, tracking_url FROM orders WHERE customer_id = ? ORDER BY created_at DESC'
+      'SELECT id, created_at, status, total_amount, tracking_url FROM orders WHERE customer_id = ? ORDER BY created_at DESC'
     )
       .bind(user.id)
       .all();

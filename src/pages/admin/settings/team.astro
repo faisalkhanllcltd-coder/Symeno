@@ -1,8 +1,9 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import TeamManager from '../../../components/admin/settings/TeamManager.svelte';
+import { env } from "cloudflare:workers";
 
-const db = Astro.locals.runtime?.env?.DB;
+const db = env.DB;
 let results: any[] = [];
 
 if (db) {

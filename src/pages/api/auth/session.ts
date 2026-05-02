@@ -1,4 +1,5 @@
-﻿import type { APIRoute } from 'astro';
+import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
 
 export const GET: APIRoute = async (context) => {
   const sessionId = context.cookies.get('auth_session')?.value;
@@ -7,8 +8,7 @@ export const GET: APIRoute = async (context) => {
     return new Response(JSON.stringify({ user: null }), { status: 401 });
   }
 
-  const env = (context.locals as any).runtime?.env;
-  const kvStore = env?.SESSION || env?.KV;
+  const kvStore = env?.SESSION;
 
   if (!kvStore) {
     console.error('[AUTH_FATAL] KV binding missing in session hydration.');

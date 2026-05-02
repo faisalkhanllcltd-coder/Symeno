@@ -5,7 +5,7 @@
   let filtered = $derived(
     inventory.filter(
       (item) =>
-        item.sku?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.slug?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.product_title?.toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
@@ -16,7 +16,7 @@
     <input
       type="text"
       bind:value={searchQuery}
-      placeholder="Search SKUs or Titles..."
+      placeholder="Search Slugs or Titles..."
       class="w-72 border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
     />
     <a
@@ -33,7 +33,7 @@
         <tr
           class="border-b border-outline bg-surface font-mono text-[10px] tracking-widest text-content-muted uppercase"
         >
-          <th class="p-4 font-normal">SKU</th>
+          <th class="p-4 font-normal">Slug</th>
           <th class="p-4 font-normal">Product & Variant</th>
           <th class="p-4 text-right font-normal">Available</th>
           <th class="p-4 text-right font-normal">Reserved (Carts)</th>
@@ -44,7 +44,7 @@
         {#each filtered as item}
           <tr class="transition-colors hover:bg-white/[0.02]">
             <td class="p-4 font-mono text-xs font-bold text-brand"
-              >{item.sku || 'NO-SKU'}</td
+              >{item.slug || 'NO-SLUG'}</td
             >
             <td class="p-4 text-xs">
               <a

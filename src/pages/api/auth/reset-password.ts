@@ -1,6 +1,7 @@
-﻿import type { APIRoute } from 'astro';
+import type { APIRoute } from 'astro';
 import { hashPassword } from '../../../lib/crypto';
 import { z } from 'zod';
+import { env } from 'cloudflare:workers';
 
 const schema = z.object({
   token: z.string().min(10),
@@ -11,9 +12,8 @@ export const POST: APIRoute = async (context) => {
   try {
     const body = await context.request.json() as any;
     const { token, newPassword } = schema.parse(body);
-    const env = (context.locals as any).runtime?.env;
     const db = env?.DB;
-    const kv = env?.KV || env?.SESSION;
+    const kv = env?.SESSION;
 
     if (!db || !kv) return new Response(JSON.stringify({ error: 'Database Offline' }), { status: 500 });
 

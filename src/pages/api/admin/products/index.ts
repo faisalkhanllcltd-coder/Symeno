@@ -13,7 +13,7 @@ export const GET: APIRoute = async ({ locals }) => {
   try {
     enforceAdmin(locals);
     const { results } = await env.DB.prepare(
-      'SELECT id, title, slug, base_price, description, stock_status, is_active, created_at FROM products ORDER BY created_at DESC'
+      'SELECT id, title, slug, basePrice, retailPrice, description, stockStatus, category, categorySlug, brand, is_active, created_at FROM products ORDER BY created_at DESC'
     ).all();
     return new Response(JSON.stringify(results), { status: 200 });
   } catch (e) {
@@ -30,16 +30,20 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // D1 Insert with parameterized bindings to prevent SQL injection
     const { success } = await env.DB.prepare(
-      `INSERT INTO products (id, title, slug, base_price, description, stock_status, is_active) 
-       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)`
+      `INSERT INTO products (id, title, slug, basePrice, retailPrice, description, stockStatus, category, categorySlug, brand, is_active) 
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)`
     )
       .bind(
         crypto.randomUUID(),
         data.title,
         data.slug,
-        data.base_price || 0,
+        data.basePrice || 0,
+        data.retailPrice || 0,
         data.description || '',
-        data.stock_status || 'IN_STOCK',
+        data.stockStatus || 'IN_STOCK',
+        data.category || '',
+        data.categorySlug || '',
+        data.brand || '',
         1
       )
       .run();

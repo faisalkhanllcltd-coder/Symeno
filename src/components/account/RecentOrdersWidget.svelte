@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
   let { orders = [] } = $props<{ orders?: any[] }>();    
 </script>
 
@@ -34,7 +34,7 @@
             >
           </div>
           <p class="font-mono text-[10px] text-content-muted">
-            {new Date(order.created_at).toLocaleDateString()} • ${order.total.toFixed(
+            {new Date(order.created_at).toLocaleDateString()} • ${order.total_amount.toFixed(
               2
             )}
           </p>

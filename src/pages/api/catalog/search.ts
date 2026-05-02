@@ -8,7 +8,7 @@ export const GET: APIRoute = async ({ request }) => {
     const brand = url.searchParams.get('brand');
     const sort = url.searchParams.get('sort') || 'newest';
 
-    let query = `SELECT sku AS id, title, sku AS slug, price AS base_price, category AS brand FROM rapidapi_cache WHERE 1=1`;
+    let query = `SELECT slug AS id, title, slug, basePrice AS base_price, retailPrice AS retail_price, stockStatus AS stock_status, category, categorySlug, brand FROM products WHERE 1=1`;
     const params: any[] = [];
 
     // Search Query Matrix
@@ -25,8 +25,8 @@ export const GET: APIRoute = async ({ request }) => {
     }
 
     // Sort Protocols
-    if (sort === 'price_asc') query += ` ORDER BY base_price ASC`;
-    else if (sort === 'price_desc') query += ` ORDER BY base_price DESC`;
+    if (sort === 'price_asc') query += ` ORDER BY basePrice ASC`;
+    else if (sort === 'price_desc') query += ` ORDER BY basePrice DESC`;
     else query += ` ORDER BY created_at DESC`;
 
     // Strict Edge Optimization: Limit payload size

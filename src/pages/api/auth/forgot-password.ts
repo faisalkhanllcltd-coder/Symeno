@@ -1,5 +1,6 @@
-﻿import type { APIRoute } from 'astro';
+import type { APIRoute } from 'astro';
 import { z } from 'zod';
+import { env } from 'cloudflare:workers';
 
 const schema = z.object({ email: z.string().email().transform(val => val.toLowerCase().trim()) });
 
@@ -7,9 +8,8 @@ export const POST: APIRoute = async (context) => {
   try {
     const body = await context.request.json() as any;
     const { email } = schema.parse(body);
-    const env = (context.locals as any).runtime?.env;
     const db = env?.DB;
-    const kv = env?.KV || env?.SESSION;
+    const kv = env?.SESSION;
 
     if (!db || !kv) return new Response(JSON.stringify({ error: 'Database Offline' }), { status: 500 });
 
@@ -21,7 +21,7 @@ export const POST: APIRoute = async (context) => {
     const resetToken = crypto.randomUUID();
 
     // Store in KV for exactly 15 minutes (900 seconds)   
-    await kv.put(`reset:${resetToken}`, user.id, { expirationTtl: 900 });
+    await kv.put(`reset:${resetToken}`, user.id as string, { expirationTtl: 900 });
 
     // PRO TIP: Trigger your transactional email webhook here, passing the resetToken
     console.log(`[DEV] Password reset token for: ${resetToken}`);

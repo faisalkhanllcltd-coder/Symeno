@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
   import { onMount } from 'svelte';
   import { ui } from '../../../stores/ui.svelte';
 
@@ -41,7 +41,7 @@
       // FIX: Restored the backticks for template literal
       const shippingAddress = `${formData.city}, ${formData.country}`;
       const payloadItems = cartItems.map(item => ({       
-        sku: item.id || item.sku, // Support both ID or SKU bindings from the cart
+        slug: item.id || item.slug, // Support both ID or Slug bindings from the cart
         quantity: item.quantity || 1
       }));
 

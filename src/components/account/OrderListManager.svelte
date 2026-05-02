@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
   let { orders = [] } = $props<{ orders?: any[] }>();    
 
   let searchQuery = $state('');
@@ -99,7 +99,7 @@
                 Total Amount
               </p>
               <p class="font-mono text-lg font-bold text-brand">
-                ${order.total.toFixed(2)}
+                ${order.total_amount.toFixed(2)}
               </p>
             </div>
           </div>

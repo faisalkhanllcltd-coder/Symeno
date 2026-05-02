@@ -18,7 +18,7 @@
       >
         <div class="mb-2 flex items-center justify-between">
           <span class="bg-brand/10 px-1 font-mono text-[9px] text-brand"
-            >{log.sku}</span
+            >{log.slug}</span
           >
           <span class="font-mono text-[9px] text-content-muted"
             >{new Date(log.created_at).toLocaleString()}</span

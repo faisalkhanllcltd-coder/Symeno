@@ -8,11 +8,14 @@ export interface User {
 
 export interface Product {
   id: string;
-  sku: string;
+  slug: string;
   title: string;
-  wholesale_price: number;
-  retail_price: number;
-  stock: number;
+  basePrice: number;
+  retailPrice: number;
+  stockStatus: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
+  category: string;
+  categorySlug: string;
+  brand: string;
   status: 'active' | 'draft' | 'archived';
   created_at: string;
 }

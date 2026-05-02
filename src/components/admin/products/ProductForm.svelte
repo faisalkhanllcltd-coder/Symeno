@@ -6,7 +6,6 @@
   let title = $state('');
   let slug = $state('');
   let brand = $state('');
-  let sku = $state('');
   let description = $state('');
   let wholesale = $state(0.0);
   let retail = $state(0.0);
@@ -36,8 +35,8 @@
       title,
       slug,
       brand,
-      base_price: Number(wholesale),
-      retail_price: Number(retail),
+      basePrice: Number(wholesale),
+      retailPrice: Number(retail),
       description,
     };
 
@@ -54,7 +53,7 @@
       const res = await fetch('/api/admin/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...validation.data, sku, stock }),
+        body: JSON.stringify({ ...validation.data, stock }),
       });
 
       if (res.ok) {
@@ -133,19 +132,7 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-          <div class="space-y-1.5">
-            <label
-              class="font-mono text-[10px] tracking-widest text-content-muted uppercase"
-              >Master SKU</label
-            >
-            <input
-              type="text"
-              bind:value={sku}
-              required
-              class="w-full rounded-none border border-outline bg-base px-3 py-2 font-mono text-sm text-content uppercase transition-colors focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
-              placeholder="SNY-XM5-BLK"
-            />
-          </div>
+
           <div class="space-y-1.5">
             <label
               class="font-mono text-[10px] tracking-widest text-content-muted uppercase"

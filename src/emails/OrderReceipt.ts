@@ -6,10 +6,10 @@ export function generateOrderReceiptHTML(order: any, items: any[]): string {
     <tr>
       <td style="padding: 12px; border-bottom: 1px solid var(--color-outline);">
         <p style="margin:0; font-weight: bold; color: var(--color-content);">${i.title}</p>
-        <p style="margin:0; font-size: 12px; color: var(--color-content-muted);">SKU: ${i.sku}</p>
+        <p style="margin:0; font-size: 12px; color: var(--color-content-muted);">Slug: ${i.slug}</p>
       </td>
       <td style="padding: 12px; border-bottom: 1px solid var(--color-outline); text-align: center; color: var(--color-content);">${i.quantity}</td>
-      <td style="padding: 12px; border-bottom: 1px solid var(--color-outline); text-align: right; color: var(--color-brand);">$${(i.price * i.quantity).toFixed(2)}</td>
+      <td style="padding: 12px; border-bottom: 1px solid var(--color-outline); text-align: right; color: var(--color-brand);">$${(i.basePrice * i.quantity).toFixed(2)}</td>
     </tr>
   `
     )

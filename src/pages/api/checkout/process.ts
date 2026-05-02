@@ -1,9 +1,10 @@
-﻿import type { APIRoute } from 'astro';
+import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
 
 export const POST: APIRoute = async (context) => {
   try {
     const body = await context.request.json() as any;
-    const db = (context.locals as any).runtime?.env?.DB;
+    const db = env.DB;
     if (!db) throw new Error("DB Offline");
 
     const orderId = `ORD-${Date.now()}`;

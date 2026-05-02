@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
   import type { ProductVariant } from '../../../types/storefront';
 
   interface Props {
@@ -14,7 +14,7 @@
     variants.push({
       id: crypto.randomUUID(),
       productId: '',
-      sku: '',
+      slug: '',
       title: '',
       priceAdjustment: 0,
       inventoryQuantity: 0,
@@ -58,12 +58,12 @@
         class="bg-surface border-outline grid grid-cols-12 items-center gap-3 rounded border p-3 transition-colors duration-300"
       >
         <div class="col-span-4">
-          <label for={`sku-${variant.id}`} class="sr-only">SKU</label>
+          <label for={`slug-${variant.id}`} class="sr-only">Slug</label>
           <input
-            id={`sku-${variant.id}`}
+            id={`slug-${variant.id}`}
             type="text"
-            bind:value={variant.sku}
-            placeholder="SKU (e.g. SNY-XM5-BLK)"
+            bind:value={variant.slug}
+            placeholder="Slug (e.g. SNY-XM5-BLK)"
             class="border-outline bg-base text-content placeholder-content-muted focus:border-brand focus:ring-brand block w-full rounded-md border px-3 py-2 font-mono text-xs transition-colors duration-300 focus:ring-1 focus:outline-none"
           />
         </div>
@@ -127,7 +127,7 @@
         </div>
 
         <input type="hidden" name="variant_id[]" value={variant.id} />
-        <input type="hidden" name="variant_sku[]" value={variant.sku} />
+        <input type="hidden" name="variant_slug[]" value={variant.slug} />
         <input type="hidden" name="variant_title[]" value={variant.title} />
         <input
           type="hidden"

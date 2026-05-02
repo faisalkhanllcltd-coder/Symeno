@@ -1,14 +1,18 @@
 <script lang="ts">
   // These props allow Astro to pass the current URL parameters down for SSR hydration
-  let {
-    activeBrand = '',
-    activeSort = 'newest',
-    currentQuery = '',
-  } = $props<{
+  interface Props {
     activeBrand?: string;
+    activeCategory?: string;
     activeSort?: string;
     currentQuery?: string;
-  }>();
+  }
+
+  let {
+    activeBrand = '',
+    activeCategory = '',
+    activeSort = 'newest',
+    currentQuery = '',
+  } = $props<Props>();
 
   const brands = ['Apple', 'Sony', 'Samsung', 'LG', 'Logitech', 'Bose'];
   const sortOptions = [
@@ -38,6 +42,9 @@
 
   {#if currentQuery}
     <input type="hidden" name="q" value={currentQuery} />
+  {/if}
+  {#if activeCategory}
+    <input type="hidden" name="category" value={activeCategory} />
   {/if}
 
   <div class="space-y-4">

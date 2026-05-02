@@ -1,4 +1,5 @@
 import { defineMiddleware } from 'astro:middleware';
+import { env } from 'cloudflare:workers';
 
 export const onRequest = defineMiddleware(async (context, next) => {
     const { request, url, cookies, redirect, locals } = context;
@@ -37,13 +38,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
             return redirect('/auth/login');
         }
 
-        // Safely extract KV from Cloudflare runtime.
-        const env = (context.locals as any).runtime?.env;
-        if (!env) {
-            console.error('[AUTH_FATAL] Cloudflare runtime.env is not available in middleware.');
-            return new Response('Internal Server Error', { status: 500 });
-        }
-        const kvStore = env.SESSION || env.KV;
+        const kvStore = env?.SESSION;
 
         if (!kvStore) {
             console.error('[AUTH_FATAL] KV namespace binding missing in middleware.');

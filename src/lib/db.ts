@@ -1,6 +1,6 @@
 // src/lib/db.ts
+import { env } from 'cloudflare:workers';
 
-export function getDb(env: any) {
-  // Accepts the per-request env object from context.locals.runtime?.env
-  return env?.DB;
+export function getDb() {
+  return env.DB;
 }

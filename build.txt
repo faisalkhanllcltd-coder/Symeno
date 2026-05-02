@@ -1,0 +1,130 @@
+﻿
+> symeno-store@1.0.0 build
+> astro check && astro build
+
+node.exe : (node:18768) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland 
+alternative instead.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:18768) [D...native instead.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[2m22:27:05[22m [34m[@astrojs/cloudflare][39m Enabling sessions with Cloudflare KV with the "SESSION" KV binding.
+[33m[1m22:27:05[22m [WARN] [vite][39m [2mDefault inspector port 9229 not available, using 9230 instead
+[22m
+Using secrets defined in .env
+[sentry-vite-plugin] Info: Sending telemetry data on issues and performance to Sentry. To disable telemetry, set `options.telemetry` to `false`.
+[2m22:27:08[22m [34m[content][39m Syncing content
+[33m[1m22:27:08[22m [WARN] [glob-loader][39m No entry type found for launch-promo.mdx
+[33m[1m22:27:08[22m [WARN] [glob-loader][39m No entry type found for specific-brand.mdx
+[2m22:27:08[22m [34m[content][39m Synced content
+[2m22:27:08[22m [34m[types][39m Generated [2m3.14s[22m
+[2m22:27:08[22m [34m[check][39m Getting diagnostics for Astro files in D:\Symeno LLC\Symeno Web...
+[96msrc/middleware.ts[0m:[93m41[0m:[93m29[0m - [91merror[0m[90m ts(2339): [0mProperty 'SESSION' does not exist on type 'Env'.
+
+[7m41[0m         const kvStore = env.SESSION || env.KV;
+[7m  [0m [91m                            ~~~~~~~[0m
+
+[96msrc/pages/500.astro[0m:[93m9[0m:[93m7[0m - [93mwarning[0m[90m ts(6133): [0m'error' is declared but its value is never read.
+
+[7m9[0m const { error } = Astro.props;
+[7m [0m [93m      ~~~~~~~~~[0m
+
+[96msrc/pages/admin/audit-logs.astro[0m:[93m4[0m:[93m1[0m - [93mwarning[0m[90m ts(6133): [0m'AuditLogFilters' is declared but its value is never read.
+
+[7m4[0m import AuditLogFilters from '../../components/admin/audit-logs/AuditLogFilters.svelte';
+[7m [0m [93m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pages/admin/audit-logs.astro[0m:[93m3[0m:[93m1[0m - [93mwarning[0m[90m ts(6133): [0m'AuditLogTable' is declared but its value is never read.
+
+[7m3[0m import AuditLogTable from '../../components/admin/audit-logs/AuditLogTable.svelte';
+[7m [0m [93m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pages/admin/audit-logs.astro[0m:[93m45[0m:[93m11[0m - [93mwarning[0m[90m ts(6133): [0m'tableComponent' is declared but its value is never read.
+
+[7m45[0m       let tableComponent;
+[7m  [0m [93m          ~~~~~~~~~~~~~~[0m
+
+[96msrc/pages/admin/settings/notifications.astro[0m:[93m4[0m:[93m1[0m - [93mwarning[0m[90m ts(6133): [0m'env' is declared but its value is never read.
+
+[7m4[0m import { env } from 'cloudflare:workers';
+[7m [0m [93m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/pages/admin/settings/payments.astro[0m:[93m4[0m:[93m1[0m - [93mwarning[0m[90m ts(6133): [0m'env' is declared but its value is never read.
+
+[7m4[0m import { env } from 'cloudflare:workers';
+[7m [0m [93m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/pages/admin/settings/shipping.astro[0m:[93m4[0m:[93m1[0m - [93mwarning[0m[90m ts(6133): [0m'env' is declared but its value is never read.
+
+[7m4[0m import { env } from 'cloudflare:workers';
+[7m [0m [93m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/pages/admin/settings/store.astro[0m:[93m4[0m:[93m1[0m - [93mwarning[0m[90m ts(6133): [0m'env' is declared but its value is never read.
+
+[7m4[0m import { env } from 'cloudflare:workers';
+[7m [0m [93m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/pages/api/account/2fa/setup.ts[0m:[93m3[0m:[93m10[0m - [93mwarning[0m[90m ts(6133): [0m'generateTOTP' is declared but its value is never read.
+
+[7m3[0m import { generateTOTP, createTOTPKeyURI } from '@oslojs/otp';
+[7m [0m [93m         ~~~~~~~~~~~~[0m
+
+[96msrc/pages/api/admin/analytics.ts[0m:[93m17[0m:[93m11[0m - [93mwarning[0m[90m ts(6133): [0m'range' is declared but its value is never read.
+
+[7m17[0m     const range = url.searchParams.get('range') || '30d'; // Future: use this to filter dates
+[7m  [0m [93m          ~~~~~[0m
+
+[96msrc/pages/api/admin/inventory/create.ts[0m:[93m5[0m:[93m9[0m - [93mwarning[0m[90m ts(6133): [0m'data' is declared but its value is never read.
+
+[7m5[0m   const data = (await context.request.json()) as Record<string, any>;
+[7m [0m [93m        ~~~~[0m
+
+[96msrc/pages/api/auth/change-email.ts[0m:[93m6[0m:[93m24[0m - [93mwarning[0m[90m ts(6385): [0m'(params?: string | { pattern?: RegExp | undefined; abort?: boolean | undefined; error?: string | $ZodErrorMap<$ZodIssueInvalidStringFormat> | undefined; message?: string | undefined; } | undefined): ZodString' is deprecated.
+
+[7m6[0m   newEmail: z.string().email().transform(val => val.toLowerCase().trim()),
+[7m [0m [93m                       ~~~~~[0m
+
+[96msrc/pages/api/auth/forgot-password.ts[0m:[93m24[0m:[93m41[0m - [91merror[0m[90m ts(2345): [0mArgument of type 'unknown' is not assignable to parameter of type 'string | ArrayBuffer | ArrayBufferView<ArrayBufferLike> | ReadableStream<any>'.
+
+[7m24[0m     await kv.put(`reset:${resetToken}`, user.id, { expirationTtl: 900 });
+[7m  [0m [91m                                        ~~~~~~~[0m
+[96msrc/pages/api/auth/forgot-password.ts[0m:[93m12[0m:[93m32[0m - [91merror[0m[90m ts(2339): [0mProperty 'SESSION' does not exist on type 'Env'.
+
+[7m12[0m     const kv = env?.KV || env?.SESSION;
+[7m  [0m [91m                               ~~~~~~~[0m
+[96msrc/pages/api/auth/forgot-password.ts[0m:[93m5[0m:[93m45[0m - [93mwarning[0m[90m ts(6385): [0m'(params?: string | { pattern?: RegExp | undefined; abort?: boolean | undefined; error?: string | $ZodErrorMap<$ZodIssueInvalidStringFormat> | undefined; message?: string | undefined; } | undefined): ZodString' is deprecated.
+
+[7m5[0m const schema = z.object({ email: z.string().email().transform(val => val.toLowerCase().trim()) });
+[7m [0m [93m                                            ~~~~~[0m
+
+[96msrc/pages/api/auth/login.ts[0m:[93m7[0m:[93m21[0m - [93mwarning[0m[90m ts(6385): [0m'(params?: string | { pattern?: RegExp | undefined; abort?: boolean | undefined; error?: string | $ZodErrorMap<$ZodIssueInvalidStringFormat> | undefined; message?: string | undefined; } | undefined): ZodString' is deprecated.
+
+[7m7[0m   email: z.string().email().transform(val => val.toLowerCase().trim()),
+[7m [0m [93m                    ~~~~~[0m
+
+[96msrc/pages/api/auth/register.ts[0m:[93m8[0m:[93m21[0m - [93mwarning[0m[90m ts(6385): [0m'(params?: string | { pattern?: RegExp | undefined; abort?: boolean | undefined; error?: string | $ZodErrorMap<$ZodIssueInvalidStringFormat> | undefined; message?: string | undefined; } | undefined): ZodString' is deprecated.
+
+[7m8[0m   email: z.string().email('Invalid email format').transform(val => val.toLowerCase().trim()),
+[7m [0m [93m                    ~~~~~[0m
+
+[96msrc/pages/api/auth/reset-password.ts[0m:[93m16[0m:[93m32[0m - [91merror[0m[90m ts(2339): [0mProperty 'SESSION' does not exist on type 'Env'.
+
+[7m16[0m     const kv = env?.KV || env?.SESSION;
+[7m  [0m [91m                               ~~~~~~~[0m
+
+[96msrc/pages/api/auth/session.ts[0m:[93m11[0m:[93m24[0m - [91merror[0m[90m ts(2339): [0mProperty 'SESSION' does not exist on type 'Env'.
+
+[7m11[0m   const kvStore = env?.SESSION || env?.KV;
+[7m  [0m [91m                       ~~~~~~~[0m
+
+[96msrc/types/admin.ts[0m:[93m2[0m:[93m1[0m - [93mwarning[0m[90m ts(6192): [0mAll imports in import declaration are unused.
+
+[7m2[0m import type { User, Product, Order } from './database';
+[7m [0m [93m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+Result (203 files): 
+- 5 errors
+- 0 warnings
+- 16 hints
+

@@ -4,6 +4,8 @@ export interface Product {
   id: string;
   slug: string;
   brand: string;
+  category: string;
+  categorySlug: string;
   title: string;
   description: string;
   basePrice: number;
@@ -16,7 +18,7 @@ export interface Product {
 export interface ProductVariant {
   id: string;
   productId: string;
-  sku: string;
+  slug: string; // explicit replacement for sku
   title: string; // e.g., "Space Black" or "256GB"
   priceAdjustment: number; // e.g., +50.00 for higher storage
   inventoryQuantity: number;

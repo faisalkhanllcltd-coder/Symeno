@@ -1,13 +1,11 @@
 ---
+import { env } from "cloudflare:workers";
 import StorefrontLayout from '../../../layouts/Storefront.astro';
-
-// ACTIVE IMPORTS
 import WishlistButton from '../../../components/storefront/WishlistButton.svelte';
 import RecentlyViewed from '../../../components/storefront/product/RecentlyViewed.svelte';
 import ProductGallery from '../../../components/storefront/product/ProductGallery.svelte';
 import ProductSpecs from '../../../components/storefront/product/ProductSpecs.astro';
 
-// FORCE EDGE SSR - No Node.js modules allowed here
 export const prerender = false;
 
 const { slug } = Astro.params;
@@ -15,25 +13,24 @@ let product: any = null;
 let errorMessage = '';
 
 try {
-  // Typecast Astro.locals to bypass TS strictness
-  const db = (Astro.locals as any).runtime?.env?.DB;
+  // ASTRO V6 D1 CONNECTION
+  const db = env.DB as any;      
   if (!db) {
-    errorMessage = 'Database connection offline.';
+    errorMessage = 'Database connection offline.';        
   } else {
-    // Fetch directly from Edge Cache
-    const rawProduct = await db.prepare("SELECT * FROM rapidapi_cache WHERE sku = ?1").bind(slug).first();
-    
+    const rawProduct = await db.prepare("SELECT * FROM rapidapi_cache WHERE slug = ?1").bind(slug).first();
+
     if (rawProduct) {
-      // Map flat D1 row to the object structure your UI expects
       product = {
-        ...rawProduct,
-        id: rawProduct.sku,
-        slug: rawProduct.sku,
-        brand: rawProduct.category ?? 'Symeno Select',
+        id: rawProduct.id,
+        slug: rawProduct.slug,
+        brand: rawProduct.brand ?? 'Symeno Select',    
+        category: rawProduct.category,
         title: rawProduct.title,
         description: rawProduct.description || rawProduct.title,
-        basePrice: rawProduct.price,
-        retailPrice: rawProduct.price * 1.2, // Arbitrage visual padding
+        basePrice: rawProduct.basePrice,
+        retailPrice: rawProduct.retailPrice, 
+        stockStatus: rawProduct.stockStatus,
         images: rawProduct.image_url ? [rawProduct.image_url] : []
       };
     }
@@ -43,23 +40,24 @@ try {
   console.error('[EDGE_DB_ERROR]', e);
 }
 
-// Default fallbacks
 const isWishlisted = false;
 const hasDiscount = product?.retailPrice && product.retailPrice > product.basePrice;
+const isInStock = product?.stockStatus === 'IN_STOCK';
 
 const productSpecs: Record<string, string> = {
   'Brand': product?.brand ?? 'N/A',
+  'Category': product?.category ?? 'N/A',
   'Model': product?.title ? product.title.slice(0, 30) + '...' : 'N/A',
-  'SKU': product?.id ? String(product.id) : 'N/A',
+  'SKU': product?.id ? String(product.id) : 'N/A',        
   'Condition': 'Brand New — Factory Sealed',
   'Warranty': 'Full Manufacturer Warranty',
-  'Stock Status': product?.stock_status === 'IN_STOCK' ? 'Available' : 'Allocation Exhausted (Backordered)',
+  'Stock Status': isInStock ? 'Available for Dispatch' : 'Allocation Exhausted (Backordered)',        
 };
 ---
 
 <StorefrontLayout
-  title={product ? `${product.title} | Verified Wholesale | Symeno` : 'SKU Not Found | Symeno'}
-  description={product ? `Secure the ${product.title} at true wholesale arbitrage pricing.` : 'Item unavailable.'}
+  title={product ? `${product.title} | Premium Goods | Symeno` : 'Asset Not Found | Symeno'}
+  description={product ? `Secure the ${product.title} at true wholesale pricing.` : 'Item unavailable.'}  
 >
   {
     product && (
@@ -81,7 +79,7 @@ const productSpecs: Record<string, string> = {
             url: `https://symeno.com/shop/product/${product.slug}`,
             priceCurrency: 'USD',
             price: product.basePrice.toString(),
-            availability: product.stock_status === 'IN_STOCK' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            availability: isInStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
             itemCondition: 'https://schema.org/NewCondition',
           },
         })}
@@ -107,9 +105,9 @@ const productSpecs: Record<string, string> = {
     {
       !product && !errorMessage && (
         <div class="bg-surface border-outline mb-12 rounded-xl border p-12 text-center">
-          <h1 class="text-content font-mono text-2xl tracking-widest uppercase mb-4">SKU Not Found</h1>
-          <p class="text-content-muted">This asset is not currently indexed in our edge cache.</p>
-          <a href="/shop" class="text-brand mt-6 inline-block font-bold hover:underline">Return to Catalog</a>
+          <h1 class="text-content font-mono text-2xl tracking-widest uppercase mb-4">Asset Not Found</h1>
+          <p class="text-content-muted">This unit is not currently indexed in our edge cache.</p>
+          <a href="/shop" class="text-brand mt-6 inline-block font-bold hover:underline">Return to Catalog</a>      
         </div>
       )
     }
@@ -134,7 +132,9 @@ const productSpecs: Record<string, string> = {
             <span class="mx-2">/</span>
             <a href="/shop" class="hover:text-brand transition-colors focus:outline-none">Catalog</a>
             <span class="mx-2">/</span>
-            <span class="text-brand max-w-[150px] truncate sm:max-w-none">{product.title}</span>
+            <a href={`/shop/${product.categorySlug || ''}`} class="hover:text-brand transition-colors focus:outline-none">{product.category}</a>
+            <span class="mx-2">/</span>
+            <span class="text-brand max-w-[150px] truncate sm:max-w-none">{product.brand}</span>
           </nav>
 
           <div class="relative z-10 mb-20 grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20">
@@ -145,75 +145,90 @@ const productSpecs: Record<string, string> = {
                   images={product.images as any}
                   alt={product.title as any}
                 />
-                <div class="absolute top-4 right-4 z-20">
+                <div class="absolute top-4 right-4 z-20"> 
                   <WishlistButton
                     client:load
                     productId={product.id as any}
-                    initialState={isWishlisted as any}
+                    initialState={isWishlisted as any}    
                   />
                 </div>
               </div>
             </div>
 
-            <div class="flex flex-col justify-center">
+            <div class="flex flex-col justify-center">    
               <h1 class="text-content mb-4 text-3xl leading-none font-bold tracking-tighter uppercase transition-colors duration-300 md:text-5xl">
                 {product.title}
               </h1>
 
               <div class="mb-8 flex items-end gap-4 pb-8 font-mono transition-colors duration-300">
-                <span class="text-brand text-4xl font-bold tracking-tighter transition-colors duration-300">
-                  ${product.basePrice.toFixed(2)}
+                <span class="text-brand text-4xl font-bold tracking-tighter transition-colors duration-300">        
+                  ${Number(product.basePrice).toFixed(2)}
                 </span>
 
                 {hasDiscount && (
                   <div class="flex flex-col pb-1 transition-colors duration-300">
                     <span class="text-content-muted text-[10px] tracking-widest uppercase line-through">
-                      Retail: ${product.retailPrice!.toFixed(2)}
+                      Retail: ${Number(product.retailPrice).toFixed(2)}
                     </span>
                     <span class="text-content text-xs font-bold tracking-widest uppercase transition-colors duration-300">
-                      Arbitrage: Save ${Math.floor(product.retailPrice! - product.basePrice)}
+                      Arbitrage: Save ${Math.floor(product.retailPrice - product.basePrice)}
                     </span>
                   </div>
                 )}
               </div>
 
-              <p class="text-content-muted mb-10 font-mono text-sm leading-relaxed transition-colors duration-300">
+              <p class="text-content-muted mb-10 font-mono text-sm leading-relaxed transition-colors duration-300"> 
                 {product.description}
               </p>
 
-              {/* PAINTED DOOR UI: Replaces standard checkout cart */}
-              <div class="bg-surface border-brand/30 shadow-ambient group relative mb-8 overflow-hidden rounded-xl border p-6 transition-colors duration-300">
-                <div class="from-brand/5 pointer-events-none absolute top-0 right-0 h-full w-32 bg-gradient-to-l to-transparent" />
-                
-                <div class="mb-4">
-                  <h3 class="text-brand mb-1 text-sm font-bold tracking-widest uppercase">Allocation Exhausted</h3>
-                  <p class="text-content-muted font-mono text-xs">Due to high demand, this unit is currently backordered. Secure your priority position for the next supply drop.</p>
-                </div>
-
-                <div class="flex flex-col gap-3">
-                  <input 
-                    type="email" 
-                    id="waitlist-email" 
-                    placeholder="ENTER COMM LINK (EMAIL)..." 
-                    class="bg-base border-outline text-content focus:ring-brand shadow-ambient w-full rounded-md border px-4 py-3 font-mono text-sm transition-colors duration-300 focus:ring-1 focus:outline-none" 
-                  />
+              {isInStock ? (
+                <div class="mb-8 flex gap-4">
                   <button
                     type="button"
-                    id="join-waitlist-btn"
-                    class="bg-brand text-brand-dark w-full rounded-md py-4 text-sm font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(54,244,164,0.15)] transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_25px_rgba(54,244,164,0.3)] focus:outline-none"
+                    id="add-to-cart-btn"
+                    class="bg-brand text-brand-dark flex-1 rounded-md py-4 text-sm font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(54,244,164,0.15)] transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_25px_rgba(54,244,164,0.3)] focus:outline-none"
                     data-product-id={product.id}
                   >
-                    Join Priority Waitlist
+                    Add to Cart
                   </button>
                 </div>
-                <p id="waitlist-success" class="text-brand hidden mt-4 text-center font-mono text-xs tracking-widest uppercase">Protocol Accepted. You are on the list.</p>
-              </div>
+              ) : (
+                <div class="bg-surface border-brand/30 shadow-ambient group relative mb-8 overflow-hidden rounded-xl border p-6 transition-colors duration-300">
+                  <div class="from-brand/5 pointer-events-none absolute top-0 right-0 h-full w-32 bg-gradient-to-l to-transparent" />
+                  <div class="mb-4">
+                    <h3 class="text-brand mb-1 text-sm font-bold tracking-widest uppercase">Allocation Exhausted</h3> 
+                    <p class="text-content-muted font-mono text-xs">Due to high demand, this unit is currently backordered. Secure your priority position for the next supply drop.</p>
+                  </div>
+                  <div class="flex flex-col gap-3">
+                    <input
+                      type="email" 
+                      id="waitlist-email"
+                      placeholder="ENTER COMM LINK (EMAIL)..."
+                      class="bg-base border-outline text-content focus:ring-brand shadow-ambient w-full rounded-md border px-4 py-3 font-mono text-sm transition-colors duration-300 focus:ring-1 focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      id="join-waitlist-btn"
+                      class="bg-brand text-brand-dark w-full rounded-md py-4 text-sm font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(54,244,164,0.15)] transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_25px_rgba(54,244,164,0.3)] focus:outline-none"
+                      data-product-id={product.id}
+                    >
+                      Join Priority Waitlist
+                    </button>
+                  </div>
+                  <p id="waitlist-success" class="text-brand hidden mt-4 text-center font-mono text-xs tracking-widest uppercase">Protocol Accepted. You are on the list.</p>   
+                </div>
+              )}
 
               <div class="text-content-muted flex items-center gap-6 font-mono text-[10px] tracking-widest uppercase transition-colors duration-300">
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2">     
                   <svg class="text-brand h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                  </svg> Verified Serial
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />     
+                  </svg> Verified Authentic
+                </div>
+                <div class="flex items-center gap-2">     
+                  <svg class="text-brand h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />     
+                  </svg> Fast Dispatch
                 </div>
               </div>
             </div>
@@ -226,7 +241,7 @@ const productSpecs: Record<string, string> = {
           <div class="relative z-10 mt-20">
             <RecentlyViewed
               client:only="svelte"
-              currentProductId={product.id as any}
+              currentProductId={product.id as any}        
             />
           </div>
         </>
@@ -236,32 +251,45 @@ const productSpecs: Record<string, string> = {
 </StorefrontLayout>
 
 <script>
-  // 1. Painted Door / Waitlist Logic
-  const btn = document.getElementById('join-waitlist-btn');
+  const waitlistBtn = document.getElementById('join-waitlist-btn');
   const emailInput = document.getElementById('waitlist-email') as HTMLInputElement;
   const successMsg = document.getElementById('waitlist-success');
 
-  btn?.addEventListener('click', () => {
+  waitlistBtn?.addEventListener('click', () => {
     const email = emailInput?.value;
     if (!email || !email.includes('@')) {
-      alert('Please provide a valid comm link (email).');
+      alert('Please provide a valid comm link (email).'); 
       return;
     }
-
-    // Capture metric for demand testing
-    console.log(`[PAINTED DOOR] Waitlist captured for: ${btn.dataset.productId} | Email: ${email}`);
-    
-    // UI Feedback
-    btn.style.display = 'none';
+    console.log(`[PAINTED DOOR] Waitlist captured for: ${waitlistBtn.dataset.productId} | Email: ${email}`);
+    waitlistBtn.style.display = 'none';
     emailInput.style.display = 'none';
     if (successMsg) successMsg.classList.remove('hidden');
   });
 
-  // 2. Recently Viewed Auto-Tracker
-  const metaEl = document.getElementById('product-meta');
+  const cartBtn = document.getElementById('add-to-cart-btn');
+  cartBtn?.addEventListener('click', () => {
+    const originalText = cartBtn.innerText;
+    cartBtn.innerText = 'ADDING...';
+    
+    setTimeout(() => {
+      cartBtn.innerText = 'ADDED TO CART ✓';
+      cartBtn.classList.add('bg-transparent', 'border', 'border-brand', 'text-brand');
+      cartBtn.classList.remove('bg-brand', 'text-brand-dark');
+      console.log(`[CART] Added product: ${cartBtn.dataset.productId}`);
+      
+      setTimeout(() => {
+        cartBtn.innerText = originalText;
+        cartBtn.classList.remove('bg-transparent', 'border', 'border-brand', 'text-brand');
+        cartBtn.classList.add('bg-brand', 'text-brand-dark');
+      }, 2000);
+    }, 400);
+  });
+
+  const metaEl = document.getElementById('product-meta'); 
   if (metaEl && metaEl.dataset.product) {
     try {
-      const p = JSON.parse(metaEl.dataset.product);
+      const p = JSON.parse(metaEl.dataset.product);       
       import('../../../stores/recentlyViewed.svelte.ts').then(
         ({ recentStore }) => {
           recentStore.add(p);

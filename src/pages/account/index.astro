@@ -27,12 +27,12 @@ if (env.DB) {
     const [statsRes, ordersRes] = await db.batch([
       db
         .prepare(
-          "SELECT COUNT(id) as count, SUM(total) as spent FROM orders WHERE customer_id = ? AND status != 'CANCELLED'"
+          "SELECT COUNT(id) as count, SUM(total_amount) as spent FROM orders WHERE customer_id = ? AND status != 'CANCELLED'"
         )
         .bind(user.id),
       db
         .prepare(
-          'SELECT id, created_at, status, total FROM orders WHERE customer_id = ? ORDER BY created_at DESC LIMIT 2'
+          'SELECT id, created_at, status, total_amount FROM orders WHERE customer_id = ? ORDER BY created_at DESC LIMIT 2'
         )
         .bind(user.id),
     ]);

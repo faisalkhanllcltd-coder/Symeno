@@ -54,17 +54,17 @@
   <form onsubmit={submitAdjustment} class="space-y-4">
     <div>
       <label class="mb-2 block font-mono text-[10px] text-content-muted"
-        >Target SKU</label
+        >Target Slug</label
       >
       <select
         bind:value={selectedVariant}
         required
         class="w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       >
-        <option value="" disabled selected>Select SKU to adjust...</option>
+        <option value="" disabled selected>Select Slug to adjust...</option>
         {#each inventory as item}
           <option value={item.variant_id}
-            >{item.sku} - {item.product_title} ({item.stock} in stock)</option
+            >{item.slug} - {item.product_title} ({item.stock} in stock)</option
           >
         {/each}
       </select>

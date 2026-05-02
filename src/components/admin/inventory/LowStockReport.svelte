@@ -25,7 +25,7 @@
           <div>
             <div class="text-xs font-bold text-content">{item.product_title}</div>
             <div class="mt-1 font-mono text-[10px] text-content-muted">
-              SKU: <span class="text-brand">{item.sku}</span>
+              Slug: <span class="text-brand">{item.slug}</span>
             </div>
           </div>
           <div class="text-right">

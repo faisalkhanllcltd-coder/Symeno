@@ -11,14 +11,14 @@ export const GET: APIRoute = async ({ locals }) => {
 
     const { results } = await env.DB.prepare(
       `
-      SELECT v.sku, p.title as product, v.title as variant, v.inventory_quantity, p.is_active
+      SELECT v.slug, p.title as product, v.title as variant, v.inventory_quantity, p.is_active, p.category, p.brand
       FROM product_variants v JOIN products p ON v.product_id = p.id
     `
     ).all();
 
-    let csv = 'SKU,Product,Variant,Stock,Active\n';
+    let csv = 'Slug,Product,Variant,Category,Brand,Stock,Active\n';
     results.forEach((row: any) => {
-      csv += `"${row.sku}","${row.product}","${row.variant}",${row.inventory_quantity},${row.is_active ? 'YES' : 'NO'}\n`;
+      csv += `"${row.slug}","${row.product}","${row.variant}","${row.category}","${row.brand}",${row.inventory_quantity},${row.is_active ? 'YES' : 'NO'}\n`;
     });
 
     return new Response(csv, {

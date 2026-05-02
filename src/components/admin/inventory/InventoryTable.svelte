@@ -3,10 +3,10 @@
     id: number | string;
     title: string;
     is_active: boolean | number;
-    sku: string;
+    slug: string;
     stock_quantity: number;
     wholesale_cost: number;
-    retail_price: number;
+    retailPrice: number;
   }
 
   // SVELTE 5 UPGRADE: Strict typing via $props()
@@ -19,8 +19,8 @@
     inventory.filter((item) => {
       const query = searchQuery.toLowerCase();
       const titleMatch = item.title?.toLowerCase().includes(query);
-      const skuMatch = item.sku?.toLowerCase().includes(query);
-      return titleMatch || skuMatch;
+      const slugMatch = item.slug?.toLowerCase().includes(query);
+      return titleMatch || slugMatch;
     })
   );
 </script>
@@ -47,14 +47,14 @@
       <input
         type="text"
         bind:value={searchQuery}
-        placeholder="Search by Title or SKU..."
+        placeholder="Search by Title or Slug..."
         class="w-full border border-outline bg-base py-2 pr-4 pl-10 font-mono text-sm text-content transition-colors placeholder:text-content-muted focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       />
     </div>
 
     <div class="flex items-center gap-2 font-mono text-xs text-content-muted">
       <span
-        >Total SKUs: <span class="font-bold text-content"
+        >Total Slugs: <span class="font-bold text-content"
           >{filteredInventory.length}</span
         ></span
       >
@@ -69,7 +69,7 @@
         <tr
           class="border-b border-outline bg-surface font-mono text-[10px] tracking-widest text-content-muted uppercase"
         >
-          <th class="px-6 py-4 font-semibold">SKU / Status</th>
+          <th class="px-6 py-4 font-semibold">Slug / Status</th>
           <th class="px-6 py-4 font-semibold">Product Title</th>
           <th class="px-6 py-4 text-right font-semibold">Wholesale</th>
           <th class="px-6 py-4 text-right font-semibold">Retail</th>
@@ -84,7 +84,7 @@
             <td class="px-6 py-4">
               <div class="flex flex-col gap-1">
                 <span class="font-mono font-bold text-brand"
-                  >{item.sku || 'N/A'}</span
+                  >{item.slug || 'N/A'}</span
                 >
                 {#if item.is_active}
                   <span
@@ -108,13 +108,13 @@
               ${(item.wholesale_cost || 0).toFixed(2)}
             </td>
             <td class="px-6 py-4 text-right font-mono font-bold text-content">
-              ${(item.retail_price || 0).toFixed(2)}
+              ${(item.retailPrice || 0).toFixed(2)}
             </td>
             <td class="px-6 py-4 text-right font-mono">
-              {#if item.wholesale_cost > 0 && item.retail_price > 0}
+              {#if item.wholesale_cost > 0 && item.retailPrice > 0}
                 {@const margin = (
-                  ((item.retail_price - item.wholesale_cost) /
-                    item.retail_price) *
+                  ((item.retailPrice - item.wholesale_cost) /
+                    item.retailPrice) *
                   100
                 ).toFixed(1)}
                 <span
@@ -123,7 +123,7 @@
                     : 'text-amber-400'}>{margin}%</span
                 >
                 <span class="mt-0.5 block text-[10px] text-content-muted"
-                  >+${(item.retail_price - item.wholesale_cost).toFixed(
+                  >+${(item.retailPrice - item.wholesale_cost).toFixed(
                     2
                   )}</span
                 >

@@ -1,6 +1,6 @@
 <script lang="ts">
   let { items = [] } = $props<{
-    items?: { sku: string; title: string; qty: number }[];
+    items?: { slug: string; title: string; qty: number }[];
   }>();
 </script>
 
@@ -18,7 +18,7 @@
         <div>
           <p class="text-xs font-medium text-content">{item.title}</p>
           <p class="mt-0.5 font-mono text-[10px] text-content-muted">
-            SKU: {item.sku}
+            Slug: {item.slug}
           </p>
         </div>
         <span

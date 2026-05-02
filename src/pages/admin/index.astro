@@ -38,7 +38,7 @@ if (db) {
 
     // 2. Fetch Inventory Telemetry
     const lowStock = await db.prepare(`
-      SELECT p.title, v.sku, v.stock_quantity as qty 
+      SELECT p.title, v.slug, v.stock_quantity as qty 
       FROM product_variants v 
       JOIN products p ON v.product_id = p.id 
       WHERE v.stock_quantity <= 5 LIMIT 5

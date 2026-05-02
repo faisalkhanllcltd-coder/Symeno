@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getStripeClient } from '../../../../../lib/stripe';
+import { env } from 'cloudflare:workers';
 
 export const POST: APIRoute = async ({ request, params, locals }) => {
   try {
@@ -9,8 +10,6 @@ export const POST: APIRoute = async ({ request, params, locals }) => {
     // Removed unused 'reason' to clear TS warnings
     const { amount, stripe_payment_id } = (await request.json()) as any;
 
-    // Extract dynamic env from locals safely
-    const env = (locals as any).runtime?.env;
     if (!env || !env.DB) {
       return new Response(JSON.stringify({ error: 'Database Offline' }), { status: 503 });
     }

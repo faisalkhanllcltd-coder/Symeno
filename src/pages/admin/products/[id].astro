@@ -23,7 +23,7 @@ if (!db) {
 
 try {
   const prodResult = await db
-    .prepare('SELECT id, slug, brand, title, description, base_price, retail_price, stock_status FROM products WHERE id = ?1')
+    .prepare('SELECT id, slug, brand, title, description, basePrice, retailPrice, stockStatus FROM products WHERE id = ?1')
     .bind(id)
     .first();
   if (!prodResult) return Astro.redirect('/admin/products');
@@ -34,24 +34,24 @@ try {
     brand: prodResult.brand as string,
     title: prodResult.title as string,
     description: prodResult.description as string,
-    basePrice: prodResult.base_price as number,
-    retailPrice: prodResult.retail_price as number | null,
-    stockStatus: prodResult.stock_status as
+    basePrice: prodResult.basePrice as number,
+    retailPrice: prodResult.retailPrice as number | null,
+    stockStatus: prodResult.stockStatus as
       | 'IN_STOCK'
       | 'LOW_STOCK'
       | 'OUT_OF_STOCK',
   } as Product;
 
   const varResult = await db
-    .prepare('SELECT id, product_id, sku, title, price_adjustment, inventory_quantity FROM product_variants WHERE product_id = ?1')
+    .prepare('SELECT id, product_id, slug, title, priceAdjustment, inventory_quantity FROM product_variants WHERE product_id = ?1')
     .bind(id)
     .all();
   variants = (varResult.results || []).map((v: any) => ({
     id: v.id,
     productId: v.product_id,
-    sku: v.sku,
+    slug: v.slug,
     title: v.title,
-    priceAdjustment: v.price_adjustment,
+    priceAdjustment: v.priceAdjustment,
     inventoryQuantity: v.inventory_quantity,
   })) as ProductVariant[];
 } catch (error) {
@@ -72,7 +72,7 @@ if (Astro.request.method === 'POST') {
     const stockStatus = data.get('stockStatus') as string;
 
     const variantIds = data.getAll('variant_id[]');
-    const variantSkus = data.getAll('variant_sku[]');
+    const variantSlugs = data.getAll('variant_slug[]');
     const variantTitles = data.getAll('variant_title[]');
     const variantPrices = data.getAll('variant_price[]');
     const variantQtys = data.getAll('variant_qty[]');
@@ -83,7 +83,7 @@ if (Astro.request.method === 'POST') {
       db
         .prepare(
           `UPDATE products 
-         SET brand = ?1, title = ?2, description = ?3, base_price = ?4, retail_price = ?5, stock_status = ?6, updated_at = CURRENT_TIMESTAMP
+         SET brand = ?1, title = ?2, description = ?3, basePrice = ?4, retailPrice = ?5, stockStatus = ?6, updated_at = CURRENT_TIMESTAMP
          WHERE id = ?7`
         )
         .bind(
@@ -102,17 +102,17 @@ if (Astro.request.method === 'POST') {
     );
 
     for (let i = 0; i < variantIds.length; i++) {
-      if (!variantSkus[i] || !variantTitles[i]) continue;
+      if (!variantSlugs[i] || !variantTitles[i]) continue;
       statements.push(
         db
           .prepare(
-            `INSERT INTO product_variants (id, product_id, sku, title, price_adjustment, inventory_quantity)
+            `INSERT INTO product_variants (id, product_id, slug, title, priceAdjustment, inventory_quantity)
            VALUES (?1, ?2, ?3, ?4, ?5, ?6)`
           )
           .bind(
             variantIds[i],
             id,
-            variantSkus[i],
+            variantSlugs[i],
             variantTitles[i],
             parseFloat((variantPrices[i] as string) || '0'),
             parseInt((variantQtys[i] as string) || '0', 10)

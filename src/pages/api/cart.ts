@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { cacheCartState } from '../../lib/kv';
 import { logger } from '../../lib/logger';
+import { env } from 'cloudflare:workers';
 
 // 1. Explicitly define the expected payload interface for the TS Compiler
 interface CartPayload {
@@ -42,8 +43,6 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       cartSessionId = `user_${cartSessionId}`;
     }
 
-    // Extract dynamic env from locals
-    const env = (locals as any).runtime?.env;
     if (!env) {
       throw new Error('Environment context missing.');
     }

@@ -1,10 +1,11 @@
 ---
 import StorefrontLayout from '../../layouts/Storefront.astro';
+import { env } from "cloudflare:workers";
 
 export const prerender = false;
 
 const { shareId } = Astro.params;
-const db = (Astro.locals as any).runtime?.env?.DB;
+const db = env.DB;
 
 let ownerName = 'Someone';
 let wishlistItems: any[] = [];
@@ -17,14 +18,14 @@ if (db) {
         'SELECT id, first_name FROM customers WHERE id = ? LIMIT 1'
       )
       .bind(shareId)
-      .first();
+      .first<{ id: string, first_name: string }>();
 
     if (user) {
       ownerName = user.first_name || 'A User';
       const { results } = await db
         .prepare(
           `
-        SELECT p.title, p.slug, p.base_price, p.image_url, COALESCE(v.inventory_quantity, 0) as stock
+        SELECT p.title, p.slug, p.basePrice, p.image_url, COALESCE(v.inventory_quantity, 0) as stock
         FROM wishlists w
         JOIN products p ON w.product_id = p.id
         LEFT JOIN product_variants v ON p.id = v.product_id AND v.is_default = 1
@@ -81,7 +82,7 @@ if (wishlistItems.length === 0) {
                 {item.title}
               </h3>
               <p class="text-brand font-mono text-[10px] font-bold">
-                ${item.base_price?.toFixed(2)}
+                ${item.basePrice?.toFixed(2)}
               </p>
             </div>
           </a>

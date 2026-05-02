@@ -1,6 +1,6 @@
 ﻿---
+import { env } from "cloudflare:workers";
 import StorefrontLayout from '../../layouts/Storefront.astro';
-import type { Product } from '../../types/storefront';
 import FilterSidebar from '../../components/storefront/catalog/FilterSidebar.svelte';
 import ProductGrid from '../../components/storefront/catalog/ProductGrid.svelte';
 
@@ -8,56 +8,112 @@ export const prerender = false;
 
 let liveProducts: any[] = [];
 let dbError = false;
+let totalProducts = 0;
 
 const url = new URL(Astro.request.url);
-const q = url.searchParams.get('q')?.toLowerCase() || '';
-const brand = url.searchParams.get('brand')?.toLowerCase() || '';
-const sort = url.searchParams.get('sort') || 'newest';
+const q = url.searchParams.get('q')?.toLowerCase() || ''; 
+const filterCategory = url.searchParams.get('category')?.toLowerCase() || '';
+const filterBrand = url.searchParams.get('brand')?.toLowerCase() || '';
+const sort = url.searchParams.get('sort') || 'newest';    
 
 try {
-  const db = Astro.locals.runtime?.env?.DB;
+  // ASTRO V6 D1 CONNECTION
+  const db = env.DB as any;
   if (!db) throw new Error("DB Offline");
 
-  const { results } = await db.prepare('SELECT * FROM rapidapi_cache ORDER BY last_fetched DESC LIMIT 100').all();
+  const { results } = await db.prepare('SELECT * FROM rapidapi_cache LIMIT 150').all();  
   let filtered = results as any[];
 
   if (q) {
-    filtered = filtered.filter(p => 
-      (p.title && p.title.toLowerCase().includes(q)) || 
+    filtered = filtered.filter(p =>
+      (p.title && p.title.toLowerCase().includes(q)) ||   
+      (p.brand && p.brand.toLowerCase().includes(q)) ||
       (p.category && p.category.toLowerCase().includes(q))
     );
   }
 
-  if (brand) filtered = filtered.filter(p => p.category && p.category.toLowerCase() === brand);
+  if (filterCategory) {
+    filtered = filtered.filter(p => p.categorySlug && p.categorySlug.toLowerCase() === filterCategory);
+  }
 
-  liveProducts = filtered.slice(0, 50).map((p: any) => ({
-    id: p.sku,
-    slug: p.sku,
-    brand: p.category || 'Symeno Select',
+  if (filterBrand) {
+    filtered = filtered.filter(p => p.brand && p.brand.toLowerCase() === filterBrand);
+  }
+
+  if (sort === 'price-low') {
+    filtered.sort((a, b) => (a.basePrice || 0) - (b.basePrice || 0));
+  } else if (sort === 'price-high') {
+    filtered.sort((a, b) => (b.basePrice || 0) - (a.basePrice || 0));
+  }
+
+  totalProducts = filtered.length;
+
+  liveProducts = filtered.slice(0, 50).map((p: any) => ({ 
+    id: p.id,
+    slug: p.slug,
+    brand: p.brand || 'Symeno Select',
+    category: p.category,
     title: p.title,
-    base_price: p.price,
-    retail_price: p.price * 1.2,
-    image_url: p.image_url || '' 
+    base_price: p.basePrice,
+    retail_price: p.retailPrice,
+    image_url: p.image_url || ''
   }));
+
 } catch (error) {
+  console.error('[CATALOG_EDGE_ERROR]', error);
   dbError = true;
 }
 ---
 
-<StorefrontLayout title="The Catalog" description="Verified inventory.">
-  <div class="bg-base min-h-screen pt-8 pb-24">
-    <div class="mx-auto max-w-7xl px-4">
-      <h1 class="text-content text-4xl font-bold">
-        {q ? `Results for "${q}"` : 'The Catalog.'}
-      </h1>
-      <div class="grid grid-cols-1 gap-12 lg:grid-cols-4 mt-8">
-        <aside class="hidden lg:block">
-           <FilterSidebar activeBrand={brand} activeSort={sort} currentQuery={q} client:load />
-        </aside>
-        <div class="lg:col-span-3">
-          {dbError ? <p>Database Connection Error</p> : <ProductGrid products={liveProducts} client:load />}
+<StorefrontLayout 
+  title="Complete Wholesale Catalog | Symeno" 
+  description="Verified inventory. Shop top brands across our curated lifestyle categories."
+>
+  <div class="bg-base min-h-screen pt-12 pb-24 transition-colors duration-300">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      
+      <div class="mb-8 border-b border-outline pb-8">
+        <h1 class="text-content mb-4 text-4xl font-bold tracking-tighter uppercase md:text-5xl">        
+          {q ? `Search: "${q}"` : filterCategory ? filterCategory.replace(/-/g, ' ') : 'The Catalog.'}        
+        </h1>
+        <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <p class="text-content-muted font-mono text-sm">
+            {q ? `We found assets matching your query.` : 'Browse our complete inventory of premium lifestyle goods.'}
+          </p>
+          <span class="border border-outline bg-surface px-3 py-1 font-mono text-[10px] tracking-widest text-content-muted uppercase shadow-sm">
+            {totalProducts} Units Available
+          </span>
         </div>
       </div>
+
+      <div class="grid grid-cols-1 gap-12 lg:grid-cols-4 mt-8">
+        <aside class="hidden lg:block">
+           <FilterSidebar 
+             activeBrand={filterBrand} 
+             activeCategory={filterCategory} 
+             activeSort={sort} 
+             currentQuery={q} 
+             client:load 
+           />
+        </aside>
+
+        <div class="lg:col-span-3">
+          {dbError ? (
+             <div class="bg-brand-alert/10 border-brand-alert/30 text-brand-alert rounded-xl border p-6 text-center font-mono tracking-widest uppercase">
+               Database Connection Offline. Please check your edge bindings.
+             </div>
+          ) : liveProducts.length > 0 ? (
+             <ProductGrid products={liveProducts} client:load />        
+          ) : (
+            <div class="bg-surface border-outline rounded-xl border p-12 text-center">
+               <h3 class="text-content mb-2 font-mono text-xl tracking-widest uppercase">No Matches Found</h3>
+               <p class="text-content-muted text-sm">Try adjusting your filters or search parameters.</p>
+               <a href="/shop" class="text-brand mt-6 inline-block text-sm font-bold hover:underline">Clear All Filters</a>
+            </div>
+          )}
+        </div>
+      </div>
+
     </div>
   </div>
 </StorefrontLayout>

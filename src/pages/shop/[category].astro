@@ -1,5 +1,6 @@
 ---
 import StorefrontLayout from '../../layouts/Storefront.astro';
+import { env } from "cloudflare:workers";
 
 // FORCE EDGE SSR
 export const prerender = false;
@@ -41,16 +42,16 @@ const meta = categoryMeta[category as string] || {
 let activeProducts: any[] = [];
 
 try {
-  const db = Astro.locals.runtime?.env?.DB;
+  const db = env.DB;
   if (db) {
     const { results } = await db.prepare("SELECT * FROM rapidapi_cache WHERE category LIKE ?1 LIMIT 50").bind(`%${category}%`).all();
     
     activeProducts = results.map((p: any) => ({
-      slug: p.sku,
+      slug: p.slug,
       title: p.title,
       brand: p.category || 'Hardware',
-      basePrice: p.price,
-      retailPrice: p.price * 1.2,
+      basePrice: p.basePrice,
+      retailPrice: p.basePrice * 1.2,
       images: p.image_url ? [p.image_url] : []
     }));
   }

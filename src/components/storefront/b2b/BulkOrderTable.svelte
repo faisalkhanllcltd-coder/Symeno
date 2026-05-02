@@ -24,9 +24,9 @@
             cart.addItem({
               productId: product.id,
               title: product.title,
-              price: product.base_price * 1.05, // Assumed Tier 1 preview
+              basePrice: product.basePrice * 1.05, // Assumed Tier 1 preview
               quantity: qty,
-              sku: product.id.substring(0, 8),
+              slug: product.id.substring(0, 8),
             });
           }
         }
@@ -66,7 +66,7 @@
         <tr>
           <th
             class="p-4 text-[10px] font-bold tracking-widest text-content-muted uppercase"
-            >SKU</th
+            >Slug</th
           >
           <th
             class="p-4 text-[10px] font-bold tracking-widest text-content-muted uppercase"
@@ -90,7 +90,7 @@
             >
             <td class="p-4 text-xs font-bold text-content">{product.title}</td>
             <td class="p-4 font-mono text-xs text-brand"
-              >${(product.base_price * 1.05).toFixed(2)}</td
+              >${(product.basePrice * 1.05).toFixed(2)}</td
             >
             <td class="p-4 text-right">
               <input
