@@ -5,6 +5,7 @@ import WishlistButton from '../../../components/storefront/WishlistButton.svelte
 import RecentlyViewed from '../../../components/storefront/product/RecentlyViewed.svelte';
 import ProductGallery from '../../../components/storefront/product/ProductGallery.svelte';
 import ProductSpecs from '../../../components/storefront/product/ProductSpecs.astro';
+import CheckoutStickyBar from '../../../components/storefront/cart/CheckoutStickyBar.svelte';
 
 export const prerender = false;
 
@@ -13,7 +14,6 @@ let product: any = null;
 let errorMessage = '';
 
 try {
-  // ASTRO V6 D1 CONNECTION
   const db = env.DB as any;      
   if (!db) {
     errorMessage = 'Database connection offline.';        
@@ -120,9 +120,12 @@ const productSpecs: Record<string, string> = {
             data-product={JSON.stringify({
               id: product.id,
               slug: product.slug,
+              brand: product.brand,
               title: product.title,
-              price: product.basePrice,
-              image_url: product.images[0] || '',
+              basePrice: product.basePrice,
+              retailPrice: product.retailPrice,
+              stockStatus: isInStock ? 1 : 0,
+              image: product.images[0] || ''
             })}
             style="display:none;"
           />
@@ -142,14 +145,14 @@ const productSpecs: Record<string, string> = {
               <div class="relative">
                 <ProductGallery
                   client:load
-                  images={product.images as any}
-                  alt={product.title as any}
+                  images={product.images as string[]}
+                  title={product.title as string}
                 />
                 <div class="absolute top-4 right-4 z-20"> 
                   <WishlistButton
                     client:load
-                    productId={product.id as any}
-                    initialState={isWishlisted as any}    
+                    productId={product.id as string}
+                    initialState={isWishlisted as boolean}    
                   />
                 </div>
               </div>
@@ -182,7 +185,7 @@ const productSpecs: Record<string, string> = {
               </p>
 
               {isInStock ? (
-                <div class="mb-8 flex gap-4">
+                <div id="main-add-to-cart" class="mb-8 flex gap-4">
                   <button
                     type="button"
                     id="add-to-cart-btn"
@@ -222,12 +225,12 @@ const productSpecs: Record<string, string> = {
               <div class="text-content-muted flex items-center gap-6 font-mono text-[10px] tracking-widest uppercase transition-colors duration-300">
                 <div class="flex items-center gap-2">     
                   <svg class="text-brand h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />     
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />      
                   </svg> Verified Authentic
                 </div>
                 <div class="flex items-center gap-2">     
                   <svg class="text-brand h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />     
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />      
                   </svg> Fast Dispatch
                 </div>
               </div>
@@ -241,9 +244,11 @@ const productSpecs: Record<string, string> = {
           <div class="relative z-10 mt-20">
             <RecentlyViewed
               client:only="svelte"
-              currentProductId={product.id as any}        
+              currentProductId={product.id as string}        
             />
           </div>
+          
+          <CheckoutStickyBar client:load product={product} />
         </>
       )
     }
@@ -251,6 +256,8 @@ const productSpecs: Record<string, string> = {
 </StorefrontLayout>
 
 <script>
+  import { cart } from '../../../stores/cart.svelte.ts';
+
   const waitlistBtn = document.getElementById('join-waitlist-btn');
   const emailInput = document.getElementById('waitlist-email') as HTMLInputElement;
   const successMsg = document.getElementById('waitlist-success');
@@ -267,32 +274,51 @@ const productSpecs: Record<string, string> = {
     if (successMsg) successMsg.classList.remove('hidden');
   });
 
-  const cartBtn = document.getElementById('add-to-cart-btn');
+  const cartBtn = document.getElementById('add-to-cart-btn') as HTMLButtonElement | null;
   cartBtn?.addEventListener('click', () => {
     const originalText = cartBtn.innerText;
-    cartBtn.innerText = 'ADDING...';
+    cartBtn.innerText = 'SECURING...';
+    cartBtn.disabled = true;
     
     setTimeout(() => {
+      const metaEl = document.getElementById('product-meta'); 
+      if (metaEl && metaEl.dataset.product) {
+        try {
+          const p = JSON.parse(metaEl.dataset.product);
+          cart.addItem(p, 1);
+          cart.openCart();
+        } catch (e) {
+          console.error('[CART_FATAL] Failed to parse product payload', e);
+        }
+      }
+
       cartBtn.innerText = 'ADDED TO CART ✓';
       cartBtn.classList.add('bg-transparent', 'border', 'border-brand', 'text-brand');
       cartBtn.classList.remove('bg-brand', 'text-brand-dark');
-      console.log(`[CART] Added product: ${cartBtn.dataset.productId}`);
       
       setTimeout(() => {
         cartBtn.innerText = originalText;
+        cartBtn.disabled = false;
         cartBtn.classList.remove('bg-transparent', 'border', 'border-brand', 'text-brand');
         cartBtn.classList.add('bg-brand', 'text-brand-dark');
       }, 2000);
     }, 400);
   });
 
+  // Hydrate Recently Viewed
   const metaEl = document.getElementById('product-meta'); 
   if (metaEl && metaEl.dataset.product) {
     try {
       const p = JSON.parse(metaEl.dataset.product);       
       import('../../../stores/recentlyViewed.svelte.ts').then(
         ({ recentStore }) => {
-          recentStore.add(p);
+          recentStore.add({
+            id: p.id,
+            slug: p.slug,
+            title: p.title,
+            price: p.basePrice,
+            image_url: p.image
+          });
         }
       );
     } catch (e) {

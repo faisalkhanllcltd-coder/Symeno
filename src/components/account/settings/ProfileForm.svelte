@@ -1,143 +1,110 @@
-﻿<script lang="ts">
-  let { user = {} } = $props<{ user?: any }>();
-  let isSubmitting = $state(false);
+<script lang="ts">
+  let { user } = $props<{
+    user: { id: string; first_name: string; last_name: string; email: string; phone?: string; };
+  }>();
 
-  let formData = $state({
-    first_name: user?.first_name || '',
-    last_name: user?.last_name || '',
-    phone: user?.phone || '',
-    dob: user?.dob || '',
-    gender: user?.gender || '',
-    avatar_url: user?.avatar_url || '',
-  });
+  let firstName = $state(user?.first_name || '');
+  let lastName = $state(user?.last_name || '');
+  let phone = $state(user?.phone || '');
+  let isSaving = $state(false);
+  let notification = $state<{ type: 'success' | 'error', text: string } | null>(null);
 
   async function handleSave(e: Event) {
     e.preventDefault();
-    isSubmitting = true;
+    isSaving = true;
+    notification = null;
+
     try {
-      const res = await fetch('/api/account/profile', { 
-        method: 'PUT',
+      const res = await fetch('/api/account/profile', {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ 
+          firstName: firstName.trim(), 
+          lastName: lastName.trim(), 
+          phone: phone.trim() 
+        })
       });
-      if (res.ok) alert('Identity synchronized.');      
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Identity update failed.');
+      }
+      
+      notification = { type: 'success', text: 'Secure identity updated successfully.' };
+    } catch (err: any) {
+      notification = { type: 'error', text: err.message };
     } finally {
-      isSubmitting = false;
+      isSaving = false;
+      setTimeout(() => { notification = null; }, 5000);
     }
   }
 </script>
 
-<form onsubmit={handleSave} class="animate-fade-in space-y-6 transition-colors duration-300">
-  <div class="mb-8 flex items-center gap-6">
-    <div
-      class="group relative h-24 w-24 overflow-hidden rounded-full border border-outline bg-base"
-    >
-      {#if formData.avatar_url}
-        <img
-          src={formData.avatar_url}
-          alt="Avatar"
-          class="h-full w-full object-cover opacity-80 transition-opacity group-hover:opacity-50"
-        />
-      {:else}
-        <div
-          class="flex h-full w-full items-center justify-center font-mono text-2xl text-content-muted uppercase"     
-        >
-          {formData.first_name?.charAt(0) || 'U'}       
-        </div>
-      {/if}
-      <div
-        class="absolute inset-0 flex cursor-pointer items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
-      >
-        <span
-          class="font-mono text-[10px] font-bold tracking-widest text-content uppercase"
-          >Upload</span
-        >
-      </div>
+<form onsubmit={handleSave} class="bg-surface border-outline space-y-6 rounded-xl border p-8 shadow-sm">
+  <div>
+    <h3 class="text-content font-sans text-lg font-bold tracking-tight uppercase">Identity Matrix</h3>
+    <p class="text-content-muted mt-1 font-mono text-[10px] tracking-widest uppercase">Update your personal edge data</p>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div>
+      <label for="firstName" class="text-content font-mono text-xs font-bold tracking-widest uppercase">First Name</label>
+      <input
+        id="firstName"
+        type="text"
+        bind:value={firstName}
+        class="bg-base border-outline text-content focus:border-brand mt-2 w-full rounded-md border p-3 font-mono text-sm transition-colors focus:outline-none focus:ring-1 focus:ring-brand"
+        required
+      />
     </div>
     <div>
-      <h3 class="text-xs font-bold tracking-widest text-content uppercase">
-        Profile Visual
-      </h3>
-      <p class="mt-1 font-mono text-[10px] text-content-muted">
-        Accepts JPG, PNG. Max 2MB.
-      </p>
+      <label for="lastName" class="text-content font-mono text-xs font-bold tracking-widest uppercase">Last Name</label>
       <input
+        id="lastName"
         type="text"
-        bind:value={formData.avatar_url}
-        placeholder="R2 Image URL..."
-        class="mt-2 w-full max-w-xs border border-outline bg-base px-3 py-1.5 font-mono text-xs text-content focus:border-brand/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand transition-colors"
+        bind:value={lastName}
+        class="bg-base border-outline text-content focus:border-brand mt-2 w-full rounded-md border p-3 font-mono text-sm transition-colors focus:outline-none focus:ring-1 focus:ring-brand"
+        required
       />
     </div>
   </div>
 
-  <div class="grid grid-cols-1 gap-6 md:grid-cols-2">   
-    <div>
-      <label
-        class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
-        >First Name</label
-      >
-      <input
-        type="text"
-        bind:value={formData.first_name}
-        class="w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand transition-colors"
-      />
-    </div>
-    <div>
-      <label
-        class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
-        >Last Name</label
-      >
-      <input
-        type="text"
-        bind:value={formData.last_name}
-        class="w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand transition-colors"
-      />
-    </div>
-    <div>
-      <label
-        class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
-        >Phone Vector</label
-      >
-      <input
-        type="tel"
-        bind:value={formData.phone}
-        class="w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand transition-colors"
-      />
-    </div>
-    <div>
-      <label
-        class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
-        >Date of Birth</label
-      >
-      <input
-        type="date"
-        bind:value={formData.dob}
-        class="w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand transition-colors"
-      />
-    </div>
-    <div>
-      <label
-        class="mb-2 block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
-        >Gender (Optional)</label
-      >
-      <select
-        bind:value={formData.gender}
-        class="w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand transition-colors cursor-pointer"
-      >
-        <option value="">Prefer not to state</option>   
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-      </select>
-    </div>
+  <div>
+    <label for="email" class="text-content font-mono text-xs font-bold tracking-widest uppercase">Encrypted Email</label>
+    <input
+      id="email"
+      type="email"
+      value={user?.email || ''}
+      disabled
+      class="bg-base border-outline text-content-muted mt-2 w-full cursor-not-allowed rounded-md border p-3 font-mono text-sm opacity-60"
+    />
+    <p class="text-content-muted mt-2 font-mono text-[9px] tracking-widest uppercase">Email changes require 2FA verification in Security Settings.</p>
   </div>
 
-  <div class="flex justify-end border-t border-outline pt-4">
+  <div>
+    <label for="phone" class="text-content font-mono text-xs font-bold tracking-widest uppercase">Phone Number</label>
+    <input
+      id="phone"
+      type="tel"
+      bind:value={phone}
+      placeholder="+1 (555) 000-0000"
+      class="bg-base border-outline text-content focus:border-brand mt-2 w-full rounded-md border p-3 font-mono text-sm transition-colors focus:outline-none focus:ring-1 focus:ring-brand"
+    />
+  </div>
+
+  {#if notification}
+    <div class="border p-3 font-mono text-xs font-bold uppercase rounded {notification.type === 'success' ? 'bg-brand/10 border-brand text-brand' : 'bg-brand-alert/10 border-brand-alert text-brand-alert'}">
+      {notification.text}
+    </div>
+  {/if}
+
+  <div class="border-outline flex items-center justify-end border-t pt-6">
     <button
       type="submit"
-      disabled={isSubmitting}
-      class="bg-brand px-8 py-3 text-xs font-bold tracking-widest text-brand-dark uppercase transition-colors hover:opacity-80 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+      disabled={isSaving}
+      class="bg-brand text-brand-dark rounded-md px-8 py-3 font-mono text-xs font-bold tracking-widest uppercase transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
     >
-      {isSubmitting ? 'Syncing...' : 'Update Identity'} 
+      {isSaving ? 'Synchronizing...' : 'Save Changes'}
     </button>
   </div>
 </form>

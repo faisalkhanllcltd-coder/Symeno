@@ -1,21 +1,14 @@
-﻿---
+---
 import StorefrontLayout from '../../layouts/Storefront.astro';
 import CheckoutForm from '../../components/storefront/checkout/CheckoutForm.svelte';
 import OrderSummary from '../../components/storefront/checkout/OrderSummary.svelte';
 
-// ASSEMBLY: Wiring CheckoutStickyBar for mobile checkout CTA
-import CheckoutStickyBar from '../../components/storefront/cart/CheckoutStickyBar.svelte';
-
 // --- SERVER-SIDE AUTHENTICATION GATE ---
-// If you want to allow Guest Checkout, you can comment this block out.
-// But based on standard enterprise setups, we enforce login to tie the order to a customer record.
 const user = Astro.locals.user;
 if (!user) {
-  // Save the intended destination so we can redirect them back after login
   return Astro.redirect('/auth/login?redirect=/checkout');
 }
 // ----------------------------------------
-
 ---
 
 <StorefrontLayout title="Checkout | Secure Gateway | Symeno">
@@ -30,7 +23,7 @@ if (!user) {
     </div>
 
     <div class="relative grid grid-cols-1 items-start gap-12 lg:grid-cols-12">
-      
+
       <!-- NATIVE CHECKOUT ENGINE -->
       <div class="lg:col-span-7 xl:col-span-8">
         <CheckoutForm client:only="svelte" />
@@ -53,6 +46,4 @@ if (!user) {
       </aside>
     </div>
   </main>
-
-  <CheckoutStickyBar client:load />
 </StorefrontLayout>

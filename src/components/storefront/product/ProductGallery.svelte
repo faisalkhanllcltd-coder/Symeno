@@ -1,46 +1,64 @@
-﻿<script lang="ts">
-  let { images = [], alt = 'Product Image' } = $props<{
-    images?: string[];
-    alt?: string;
+<script lang="ts">
+  let { 
+    images = [], 
+    title = 'Product Image',
+    activeImage = ''
+  } = $props<{
+    images: string[];
+    title: string;
+    activeImage?: string;
   }>();
 
   let activeIndex = $state(0);
+
+  // If a parent component changes the activeImage (e.g., color variant changed), update index
+  $effect(() => {
+    if (activeImage) {
+      const idx = images.indexOf(activeImage);
+      if (idx !== -1) activeIndex = idx;
+    }
+  });
+
+  function setIndex(index: number) {
+    activeIndex = index;
+  }
 </script>
 
-<div class="flex flex-col gap-4 md:flex-row-reverse">   
-  <div
-    class="group relative flex aspect-square flex-1 items-center justify-center overflow-hidden border border-outline bg-base transition-colors duration-300"
-  >
+<div class="flex flex-col gap-4 sticky top-24">
+  <!-- Main Display -->
+  <div class="bg-base border-outline relative aspect-square w-full overflow-hidden rounded-xl border">
     {#if images.length > 0}
       <img
         src={images[activeIndex]}
-        {alt}
-        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        alt={`${title} - View ${activeIndex + 1}`}
+        class="h-full w-full object-cover transition-opacity duration-500"
+        loading="eager"
+        decoding="sync"
       />
     {:else}
-      <span class="font-mono text-xs tracking-widest text-content-muted uppercase"
-        >Image Unavailable</span
-      >
+      <div class="flex h-full w-full items-center justify-center">
+        <span class="text-content-muted font-mono text-xs tracking-widest uppercase">No Image Available</span>
+      </div>
+    {/if}
+    
+    {#if images.length > 1}
+      <div class="absolute bottom-4 right-4 bg-surface/80 border-outline rounded border px-2 py-1 backdrop-blur-md">
+        <span class="text-content font-mono text-[10px] font-bold">{activeIndex + 1} / {images.length}</span>
+      </div>
     {/if}
   </div>
 
+  <!-- Thumbnails -->
   {#if images.length > 1}
-    <div
-      class="no-scrollbar flex shrink-0 gap-4 overflow-x-auto md:w-24 md:flex-col"
-    >
+    <div class="custom-scrollbar flex w-full gap-3 overflow-x-auto pb-2">
       {#each images as img, i}
         <button
-          onclick={() => (activeIndex = i)}
-          class="h-20 w-20 shrink-0 border bg-base transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand md:h-24 md:w-full {activeIndex ===
-          i
-            ? 'border-brand'
-            : 'border-outline hover:border-content-muted'}" 
+          onclick={() => setIndex(i)}
+          class="bg-base border-outline relative aspect-square w-20 shrink-0 overflow-hidden rounded-md border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand
+          {activeIndex === i ? 'ring-brand ring-2 ring-offset-1 ring-offset-surface' : 'hover:opacity-80'}"
+          aria-label={`Select view ${i + 1}`}
         >
-          <img
-            src={img}
-            {alt}
-            class="h-full w-full object-cover opacity-80 transition-opacity hover:opacity-100"
-          />
+          <img src={img} alt="" class="h-full w-full object-cover" loading="lazy" />
         </button>
       {/each}
     </div>
@@ -48,11 +66,8 @@
 </div>
 
 <style>
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+  .custom-scrollbar::-webkit-scrollbar { height: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: var(--color-base); }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--color-outline); border-radius: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--color-brand); }
 </style>

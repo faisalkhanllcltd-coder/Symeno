@@ -4,93 +4,52 @@ import DynamicGreeting from '../../components/account/DynamicGreeting.svelte';
 import DashboardStats from '../../components/account/DashboardStats.svelte';
 import RecentOrdersWidget from '../../components/account/RecentOrdersWidget.svelte';
 import AccountQuickLinks from '../../components/account/AccountQuickLinks.svelte';
-import AccountRecommendations from '../../components/account/AccountRecommendations.svelte';
 import { env } from 'cloudflare:workers';
 
+// --- SERVER-SIDE AUTHENTICATION GATE ---
 const user = Astro.locals.user;
 if (!user) {
   return Astro.redirect('/auth/login');
 }
 
-// Default States
-let stats = { totalOrders: 0, totalSpent: 0, points: 0 };
+const db = env?.DB;
+
+// STRICT TYPE FIXES
+let stats = { totalOrders: 0, totalSpent: 0, points: user.points || 0 };
 let recentOrders: any[] = [];
-let recommendations: any[] = [];
-let recTitle = 'Trending in the Matrix';
 
-// Edge-optimized data fetching using D1 Batch
-if (env.DB) {
+// SECURE EDGE MATRIX QUERIES
+if (db) {
   try {
-    const db = env.DB;
+    const ordersQuery = await db.prepare(
+      'SELECT COUNT(*) as count, SUM(total_amount) as total FROM orders WHERE customer_id = ?1'
+    ).bind(user.id).first<{ count: number, total: number }>();
+    
+    stats.totalOrders = ordersQuery?.count || 0;
+    stats.totalSpent = ordersQuery?.total || 0;
 
-    // 1. Fetch Aggregates & Recent Orders concurrently
-    const [statsRes, ordersRes] = await db.batch([
-      db
-        .prepare(
-          "SELECT COUNT(id) as count, SUM(total_amount) as spent FROM orders WHERE customer_id = ? AND status != 'CANCELLED'"
-        )
-        .bind(user.id),
-      db
-        .prepare(
-          'SELECT id, created_at, status, total_amount FROM orders WHERE customer_id = ? ORDER BY created_at DESC LIMIT 2'
-        )
-        .bind(user.id),
-    ]);
-
-    stats.totalOrders = (statsRes.results[0] as any)?.count || 0;
-    stats.totalSpent = (statsRes.results[0] as any)?.spent || 0;
-    stats.points = Math.floor(stats.totalSpent * 0.1); // Basic logic: 1 point per $10 spent
-
-    recentOrders = ordersRes.results || [];
-
-    // 2. Fallback Recommendation Engine Logic
-    if (recentOrders.length > 0) {
-      // Logic: Based on past orders, show active products (Skipping complex ML for Edge speed)
-      recTitle = 'Based on your operational history';
-      const { results } = await db
-        .prepare(
-          `SELECT title, slug, base_price, image_url FROM products WHERE is_active = 1 ORDER BY RANDOM() LIMIT 3`
-        )
-        .all();
-      recommendations = results || [];
-    } else {
-      // New user fallback: show latest products
-      const { results } = await db
-        .prepare(
-          `SELECT title, slug, base_price, image_url FROM products WHERE is_active = 1 ORDER BY created_at DESC LIMIT 3`
-        )
-        .all();
-      recommendations = results || [];
-    }
-  } catch (error) {
-    console.error('[ACCOUNT_DB_ERROR]', error);
+    const { results } = await db.prepare(
+      'SELECT id, status, total_amount as total, created_at FROM orders WHERE customer_id = ?1 ORDER BY created_at DESC LIMIT 3'
+    ).bind(user.id).all();
+    
+    recentOrders = results || [];
+  } catch (err) {
+    console.error('[D1_ACCOUNT_ERROR]', err);
   }
 }
 ---
 
-<AccountLayout title="Operator Dashboard" currentPath="/account">
-  <div class="mx-auto max-w-5xl space-y-8">
-    <div class="border-outline border-b pb-6">
-      <DynamicGreeting client:load name={(user as any).first_name} />
-      <p class="text-content-muted mt-2 font-mono text-xs">
-        Personal Identity & Ledger Management
-      </p>
-    </div>
-
-    <DashboardStats client:load stats={stats} />
-
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-      <div class="space-y-8 lg:col-span-2">
-        <RecentOrdersWidget client:load orders={recentOrders} />
-        <AccountRecommendations client:load products={recommendations} title={recTitle} />
+<AccountLayout title="Secure Dashboard | Symeno">
+  <div class="mx-auto max-w-6xl px-6 py-12 space-y-8">
+    <DynamicGreeting name={user.first_name || user.email.split('@')[0]} client:load />
+    
+    <DashboardStats stats={stats} client:load />
+    
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div class="lg:col-span-2">
+        <RecentOrdersWidget orders={recentOrders} client:load />
       </div>
-
-      <div>
-        <h3
-          class="text-content mb-4 font-mono text-xs font-bold tracking-widest uppercase"
-        >
-          Fast Travel
-        </h3>
+      <div class="space-y-8">
         <AccountQuickLinks client:load />
       </div>
     </div>

@@ -1,132 +1,128 @@
 <script lang="ts">
   let orderId = $state('');
   let email = $state('');
-  let isProcessing = $state(false);
+  let isTracking = $state(false);
   let errorMsg = $state('');
-  let orderData = $state<any>(null);
+  let orderDetails = $state<{ id: string; status: string; created_at: string } | null>(null);
 
   async function handleTrack(e: Event) {
     e.preventDefault();
-    isProcessing = true;
     errorMsg = '';
-    orderData = null;
+    orderDetails = null;
+
+    if (!orderId || !email) {
+      errorMsg = 'Please provide both Order ID and Email.';
+      return;
+    }
+
+    isTracking = true;
 
     try {
       const res = await fetch('/api/support/track-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order_id: orderId, email }),
+        body: JSON.stringify({ orderId: orderId.trim(), email: email.trim().toLowerCase() })
       });
 
-      if (res.ok) {
-        orderData = await res.json();
-      } else {
-        const err = await res.json();
-        errorMsg = err.error;
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Order not found or access denied.');
       }
+
+      orderDetails = await res.json();
+    } catch (err: any) {
+      errorMsg = err.message;
     } finally {
-      isProcessing = false;
+      isTracking = false;
     }
   }
+
+  const statuses = ['pending', 'processing', 'shipped', 'delivered'];
+  let currentStepIndex = $derived(orderDetails ? statuses.indexOf(orderDetails.status.toLowerCase()) : -1);
 </script>
 
-<div class="mx-auto max-w-md">
-  {#if !orderData}
-    <form
-      onsubmit={handleTrack}
-      class="animate-fade-in space-y-6 border border-outline bg-base p-6 sm:p-8"
-    >
-      <div class="space-y-2">
-        <label
-          class="block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
-          >Order Number</label
-        >
-        <input
-          type="text"
-          bind:value={orderId}
-          required
-          placeholder="e.g. 8A9B2C1D"
-          class="w-full border border-outline bg-surface px-3 py-3 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
-        />
-      </div>
-      <div class="space-y-2">
-        <label
-          class="block font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase"
-          >Billing Email</label
-        >
-        <input
-          type="email"
-          bind:value={email}
-          required
-          placeholder="operator@symeno.com"
-          class="w-full border border-outline bg-surface px-3 py-3 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
-        />
+<div class="mx-auto max-w-xl">
+  {#if !orderDetails}
+    <form onsubmit={handleTrack} class="bg-surface border-outline space-y-6 rounded-xl border p-8 shadow-sm">
+      <div class="space-y-4">
+        <div>
+          <label for="orderId" class="text-content font-mono text-xs font-bold tracking-widest uppercase">Order ID</label>
+          <input
+            id="orderId"
+            type="text"
+            bind:value={orderId}
+            placeholder="e.g., SYM-10482"
+            class="bg-base border-outline text-content focus:border-brand mt-2 w-full rounded-md border p-3 font-mono text-sm transition-colors focus:outline-none focus:ring-1 focus:ring-brand"
+            required
+          />
+        </div>
+        <div>
+          <label for="email" class="text-content font-mono text-xs font-bold tracking-widest uppercase">Email Address</label>
+          <input
+            id="email"
+            type="email"
+            bind:value={email}
+            placeholder="Used at checkout"
+            class="bg-base border-outline text-content focus:border-brand mt-2 w-full rounded-md border p-3 font-mono text-sm transition-colors focus:outline-none focus:ring-1 focus:ring-brand"
+            required
+          />
+        </div>
       </div>
 
       {#if errorMsg}
-        <div
-          class="border border-brand-alert/30 bg-brand-alert/10 p-3 text-center font-mono text-[10px] tracking-widest text-brand-alert uppercase"
-        >
+        <div class="bg-brand-alert/10 border-brand-alert text-brand-alert rounded border p-3 font-mono text-xs font-bold uppercase">
           {errorMsg}
         </div>
       {/if}
 
       <button
         type="submit"
-        disabled={isProcessing}
-        class="w-full bg-brand px-4 py-3 text-xs font-bold tracking-widest text-brand-dark uppercase shadow-[0_0_15px_var(--color-brand,rgba(54,244,164,0.15))] transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark rounded-sm"
+        disabled={isTracking}
+        class="bg-brand text-brand-dark w-full rounded-md py-4 text-sm font-bold tracking-widest uppercase transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
       >
-        {isProcessing ? 'Interrogating Database...' : 'Locate Shipment'}
+        {isTracking ? 'Querying Edge Matrix...' : 'Track Order'}
       </button>
     </form>
   {:else}
-    <div
-      class="animate-fade-in space-y-6 border border-brand/30 bg-base p-6 text-center sm:p-8"
-    >
-      <div
-        class="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-brand bg-brand/10"
-      >
-        <svg
-          class="h-8 w-8 text-brand"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          ><path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-          /></svg
+    <div class="bg-surface border-outline rounded-xl border p-8 shadow-sm">
+      <div class="mb-8 flex items-start justify-between border-b border-outline pb-6">
+        <div>
+          <h3 class="text-content font-sans text-xl font-bold uppercase">Order {orderDetails.id}</h3>
+          <p class="text-content-muted mt-1 font-mono text-xs tracking-widest uppercase">
+            Placed {new Date(orderDetails.created_at).toLocaleDateString()}
+          </p>
+        </div>
+        <button
+          onclick={() => (orderDetails = null)}
+          class="text-content-muted hover:text-brand font-mono text-[10px] font-bold tracking-widest uppercase focus-visible:outline-none"
         >
-      </div>
-      <div>
-        <h3
-          class="font-mono text-lg font-bold tracking-widest text-content uppercase"
-        >
-          Order Found
-        </h3>
-        <p class="mt-1 font-mono text-xs text-content-muted">
-          Status: <span class="font-bold text-brand"
-            >{orderData.status}</span
-          >
-        </p>
+          Reset
+        </button>
       </div>
 
-      {#if orderData.tracking_url}
-        <a
-          href={orderData.tracking_url}
-          target="_blank"
-          class="block w-full border border-brand/30 bg-surface px-4 py-3 text-xs font-bold tracking-widest text-brand uppercase transition-colors hover:bg-brand/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
-        >
-          Open Carrier Tracking
-        </a>
-      {/if}
-
-      <button
-        onclick={() => (orderData = null)}
-        class="font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
-        >Track Another</button
-      >
+      <div class="relative space-y-8 before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-outline before:to-transparent">
+        {#each statuses as status, i}
+          <div class="relative flex items-center gap-6">
+            <div
+              class="z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 transition-colors duration-500 {i <= currentStepIndex ? 'bg-brand border-brand text-brand-dark' : 'bg-base border-outline text-content-muted'}"
+            >
+              {#if i < currentStepIndex}
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
+              {:else if i === currentStepIndex}
+                <div class="h-2.5 w-2.5 rounded-full bg-current animate-pulse"></div>
+              {/if}
+            </div>
+            <div>
+              <h4 class="font-mono text-sm font-bold uppercase {i <= currentStepIndex ? 'text-content' : 'text-content-muted'}">
+                {status}
+              </h4>
+              {#if i === currentStepIndex}
+                <p class="text-brand mt-1 font-mono text-[10px] tracking-widest uppercase">Current Status</p>
+              {/if}
+            </div>
+          </div>
+        {/each}
+      </div>
     </div>
   {/if}
 </div>
