@@ -1,10 +1,20 @@
 <script lang="ts">
-  let { productId, initialState = false } = $props<{
+  // 1. Do not destructure. Keep the props object intact for reactivity.
+  let props = $props<{
     productId: string;
     initialState?: boolean;
   }>();
-  let isSaved = $state(initialState);
+
+  // 2. Initialize local state using the prop fallback
+  let isSaved = $state(props.initialState ?? false);
   let isProcessing = $state(false);
+
+  // 3. Keep edge-synced if the parent explicitly updates the prop later
+  $effect(() => {
+    if (props.initialState !== undefined) {
+      isSaved = props.initialState;
+    }
+  });
 
   async function toggleWishlist(e: Event) {
     e.preventDefault();
@@ -21,7 +31,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          productId,
+          productId: props.productId,
           action: isSaved ? 'add' : 'remove',
         }),
       });

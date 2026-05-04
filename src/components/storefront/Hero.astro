@@ -1,16 +1,59 @@
 ---
-// src/components/storefront/Hero.astro
+import { env } from "cloudflare:workers";
+
 const { deal } = Astro.props;
 
-// EDGE FALLBACK: Prevent UI crash if database drops
-const displayDeal = deal || {
-  slug: 'shop',
-  brand: 'Symeno Select',
-  title: 'Premium Everyday Carry Assortment',
-  basePrice: 24.99,
-  retailPrice: 39.99,
-  images: ['https://placehold.co/600x400/1a1a1a/36F4A4?text=Premium+Goods']
-};
+let displayDeal = null;
+let dbError = false;
+
+// 1. EDGE AUTONOMY: If parent doesn't pass a deal, fetch the latest enriched asset from D1
+if (!deal) {
+  try {
+    const db = env.DB as any;
+    if (db) {
+      // We specifically query for a product that our Node engine has already enriched
+      const { results } = await db.prepare("SELECT slug, title, brand, basePrice, retailPrice, image_url, images_json FROM rapidapi_cache WHERE images_json IS NOT NULL ORDER BY id DESC LIMIT 1").all();
+      
+      if (results.length > 0) {
+        const p = results[0];
+        let mainImage = p.image_url;
+        
+        try {
+          if (p.images_json) {
+            const parsed = JSON.parse(p.images_json);
+            if (parsed.length > 0) mainImage = parsed[0];
+          }
+        } catch(e) {}
+
+        displayDeal = {
+          slug: p.slug,
+          brand: p.brand || 'Symeno Select',
+          title: p.title,
+          basePrice: p.basePrice || 0,
+          retailPrice: p.retailPrice,
+          images: [mainImage]
+        };
+      }
+    }
+  } catch (e) {
+    console.error('[HERO_EDGE_ERROR]', e);
+    dbError = true;
+  }
+} else {
+  displayDeal = deal;
+}
+
+// 2. FAIL-SAFE GRACEFUL DEGRADATION: Prevent 500 error if DB is empty or offline
+if (!displayDeal) {
+  displayDeal = {
+    slug: 'shop',
+    brand: 'System',
+    title: 'Catalog Updating - Check Back Soon',
+    basePrice: 0,
+    retailPrice: 0,
+    images: ['https://placehold.co/600x400/1a1a1a/36F4A4?text=Processing...']
+  };
+}
 
 const discount = displayDeal.retailPrice && displayDeal.retailPrice > displayDeal.basePrice 
   ? Math.floor(displayDeal.retailPrice - displayDeal.basePrice)
@@ -42,8 +85,7 @@ const discount = displayDeal.retailPrice && displayDeal.retailPrice > displayDea
       </div>
 
       <div class="relative md:col-span-5" id="deal-of-the-day">
-        {/* FIX: Entire card is now a robust anchor tag routing precisely to the Edge Product Page */}
-        <a href={deal ? `/shop/product/${displayDeal.slug}` : '/shop'} class="bg-surface shadow-ambient flex flex-col overflow-hidden rounded-xl transition-all duration-500 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-base block group">
+        <a href={displayDeal.slug !== 'shop' ? `/shop/product/${displayDeal.slug}` : '/shop'} class="bg-surface shadow-ambient flex flex-col overflow-hidden rounded-xl transition-all duration-500 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-base block group">
           <div class="bg-surface-hover relative flex h-64 w-full items-center justify-center overflow-hidden transition-colors duration-300">
             <div class="from-surface absolute inset-0 z-10 bg-gradient-to-t to-transparent opacity-80"></div>
             
@@ -52,7 +94,7 @@ const discount = displayDeal.retailPrice && displayDeal.retailPrice > displayDea
             </span>
 
             <img
-              src={displayDeal.images[0] || 'https://placehold.co/600x400/1a1a1a/36F4A4?text=Premium+Goods'}
+              src={displayDeal.images[0]}
               alt={displayDeal.title}
               width="600"
               height="400"

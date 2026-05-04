@@ -4,13 +4,14 @@ import StorefrontLayout from '../../../layouts/Storefront.astro';
 import WishlistButton from '../../../components/storefront/WishlistButton.svelte';
 import RecentlyViewed from '../../../components/storefront/product/RecentlyViewed.svelte';
 import ProductGallery from '../../../components/storefront/product/ProductGallery.svelte';
-import ProductSpecs from '../../../components/storefront/product/ProductSpecs.astro';
 import CheckoutStickyBar from '../../../components/storefront/cart/CheckoutStickyBar.svelte';
 
 export const prerender = false;
 
 const { slug } = Astro.params;
 let product: any = null;
+let relatedProducts: any[] = [];
+let descriptionBullets: string[] = [];
 let errorMessage = '';
 
 try {
@@ -18,21 +19,57 @@ try {
   if (!db) {
     errorMessage = 'Database connection offline.';        
   } else {
+    // 1. Fetch Main Product
     const rawProduct = await db.prepare("SELECT * FROM rapidapi_cache WHERE slug = ?1").bind(slug).first();
 
     if (rawProduct) {
+      let parsedImages = [];
+      try {
+        if (rawProduct.images_json) parsedImages = JSON.parse(rawProduct.images_json);
+      } catch(e) { console.error('Image parse failed', e); }
+      
+      // Fallback if the array is empty
+      if (parsedImages.length === 0 && rawProduct.image_url) {
+        parsedImages = [rawProduct.image_url];
+      }
+
+      try {
+        if (rawProduct.features_json) descriptionBullets = JSON.parse(rawProduct.features_json);
+      } catch(e) { console.error('Features parse failed', e); }
+
       product = {
         id: rawProduct.id,
         slug: rawProduct.slug,
         brand: rawProduct.brand ?? 'Symeno Select',    
         category: rawProduct.category,
+        categorySlug: rawProduct.categorySlug,
         title: rawProduct.title,
         description: rawProduct.description || rawProduct.title,
         basePrice: rawProduct.basePrice,
         retailPrice: rawProduct.retailPrice, 
         stockStatus: rawProduct.stockStatus,
-        images: rawProduct.image_url ? [rawProduct.image_url] : []
+        images: parsedImages
       };
+
+      if (descriptionBullets.length === 0 && product.description && product.description.length > 50) {
+        descriptionBullets = product.description
+          .split(/(?<=\.)\s+/)
+          .filter((sentence: string) => sentence.trim().length > 5);
+      }
+
+      // 2. Fetch Related Products
+      const { results: related } = await db.prepare(
+        "SELECT slug, title, brand, basePrice, retailPrice, image_url FROM rapidapi_cache WHERE category = ?1 AND id != ?2 LIMIT 4"
+      ).bind(product.category, product.id).all();
+
+      relatedProducts = related.map((p: any) => ({
+        slug: p.slug,
+        title: p.title,
+        brand: p.brand || 'Symeno Select',
+        basePrice: p.basePrice,
+        retailPrice: p.retailPrice || (p.basePrice * 1.2),
+        image: p.image_url
+      }));
     }
   }
 } catch (e) {
@@ -44,19 +81,17 @@ const isWishlisted = false;
 const hasDiscount = product?.retailPrice && product.retailPrice > product.basePrice;
 const isInStock = product?.stockStatus === 'IN_STOCK';
 
-const productSpecs: Record<string, string> = {
-  'Brand': product?.brand ?? 'N/A',
-  'Category': product?.category ?? 'N/A',
-  'Model': product?.title ? product.title.slice(0, 30) + '...' : 'N/A',
-  'SKU': product?.id ? String(product.id) : 'N/A',        
-  'Condition': 'Brand New — Factory Sealed',
-  'Warranty': 'Full Manufacturer Warranty',
-  'Stock Status': isInStock ? 'Available for Dispatch' : 'Allocation Exhausted (Backordered)',        
-};
+const productSpecs = [
+  { label: 'Brand', value: product?.brand ?? 'N/A' },
+  { label: 'Category', value: product?.category ?? 'N/A' },
+  { label: 'SKU', value: product?.id ? String(product.id) : 'N/A' },        
+  { label: 'Condition', value: 'Brand New — Factory Sealed' },
+  { label: 'Warranty', value: 'Full Manufacturer Warranty' },
+];
 ---
 
 <StorefrontLayout
-  title={product ? `${product.title} | Premium Goods | Symeno` : 'Asset Not Found | Symeno'}
+  title={product ? `${product.title} | Symeno` : 'Asset Not Found | Symeno'}
   description={product ? `Secure the ${product.title} at true wholesale pricing.` : 'Item unavailable.'}  
 >
   {
@@ -140,31 +175,32 @@ const productSpecs: Record<string, string> = {
             <span class="text-brand max-w-[150px] truncate sm:max-w-none">{product.brand}</span>
           </nav>
 
-          <div class="relative z-10 mb-20 grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20">
-            <div class="space-y-6">
-              <div class="relative">
-                <ProductGallery
+          <div class="relative z-10 mb-20 flex flex-col gap-12 lg:flex-row lg:gap-16 lg:items-start">
+            
+            <!-- THE FIX: Unrestricted Gallery Container -->
+            <div class="w-full lg:w-6/12 lg:sticky lg:top-24 shrink-0 relative">
+              <ProductGallery
+                client:load
+                images={product.images as string[]}
+                title={product.title as string}
+              />
+              <div class="absolute top-4 right-4 z-20"> 
+                <WishlistButton
                   client:load
-                  images={product.images as string[]}
-                  title={product.title as string}
+                  productId={product.id as string}
+                  initialState={isWishlisted as boolean}    
                 />
-                <div class="absolute top-4 right-4 z-20"> 
-                  <WishlistButton
-                    client:load
-                    productId={product.id as string}
-                    initialState={isWishlisted as boolean}    
-                  />
-                </div>
               </div>
             </div>
 
-            <div class="flex flex-col justify-center">    
-              <h1 class="text-content mb-4 text-3xl leading-none font-bold tracking-tighter uppercase transition-colors duration-300 md:text-5xl">
+            <!-- ZONE 2: The Buy Box & Data -->
+            <div class="flex-1 flex flex-col">    
+              <h1 class="text-content mb-4 text-2xl sm:text-3xl lg:text-4xl leading-tight font-bold tracking-tight uppercase transition-colors duration-300">
                 {product.title}
               </h1>
 
-              <div class="mb-8 flex items-end gap-4 pb-8 font-mono transition-colors duration-300">
-                <span class="text-brand text-4xl font-bold tracking-tighter transition-colors duration-300">        
+              <div class="mb-6 flex flex-wrap items-end gap-4 font-mono transition-colors duration-300 border-b border-outline/50 pb-6">
+                <span class="text-brand text-3xl sm:text-4xl font-bold tracking-tighter transition-colors duration-300">        
                   ${Number(product.basePrice).toFixed(2)}
                 </span>
 
@@ -173,33 +209,69 @@ const productSpecs: Record<string, string> = {
                     <span class="text-content-muted text-[10px] tracking-widest uppercase line-through">
                       Retail: ${Number(product.retailPrice).toFixed(2)}
                     </span>
-                    <span class="text-content text-xs font-bold tracking-widest uppercase transition-colors duration-300">
-                      Arbitrage: Save ${Math.floor(product.retailPrice - product.basePrice)}
+                    <span class="text-brand-alert text-xs font-bold tracking-widest uppercase transition-colors duration-300">
+                      Save ${Math.floor(product.retailPrice - product.basePrice)}
                     </span>
                   </div>
                 )}
               </div>
 
-              <p class="text-content-muted mb-10 font-mono text-sm leading-relaxed transition-colors duration-300"> 
-                {product.description}
-              </p>
+              <div class="mb-8">
+                {isInStock ? (
+                  <span class="inline-flex items-center gap-1.5 rounded bg-brand/10 px-2.5 py-1 font-mono text-[10px] tracking-widest text-brand uppercase border border-brand/20">
+                    <span class="h-1.5 w-1.5 rounded-full bg-brand animate-pulse"></span>
+                    Available for Dispatch
+                  </span>
+                ) : (
+                  <span class="inline-flex items-center gap-1.5 rounded bg-brand-alert/10 px-2.5 py-1 font-mono text-[10px] tracking-widest text-brand-alert uppercase border border-brand-alert/20">
+                    Allocation Exhausted
+                  </span>
+                )}
+              </div>
+
+              {descriptionBullets.length > 0 && (
+                <div class="mb-8 space-y-3">
+                  <h3 class="font-mono text-xs tracking-widest text-content-muted uppercase">Product Highlights</h3>
+                  <ul class="space-y-2">
+                    {descriptionBullets.map((bullet: string) => (
+                      <li class="flex items-start gap-3 text-sm text-content/90 leading-relaxed">
+                        <span class="text-brand mt-2 h-1.5 w-1.5 shrink-0 rounded-full"></span>
+                        <span>{bullet.trim()}{bullet.endsWith('.') ? '' : '.'}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {isInStock ? (
-                <div id="main-add-to-cart" class="mb-8 flex gap-4">
+                <div id="main-add-to-cart" class="mb-12 flex flex-col gap-4 bg-surface/30 p-5 rounded-xl border border-outline/50">
                   <button
                     type="button"
                     id="add-to-cart-btn"
-                    class="bg-brand text-brand-dark flex-1 rounded-md py-4 text-sm font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(54,244,164,0.15)] transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_25px_rgba(54,244,164,0.3)] focus:outline-none"
+                    class="bg-brand text-brand-dark w-full rounded-md py-4 text-sm font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(54,244,164,0.15)] transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_25px_rgba(54,244,164,0.3)] focus:outline-none"
                     data-product-id={product.id}
                   >
                     Add to Cart
                   </button>
+                  
+                  <div class="text-content-muted flex items-center justify-center gap-6 font-mono text-[10px] tracking-widest uppercase transition-colors duration-300 mt-2">
+                    <div class="flex items-center gap-1.5">     
+                      <svg class="text-brand h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />      
+                      </svg> Verified Authentic
+                    </div>
+                    <div class="flex items-center gap-1.5">     
+                      <svg class="text-brand h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />      
+                      </svg> Fast Dispatch
+                    </div>
+                  </div>
                 </div>
               ) : (
-                <div class="bg-surface border-brand/30 shadow-ambient group relative mb-8 overflow-hidden rounded-xl border p-6 transition-colors duration-300">
+                <div class="bg-surface border-brand/30 shadow-ambient group relative mb-12 overflow-hidden rounded-xl border p-6 transition-colors duration-300">
                   <div class="from-brand/5 pointer-events-none absolute top-0 right-0 h-full w-32 bg-gradient-to-l to-transparent" />
                   <div class="mb-4">
-                    <h3 class="text-brand mb-1 text-sm font-bold tracking-widest uppercase">Allocation Exhausted</h3> 
+                    <h3 class="text-brand mb-1 text-sm font-bold tracking-widest uppercase">Join Waitlist</h3> 
                     <p class="text-content-muted font-mono text-xs">Due to high demand, this unit is currently backordered. Secure your priority position for the next supply drop.</p>
                   </div>
                   <div class="flex flex-col gap-3">
@@ -215,33 +287,67 @@ const productSpecs: Record<string, string> = {
                       class="bg-brand text-brand-dark w-full rounded-md py-4 text-sm font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(54,244,164,0.15)] transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_25px_rgba(54,244,164,0.3)] focus:outline-none"
                       data-product-id={product.id}
                     >
-                      Join Priority Waitlist
+                      Secure Position
                     </button>
                   </div>
                   <p id="waitlist-success" class="text-brand hidden mt-4 text-center font-mono text-xs tracking-widest uppercase">Protocol Accepted. You are on the list.</p>   
                 </div>
               )}
 
-              <div class="text-content-muted flex items-center gap-6 font-mono text-[10px] tracking-widest uppercase transition-colors duration-300">
-                <div class="flex items-center gap-2">     
-                  <svg class="text-brand h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />      
-                  </svg> Verified Authentic
+              <div class="overflow-hidden rounded-xl border border-outline bg-surface shadow-sm mb-12">
+                <div class="px-6 py-5 border-b border-outline bg-base/50">
+                  <h2 class="text-sm font-bold tracking-widest text-content uppercase">Detailed Specifications</h2>
                 </div>
-                <div class="flex items-center gap-2">     
-                  <svg class="text-brand h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />      
-                  </svg> Fast Dispatch
+                <div class="divide-y divide-outline/50">
+                  {productSpecs.map((spec) => (
+                    <div class="grid grid-cols-1 sm:grid-cols-3 px-6 py-4 transition-colors hover:bg-base/30 gap-1 sm:gap-4">
+                      <div class="font-mono text-[10px] sm:text-xs text-content-muted uppercase tracking-wider flex items-center">{spec.label}</div>
+                      <div class="col-span-2 text-sm font-medium text-content">{spec.value}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
+
             </div>
           </div>
 
-          <div class="relative z-10 mb-16">
-            <ProductSpecs specs={productSpecs} />
-          </div>
+          {relatedProducts.length > 0 && (
+            <div class="relative z-10 mb-20 pt-12 border-t border-outline">
+              <h2 class="mb-8 text-xl font-bold tracking-tighter text-content uppercase">Similar Items</h2>
+              <div class="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+                {relatedProducts.map((rp) => (
+                  <a href={`/shop/product/${rp.slug}`} class="group relative flex flex-col focus:outline-none">
+                    <div class="relative mb-4 flex aspect-square items-center justify-center overflow-hidden border border-outline bg-surface transition-colors group-hover:border-brand/50 rounded-xl">
+                      {rp.retailPrice && rp.retailPrice > rp.basePrice && (
+                        <div class="absolute top-2 left-2 z-10 border border-brand/30 bg-brand/10 px-1.5 py-0.5 text-[8px] font-bold tracking-widest text-brand uppercase backdrop-blur-sm">
+                          Save ${Math.floor(rp.retailPrice - rp.basePrice)}
+                        </div>
+                      )}
+                      {rp.image ? (
+                        <img src={rp.image} alt={rp.title} loading="lazy" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" />
+                      ) : (
+                        <span class="font-mono text-[10px] text-content-muted">No Image</span>
+                      )}
+                    </div>
+                    <span class="mb-1 truncate font-mono text-[9px] tracking-widest text-content-muted uppercase transition-colors group-hover:text-content">
+                      {rp.brand}
+                    </span>
+                    <h3 class="mb-1 truncate text-xs font-bold text-content transition-colors group-hover:text-brand">
+                      {rp.title}
+                    </h3>
+                    <div class="mt-auto flex items-baseline gap-2 font-mono">
+                      <span class="text-sm font-bold text-brand">${rp.basePrice.toFixed(2)}</span>
+                      {rp.retailPrice && rp.retailPrice > rp.basePrice && (
+                        <span class="text-[9px] text-content-muted line-through">${rp.retailPrice.toFixed(2)}</span>
+                      )}
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
 
-          <div class="relative z-10 mt-20">
+          <div class="relative z-10 mt-12 border-t border-outline pt-12">
             <RecentlyViewed
               client:only="svelte"
               currentProductId={product.id as string}        
@@ -305,7 +411,6 @@ const productSpecs: Record<string, string> = {
     }, 400);
   });
 
-  // Hydrate Recently Viewed
   const metaEl = document.getElementById('product-meta'); 
   if (metaEl && metaEl.dataset.product) {
     try {

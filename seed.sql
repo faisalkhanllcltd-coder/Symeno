@@ -11,7 +11,9 @@ CREATE TABLE rapidapi_cache (
   basePrice REAL,
   retailPrice REAL,
   stockStatus TEXT,
-  image_url TEXT
+  image_url TEXT,
+  images_json TEXT DEFAULT NULL,
+  features_json TEXT DEFAULT NULL
 );
 
 INSERT INTO rapidapi_cache (id, slug, category, categorySlug, brand, title, description, basePrice, retailPrice, stockStatus, image_url) VALUES ('B00HUIWK1W', 'soto-compact-helix-coffee-maker-portable-stainless-stee', 'Pour-Over Coffee', 'pour-over-coffee', 'AeroBrew', 'SOTO Compact Helix Coffee Maker', 'AeroBrew pour-over coffee — authentic quality, carefully selected for everyday use.', 22.99, 28.74, 'IN_STOCK', 'https://m.media-amazon.com/images/I/61Rh71PQYRL._AC_UL960_QL65_.jpg');

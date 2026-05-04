@@ -8,26 +8,31 @@
   let isSubmitting = $state(false);
   let rmaResult = $state<string | null>(null);
 
-  // Mock items loaded when an order is selected
-  let orderItems = $derived(() => {
-    if (!selectedOrder) return [];
-    return [
-      {
-        id: 'item_1',
-        name: 'Symeno Operator Keyboard',
-        price: 149.99,
-        reason: '',
-        photoUrl: '',
-      },
-      {
-        id: 'item_2',
-        name: 'Tactile Switches (90x)',
-        price: 45.0,
-        reason: '',
-        photoUrl: '',
-      },
-    ];
+  // Dynamically fetched order items when an order is selected
+  let orderItems = $state<any[]>([]);
+  let loadingItems = $state(false);
+
+  $effect(() => {
+    if (!selectedOrder) {
+      orderItems = [];
+      return;
+    }
+    loadingItems = true;
+    fetch(`/api/account/order-items?orderId=${encodeURIComponent(selectedOrder)}`)
+      .then(res => res.ok ? res.json() : [])
+      .then(data => {
+        orderItems = Array.isArray(data) ? data.map((item: any) => ({
+          id: item.id,
+          name: item.title || item.name || 'Unknown Item',
+          price: Number(item.unit_price || item.locked_price || 0),
+          reason: '',
+          photoUrl: '',
+        })) : [];
+      })
+      .catch(() => { orderItems = []; })
+      .finally(() => { loadingItems = false; });
   });
+
 
   const reasons = [
     'Wrong size or fit',
@@ -165,7 +170,7 @@
         </h2>
 
         <div class="space-y-4">
-          {#each orderItems() as item}
+          {#each orderItems as item}
             <div class="border border-outline bg-surface p-4 {isSubmitting ? 'opacity-70' : ''}">
               <label class="mb-4 flex cursor-pointer items-center gap-4 {isSubmitting ? 'cursor-not-allowed' : ''}">
                 <input

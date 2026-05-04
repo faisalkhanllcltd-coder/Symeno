@@ -14,44 +14,36 @@ Astro.response.headers.set(
 const { category } = Astro.params;
 if (!category) return Astro.redirect('/404');
 
-// Category Metadata mapping
-const categoryMeta: Record<string, { name: string; desc: string }> = {
-  audio: {
-    name: 'Audio & Acoustics',
-    desc: 'Studio-grade sound reproduction hardware.',
-  },
-  displays: {
-    name: 'Displays & Monitors',
-    desc: 'High-refresh rate visual matrices.',
-  },
-  peripherals: {
-    name: 'Peripherals & Input',
-    desc: 'Precision tactile interfaces and mechanical switches.',   
-  },
-  components: {
-    name: 'Core Components',
-    desc: 'Raw processing and storage units.',
-  },
-};
+// THE FORMATTER: Turns "baby-accessories" into "Baby Accessories"
+function formatCategoryName(slug: string) {
+  return slug
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
 
-const meta = categoryMeta[category as string] || {
-  name: category.toString().replace(/-/g, ' ').toUpperCase(),
-  desc: `Premium ${category} hardware sourced directly from our verified independent supply chain.`,
+const formattedName = formatCategoryName(category as string);
+
+// Dynamic Metadata
+const meta = {
+  name: formattedName,
+  desc: `Curated ${formattedName.toLowerCase()} sourced directly from our verified supply chain.`,
 };
 
 let activeProducts: any[] = [];
 
 try {
-  const db = env.DB;
+  const db = env.DB as any;
   if (db) {
-    const { results } = await db.prepare("SELECT * FROM rapidapi_cache WHERE category LIKE ?1 LIMIT 50").bind(`%${category}%`).all();
+    // THE FIX: Exact match against categorySlug instead of fuzzy LIKE
+    const { results } = await db.prepare("SELECT * FROM rapidapi_cache WHERE categorySlug = ?1 LIMIT 50").bind(category).all();
     
     activeProducts = results.map((p: any) => ({
       slug: p.slug,
       title: p.title,
-      brand: p.category || 'Hardware',
+      brand: p.brand || 'Symeno Select',
       basePrice: p.basePrice,
-      retailPrice: p.basePrice * 1.2,
+      retailPrice: p.retailPrice || (p.basePrice * 1.2), // Fallback if API lacks retail price
       images: p.image_url ? [p.image_url] : []
     }));
   }
@@ -61,7 +53,7 @@ try {
 ---
 
 <StorefrontLayout
-  title={`${meta.name} | Wholesale Arbitrage | Symeno`}
+  title={`${meta.name} | Symeno`}
   description={meta.desc}
 >
   <div class="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-20 lg:px-8">
@@ -119,21 +111,20 @@ try {
                 <div class="absolute right-0 bottom-0 h-2 w-2 border-r border-b border-outline" />
 
                 {product.retailPrice && product.retailPrice > product.basePrice && (
-                  <div class="absolute top-3 left-3 z-10 border border-brand/30 bg-brand/10 px-2 py-1 text-[9px] font-bold tracking-widest text-brand uppercase">
+                  <div class="absolute top-3 left-3 z-10 border border-brand/30 bg-brand/10 px-2 py-1 text-[9px] font-bold tracking-widest text-brand uppercase backdrop-blur-sm">
                     Save ${Math.floor(product.retailPrice - product.basePrice)}
                   </div>
                 )}
                 
-                {/* FIX 2: Wired the Amazon images natively */}
                 {product.images && product.images[0] ? (
                   <img 
                     src={product.images[0]} 
                     alt={product.title} 
                     loading="lazy"
-                    class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                   />
                 ) : (
-                  <span class="font-mono text-[10px] text-content-muted">Hardware Array</span>
+                  <span class="font-mono text-[10px] text-content-muted">Visual Missing</span>
                 )}
               </div>
 

@@ -16,6 +16,8 @@ export const prerender = false;
 let featured: any[] = [];
 let dynamicDeals: string[] = [];
 let heroDeal: any = null;
+let storeCategories: any[] = []; // NEW: Array to hold real DB categories
+
 const cities = ['London, UK', 'Dubai, UAE', 'Toronto, CA', 'New York, US', 'Sydney, AU'];
 
 try {
@@ -23,9 +25,12 @@ try {
   const db = env.DB as any;
 
   if (db) {
-    const { results } = await db.prepare("SELECT * FROM rapidapi_cache WHERE stockStatus = 'IN_STOCK' LIMIT 10").all();
+    // ----------------------------------------------------
+    // QUERY 1: FETCH TOP PRODUCTS
+    // ----------------------------------------------------
+    const { results: productResults } = await db.prepare("SELECT * FROM rapidapi_cache WHERE stockStatus = 'IN_STOCK' LIMIT 10").all();
 
-    const mappedProducts = results.map((p: any) => ({     
+    const mappedProducts = productResults.map((p: any) => ({     
       id: p.id,
       slug: p.slug,
       brand: p.brand || 'Symeno Select',
@@ -51,6 +56,40 @@ try {
           : Math.floor(p.basePrice * 0.2);
         return `${city} — A customer just saved $${savings} on ${p.brand} goods`;
       });
+
+    // ----------------------------------------------------
+    // QUERY 2: AGGREGATE REAL CATEGORIES
+    // ----------------------------------------------------
+    const { results: catResults } = await db.prepare(`
+      SELECT 
+        category as name, 
+        categorySlug as slug, 
+        COUNT(id) as count, 
+        MAX(image_url) as image,
+        MAX(retailPrice) as maxRetail,
+        MIN(basePrice) as minBase
+      FROM rapidapi_cache 
+      WHERE category IS NOT NULL AND categorySlug IS NOT NULL
+      GROUP BY category, categorySlug 
+      ORDER BY count DESC 
+      LIMIT 6
+    `).all();
+
+    storeCategories = catResults.map((c: any) => {
+      const maxR = c.maxRetail || 0;
+      const minB = c.minBase || 0;
+      // Calculate real discount margin based on DB max/min prices
+      const discountCalc = maxR > minB ? Math.floor(((maxR - minB) / maxR) * 100) : 25;
+      
+      return {
+        name: c.name,
+        slug: c.slug,
+        count: c.count,
+        image: c.image,
+        discount: `${discountCalc}%`,
+        lowStock: c.count < 5 // Dynamically flags if inventory is less than 5
+      };
+    });
   }
 } catch (e) {
   console.error('[HOMEPAGE_D1_ERROR]', e);
@@ -67,7 +106,8 @@ if (dynamicDeals.length === 0) {
 >
   <Hero deal={heroDeal} />
   <TrustBar />
-  <CategoryGrid />
+  <!-- Passing the real D1 data to the Category Grid -->
+  <CategoryGrid categories={storeCategories} />
   <BrandStory />
   <Manifesto />
   <FeaturedProducts products={featured} />

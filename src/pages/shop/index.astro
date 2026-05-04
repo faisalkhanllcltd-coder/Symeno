@@ -7,6 +7,8 @@ import ProductGrid from '../../components/storefront/catalog/ProductGrid.svelte'
 export const prerender = false;
 
 let liveProducts: any[] = [];
+let dynamicCategories: { name: string; slug: string; count: number }[] = [];
+let dynamicBrands: { name: string; slug: string; count: number }[] = [];
 let dbError = false;
 let totalProducts = 0;
 
@@ -21,9 +23,30 @@ try {
   const db = env.DB as any;
   if (!db) throw new Error("DB Offline");
 
-  const { results } = await db.prepare('SELECT * FROM rapidapi_cache LIMIT 150').all();  
+  // Fetch complete dataset (Removed the LIMIT 150 trap for accurate edge filtering)
+  const { results } = await db.prepare('SELECT * FROM rapidapi_cache').all();  
   let filtered = results as any[];
 
+  // 1. DYNAMIC SIDEBAR DATA EXTRACTION
+  // We extract the real categories and brands before filtering so the sidebar always shows all options
+  const categoryMap = new Map();
+  const brandMap = new Map();
+
+  results.forEach((p: any) => {
+    if (p.category) {
+      const cSlug = p.categorySlug || p.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      categoryMap.set(cSlug, { name: p.category, slug: cSlug, count: (categoryMap.get(cSlug)?.count || 0) + 1 });
+    }
+    if (p.brand) {
+      const bSlug = p.brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      brandMap.set(bSlug, { name: p.brand, slug: bSlug, count: (brandMap.get(bSlug)?.count || 0) + 1 });
+    }
+  });
+
+  dynamicCategories = Array.from(categoryMap.values()).sort((a, b) => b.count - a.count);
+  dynamicBrands = Array.from(brandMap.values()).sort((a, b) => b.count - a.count);
+
+  // 2. EDGE FILTERING PIPELINE
   if (q) {
     filtered = filtered.filter(p =>
       (p.title && p.title.toLowerCase().includes(q)) ||   
@@ -33,11 +56,17 @@ try {
   }
 
   if (filterCategory) {
-    filtered = filtered.filter(p => p.categorySlug && p.categorySlug.toLowerCase() === filterCategory);
+    filtered = filtered.filter(p => {
+      const cSlug = p.categorySlug || p.category?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      return cSlug === filterCategory;
+    });
   }
 
   if (filterBrand) {
-    filtered = filtered.filter(p => p.brand && p.brand.toLowerCase() === filterBrand);
+    filtered = filtered.filter(p => {
+      const bSlug = p.brand?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      return bSlug === filterBrand;
+    });
   }
 
   if (sort === 'price-low') {
@@ -48,16 +77,27 @@ try {
 
   totalProducts = filtered.length;
 
-  liveProducts = filtered.slice(0, 50).map((p: any) => ({ 
-    id: p.id,
-    slug: p.slug,
-    brand: p.brand || 'Symeno Select',
-    category: p.category,
-    title: p.title,
-    base_price: p.basePrice,
-    retail_price: p.retailPrice,
-    image_url: p.image_url || ''
-  }));
+  // 3. SECURE DATA MAPPING (Connecting the new Amazon images)
+  liveProducts = filtered.map((p: any) => {
+    let mainImage = p.image_url || '';
+    try {
+      if (p.images_json) {
+        const parsedImages = JSON.parse(p.images_json);
+        if (parsedImages.length > 0) mainImage = parsedImages[0]; // Hijack the grid with the new high-res image
+      }
+    } catch(e) { console.error('Image JSON parse failed for', p.slug); }
+
+    return { 
+      id: p.id,
+      slug: p.slug,
+      brand: p.brand || 'Symeno Select',
+      category: p.category,
+      title: p.title,
+      base_price: p.basePrice,
+      retail_price: p.retailPrice,
+      image_url: mainImage
+    };
+  });
 
 } catch (error) {
   console.error('[CATALOG_EDGE_ERROR]', error);
@@ -88,11 +128,14 @@ try {
 
       <div class="grid grid-cols-1 gap-12 lg:grid-cols-4 mt-8">
         <aside class="hidden lg:block">
+           <!-- THE FIX: We are now passing the real database categories and brands into the sidebar -->
            <FilterSidebar 
              activeBrand={filterBrand} 
              activeCategory={filterCategory} 
              activeSort={sort} 
              currentQuery={q} 
+             realCategories={dynamicCategories}
+             realBrands={dynamicBrands}
              client:load 
            />
         </aside>

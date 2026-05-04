@@ -1,12 +1,18 @@
 ---
-const categories = [
-  { name: 'Audio', count: '143', discount: '35%' },
-  { name: 'Smart Home', count: '89', discount: '20%' },
-  { name: 'Wearables', count: '212', discount: '40%' },
-  { name: 'Computing', count: '64', discount: '15%' },
-  { name: 'Photography', count: '31', discount: '25%', lowStock: true },
-  { name: 'Accessories', count: '450', discount: '50%' },
-];
+interface Category {
+  name: string;
+  slug: string;
+  count: number;
+  image: string;
+  discount: string;
+  lowStock?: boolean;
+}
+
+interface Props {
+  categories?: Category[];
+}
+
+const { categories = [] } = Astro.props;
 ---
 
 <section class="relative w-full bg-base py-24">
@@ -23,14 +29,15 @@ const categories = [
       </a>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">     
-      {
-        categories.map((cat) => (
+    {categories.length > 0 ? (
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">      
+        {categories.map((cat) => (
           <a
-            href={`/shop/${cat.name.toLowerCase().replaceAll(' ', '-')}`} 
-            class="group relative block aspect-[4/3] overflow-hidden rounded-xl border border-outline bg-surface transition-all duration-300 hover:border-content-muted hover:shadow-[0_0_15px_rgba(0,0,0,0.1)]"
+            href={`/shop/${cat.slug}`} 
+            class="group relative block aspect-[4/3] overflow-hidden rounded-xl border border-outline bg-surface transition-all duration-300 hover:border-brand/50 hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)]"
           >
-            <div class="absolute top-2 right-2 md:top-4 md:right-4 z-20 -rotate-2 transform rounded border border-outline bg-base/90 px-2 py-1 md:px-3 md:py-1.5 shadow-xl backdrop-blur-sm">
+            <!-- Discount Badge -->
+            <div class="absolute top-2 right-2 md:top-4 md:right-4 z-20 -rotate-2 transform rounded border border-outline bg-base/90 px-2 py-1 md:px-3 md:py-1.5 shadow-xl backdrop-blur-md">
               <span class="mb-[1px] block font-mono text-[7px] md:text-[10px] leading-none tracking-wider text-content-muted uppercase">
                 Up to
               </span>
@@ -39,14 +46,25 @@ const categories = [
               </span>
             </div>
 
-            <div class="absolute inset-0 flex items-center justify-center bg-surface">
-              <span class="font-mono text-sm text-content-muted/10 transition-transform duration-700 group-hover:scale-105">
-                Category Image
-              </span>
+            <!-- THE FIX: Real Images Mapped from D1 -->
+            <div class="absolute inset-0 bg-surface">
+              {cat.image ? (
+                <img 
+                  src={cat.image} 
+                  alt={`${cat.name} Category`} 
+                  loading="lazy"
+                  class="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+                />
+              ) : (
+                <div class="flex h-full w-full items-center justify-center bg-surface">
+                  <span class="font-mono text-xs text-content-muted/30 uppercase">No Image</span>
+                </div>
+              )}
             </div>
 
-            <div class="absolute inset-0 z-10 bg-gradient-to-t from-base via-base/60 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-80" />
+            <div class="absolute inset-0 z-10 bg-gradient-to-t from-base via-base/70 to-transparent opacity-95 transition-opacity duration-300 group-hover:opacity-85" />
 
+            <!-- Category Info -->
             <div class="absolute bottom-0 left-0 z-20 w-full p-3 md:p-5">
               <h3 class="mb-1 text-base md:text-lg font-bold tracking-wider text-content uppercase transition-colors group-hover:text-brand">        
                 {cat.name}
@@ -56,7 +74,7 @@ const categories = [
                   {cat.count} Products
                 </span>
                 {cat.lowStock && (
-                  <div class="flex items-center gap-1.5 rounded border border-brand-alert/20 bg-base/80 px-1.5 py-0.5">
+                  <div class="flex items-center gap-1.5 rounded border border-brand-alert/20 bg-base/80 px-1.5 py-0.5 backdrop-blur-md">
                     <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-alert" />
                     <span class="font-mono text-[8px] md:text-[10px] tracking-widest text-brand-alert uppercase">
                       Low Stock
@@ -66,8 +84,16 @@ const categories = [
               </div>
             </div>
           </a>
-        ))
-      }
-    </div>
+        ))}
+      </div>
+    ) : (
+      <!-- Empty State Fallback -->
+      <div class="flex w-full flex-col items-center justify-center rounded-xl border border-dashed border-outline/50 bg-surface/30 py-24 text-center">
+        <svg class="mb-4 h-8 w-8 text-content-muted/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+        <p class="font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase">Synchronizing Inventory...</p>
+      </div>
+    )}
   </div>
 </section>

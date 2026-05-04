@@ -11,7 +11,7 @@
 
   let activeIndex = $state(0);
 
-  // If a parent component changes the activeImage (e.g., color variant changed), update index
+  // If a parent component changes the activeImage, update index
   $effect(() => {
     if (activeImage) {
       const idx = images.indexOf(activeImage);
@@ -24,14 +24,30 @@
   }
 </script>
 
-<div class="flex flex-col gap-4 sticky top-24">
+<div class="flex flex-col-reverse lg:flex-row gap-4 w-full h-full">
+  <!-- Amazon-Style Thumbnails (Left on Desktop, Bottom on Mobile) -->
+  {#if images.length > 1}
+    <div class="custom-scrollbar flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto lg:w-20 shrink-0 pb-2 lg:pb-0 lg:pr-2 lg:max-h-[600px]">
+      {#each images as img, i}
+        <button
+          onclick={() => setIndex(i)}
+          class="bg-base relative aspect-square w-16 lg:w-full shrink-0 overflow-hidden rounded-xl border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand
+          {activeIndex === i ? 'border-brand ring-2 ring-brand/20' : 'border-transparent hover:border-outline opacity-70 hover:opacity-100'}"
+          aria-label={`Select view ${i + 1}`}
+        >
+          <img src={img} alt="" class="h-full w-full object-cover" loading="lazy" />
+        </button>
+      {/each}
+    </div>
+  {/if}
+
   <!-- Main Display -->
-  <div class="bg-base border-outline relative aspect-square w-full overflow-hidden rounded-xl border">
+  <div class="bg-base border-outline relative aspect-square w-full flex-1 overflow-hidden rounded-xl border shadow-sm">
     {#if images.length > 0}
       <img
         src={images[activeIndex]}
         alt={`${title} - View ${activeIndex + 1}`}
-        class="h-full w-full object-cover transition-opacity duration-500"
+        class="h-full w-full object-cover transition-opacity duration-300"
         loading="eager"
         decoding="sync"
       />
@@ -40,34 +56,12 @@
         <span class="text-content-muted font-mono text-xs tracking-widest uppercase">No Image Available</span>
       </div>
     {/if}
-    
-    {#if images.length > 1}
-      <div class="absolute bottom-4 right-4 bg-surface/80 border-outline rounded border px-2 py-1 backdrop-blur-md">
-        <span class="text-content font-mono text-[10px] font-bold">{activeIndex + 1} / {images.length}</span>
-      </div>
-    {/if}
   </div>
-
-  <!-- Thumbnails -->
-  {#if images.length > 1}
-    <div class="custom-scrollbar flex w-full gap-3 overflow-x-auto pb-2">
-      {#each images as img, i}
-        <button
-          onclick={() => setIndex(i)}
-          class="bg-base border-outline relative aspect-square w-20 shrink-0 overflow-hidden rounded-md border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand
-          {activeIndex === i ? 'ring-brand ring-2 ring-offset-1 ring-offset-surface' : 'hover:opacity-80'}"
-          aria-label={`Select view ${i + 1}`}
-        >
-          <img src={img} alt="" class="h-full w-full object-cover" loading="lazy" />
-        </button>
-      {/each}
-    </div>
-  {/if}
 </div>
 
 <style>
-  .custom-scrollbar::-webkit-scrollbar { height: 4px; }
-  .custom-scrollbar::-webkit-scrollbar-track { background: var(--color-base); }
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
   .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--color-outline); border-radius: 4px; }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--color-brand); }
 </style>

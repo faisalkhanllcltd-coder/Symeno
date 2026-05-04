@@ -1,9 +1,10 @@
-import { defineCollection } from 'astro:content';
-import { z } from 'astro/zod';
+// src/content.config.ts
+import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
 const blog = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
+  // Use robust URL resolution for the glob base to prevent pathing errors
+  loader: glob({ pattern: '**/*.{md,mdx}', base: new URL('./src/content/blog', import.meta.url) }),
   schema: z.object({
     title: z.string().default('Draft Post'),
     pubDate: z.date().default(() => new Date()),
@@ -12,7 +13,7 @@ const blog = defineCollection({
 });
 
 const brands = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/brands' }),
+  loader: glob({ pattern: '**/*.{md,mdx}', base: new URL('./src/content/brands', import.meta.url) }),
   schema: z.object({
     name: z.string().default('Brand Name'),
     description: z.string().default(''),

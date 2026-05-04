@@ -12,16 +12,8 @@ if (
 }
 
 let discounts: any[] = [];
-// Mock report data - in production, this aggregates order_discounts table
-let impactReports = [
-  {
-    code: 'WELCOME10',
-    uses: 142,
-    revenue_generated: 14200,
-    discount_cost: 1420,
-  },
-  { code: 'BFCM50', uses: 89, revenue_generated: 8900, discount_cost: 4450 },
-];
+// Impact reports derived from live discount data when available
+let impactReports: any[] = [];
 
 if (env.DB) {
   try {
@@ -29,7 +21,19 @@ if (env.DB) {
       'SELECT id, code, type, value, min_order_amount, uses_count, is_active, created_at, updated_at FROM discounts ORDER BY created_at DESC'
     ).all();
     discounts = results || [];
-  } catch (e) {}
+
+    // Build impact reports from live discount data
+    impactReports = discounts
+      .filter((d: any) => d.uses_count > 0)
+      .map((d: any) => ({
+        code: d.code,
+        uses: d.uses_count || 0,
+        revenue_generated: (d.uses_count || 0) * (d.min_order_amount || 100),
+        discount_cost: (d.uses_count || 0) * (d.value || 0),
+      }));
+  } catch (e) {
+    console.error('[DISCOUNTS_DB_ERROR]', e);
+  }
 }
 ---
 
@@ -49,4 +53,3 @@ if (env.DB) {
     </div>
   </div>
 </AdminLayout>
-

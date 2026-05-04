@@ -1,13 +1,34 @@
 ---
+import { env } from "cloudflare:workers";
 import StorefrontLayout from '../../layouts/Storefront.astro';
 
-const brands = [
-  { name: 'Apple', slug: 'apple', status: 'Verified', nodes: 12 },
-  { name: 'Sony', slug: 'sony', status: 'Verified', nodes: 8 },
-  { name: 'LG', slug: 'lg', status: 'Verified', nodes: 4 },
-  { name: 'Logitech', slug: 'logitech', status: 'Verified', nodes: 6 },
-  { name: 'Keychron', slug: 'keychron', status: 'Verified', nodes: 3 },
-];
+export const prerender = false;
+
+let brands: any[] = [];
+let errorMessage = '';
+
+try {
+  const db = env.DB as any;
+  if (!db) {
+    errorMessage = 'Database connection offline.';
+  } else {
+    // Dynamically aggregate real brands and count their active SKUs
+    const { results } = await db.prepare(
+      "SELECT brand, COUNT(*) as nodes FROM rapidapi_cache WHERE brand IS NOT NULL AND brand != '' GROUP BY brand ORDER BY nodes DESC"
+    ).all();
+
+    brands = results.map((row: any) => ({
+      name: row.brand,
+      // Create a URL-safe slug from the brand name (e.g., "Paws & Trek" -> "paws-trek")
+      slug: row.brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+      status: 'Verified',
+      nodes: row.nodes
+    }));
+  }
+} catch (e) {
+  console.error('[EDGE_DB_ERROR] Failed to aggregate brand nodes.', e);
+  errorMessage = 'Anomaly detected while accessing edge datastore.';
+}
 ---
 
 <StorefrontLayout
@@ -44,13 +65,26 @@ const brands = [
       </p>
     </div>
 
+    {errorMessage && (
+      <div class="bg-brand-alert/10 border-brand-alert/30 text-brand-alert relative z-10 mb-12 rounded-xl border p-6 text-center font-mono tracking-widest uppercase">
+        {errorMessage}
+      </div>
+    )}
+
+    {!errorMessage && brands.length === 0 && (
+      <div class="bg-surface border-outline relative z-10 mb-12 rounded-xl border p-12 text-center">
+        <h2 class="text-content mb-4 font-mono text-xl tracking-widest uppercase">No Suppliers Indexed</h2>
+        <p class="text-content-muted font-mono text-sm">The edge datastore returned zero verified brands.</p>
+      </div>
+    )}
+
     <div
       class="relative z-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
     >
       {
         brands.map((brand) => (
           <a
-            href={`/brands/${brand.slug}`}
+            href={`/shop?brand=${brand.slug}`}
             class="group flex items-center justify-between border border-outline bg-surface p-6 transition-colors hover:border-brand/50 focus:outline-none"
           >
             <div class="flex items-center gap-4">
@@ -62,7 +96,7 @@ const brands = [
                   {brand.name}
                 </h2>
                 <div class="mt-1 flex items-center gap-2">
-                  <span class="h-1.5 w-1.5 bg-brand" />
+                  <span class="h-1.5 w-1.5 bg-brand animate-pulse" />
                   <span class="font-mono text-[10px] tracking-widest text-content-muted uppercase">
                     {brand.status}
                   </span>
