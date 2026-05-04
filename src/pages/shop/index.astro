@@ -19,20 +19,20 @@ const filterBrand = url.searchParams.get('brand')?.toLowerCase() || '';
 const sort = url.searchParams.get('sort') || 'newest';    
 
 try {
-  // ASTRO V6 D1 CONNECTION
   const db = env.DB as any;
   if (!db) throw new Error("DB Offline");
 
-  // Fetch complete dataset (Removed the LIMIT 150 trap for accurate edge filtering)
   const { results } = await db.prepare('SELECT * FROM rapidapi_cache').all();  
-  let filtered = results as any[];
+  
+  // THE FIX: We MUST clone the D1 array using [...results] 
+  // Cloudflare often freezes the original array, making .sort() throw a fatal crash.
+  let filtered = [...results] as any[];
 
   // 1. DYNAMIC SIDEBAR DATA EXTRACTION
-  // We extract the real categories and brands before filtering so the sidebar always shows all options
   const categoryMap = new Map();
   const brandMap = new Map();
 
-  results.forEach((p: any) => {
+  filtered.forEach((p: any) => {
     if (p.category) {
       const cSlug = p.categorySlug || p.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
       categoryMap.set(cSlug, { name: p.category, slug: cSlug, count: (categoryMap.get(cSlug)?.count || 0) + 1 });
@@ -57,35 +57,37 @@ try {
 
   if (filterCategory) {
     filtered = filtered.filter(p => {
-      const cSlug = p.categorySlug || p.category?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      const cSlug = p.categorySlug || (p.category ? p.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '');
       return cSlug === filterCategory;
     });
   }
 
   if (filterBrand) {
     filtered = filtered.filter(p => {
-      const bSlug = p.brand?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      const bSlug = p.brand ? p.brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '';
       return bSlug === filterBrand;
     });
   }
 
-  if (sort === 'price-low') {
+  if (sort === 'price_asc') {
     filtered.sort((a, b) => (a.basePrice || 0) - (b.basePrice || 0));
-  } else if (sort === 'price-high') {
+  } else if (sort === 'price_desc') {
     filtered.sort((a, b) => (b.basePrice || 0) - (a.basePrice || 0));
+  } else {
+    filtered.reverse(); 
   }
 
   totalProducts = filtered.length;
 
-  // 3. SECURE DATA MAPPING (Connecting the new Amazon images)
+  // 3. SECURE DATA MAPPING 
   liveProducts = filtered.map((p: any) => {
     let mainImage = p.image_url || '';
     try {
       if (p.images_json) {
         const parsedImages = JSON.parse(p.images_json);
-        if (parsedImages.length > 0) mainImage = parsedImages[0]; // Hijack the grid with the new high-res image
+        if (parsedImages.length > 0) mainImage = parsedImages[0]; 
       }
-    } catch(e) { console.error('Image JSON parse failed for', p.slug); }
+    } catch(e) {}
 
     return { 
       id: p.id,
@@ -104,6 +106,12 @@ try {
   dbError = true;
 }
 ---
+
+<style is:global>
+  html, body, main {
+    overflow: visible !important;
+  }
+</style>
 
 <StorefrontLayout 
   title="Complete Wholesale Catalog | Symeno" 
@@ -127,17 +135,18 @@ try {
       </div>
 
       <div class="grid grid-cols-1 gap-12 lg:grid-cols-4 mt-8">
-        <aside class="hidden lg:block">
-           <!-- THE FIX: We are now passing the real database categories and brands into the sidebar -->
-           <FilterSidebar 
-             activeBrand={filterBrand} 
-             activeCategory={filterCategory} 
-             activeSort={sort} 
-             currentQuery={q} 
-             realCategories={dynamicCategories}
-             realBrands={dynamicBrands}
-             client:load 
-           />
+        <aside class="hidden lg:block relative w-full h-full">
+           <div class="sticky top-24 z-10 self-start">
+             <FilterSidebar 
+               activeBrand={filterBrand} 
+               activeCategory={filterCategory} 
+               activeSort={sort} 
+               currentQuery={q} 
+               realCategories={dynamicCategories}
+               realBrands={dynamicBrands}
+               client:load 
+             />
+           </div>
         </aside>
 
         <div class="lg:col-span-3">

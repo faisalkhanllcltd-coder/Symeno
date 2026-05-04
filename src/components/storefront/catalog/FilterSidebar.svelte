@@ -18,6 +18,7 @@
     realBrands = [],
   } = $props<Props>();
 
+  // ENFORCED: These values now perfectly match the backend logic
   const sortOptions = [
     { value: 'newest', label: 'Newest Arrivals' },    
     { value: 'price_asc', label: 'Price: Low to High' },
@@ -28,7 +29,7 @@
 <form
   action="/shop"
   method="GET"
-  class="sticky top-24 space-y-8 border border-outline bg-surface p-6 transition-colors duration-300"
+  class="space-y-8 border border-outline bg-surface p-6 transition-colors duration-300 max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar"
 >
   <div class="flex items-center justify-between border-b border-outline pb-4">
     <h3
@@ -70,7 +71,7 @@
       <h4 class="font-mono text-[10px] tracking-widest text-content-muted uppercase">
         Categories
       </h4>
-      <div class="custom-scrollbar max-h-60 space-y-2 overflow-y-auto pr-2">
+      <div class="space-y-2 pr-2">
         <label class="group flex cursor-pointer items-center gap-3">
           <input
             type="radio"
@@ -136,7 +137,7 @@
       <h4 class="font-mono text-[10px] tracking-widest text-content-muted uppercase">
         Brand Authority
       </h4>
-      <div class="custom-scrollbar max-h-60 space-y-2 overflow-y-auto pr-2">
+      <div class="space-y-2 pr-2">
         <label class="group flex cursor-pointer items-center gap-3">
           <input
             type="radio"

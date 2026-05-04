@@ -16,7 +16,8 @@ const { title, description = 'Top Brands. Real Prices. No Games.' } = Astro.prop
 const isLoggedIn = !!Astro.locals.user;
 ---
 <!doctype html>
-<html lang="en" class="scroll-smooth overflow-x-hidden w-full">
+<!-- THE FIX: Stripped ALL overflow classes from html to guarantee position: sticky works -->
+<html lang="en" class="scroll-smooth w-full">
   <head>
     <MetaTags title={`${title} | Symeno`} description={description} />
     
@@ -45,7 +46,6 @@ const isLoggedIn = !!Astro.locals.user;
     <script is:inline define:vars={{ isLoggedIn }}>window.SYMENO_IS_LOGGED_IN = isLoggedIn;</script>
     <script>
       import { wishlist } from '../stores/wishlist.svelte'; 
-      // Typecast to bypass strict Window interface checking
       wishlist.init((window as any).SYMENO_IS_LOGGED_IN);
     </script>
   </body>

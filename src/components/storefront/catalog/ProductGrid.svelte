@@ -1,5 +1,22 @@
 <script lang="ts">
+  import { cart } from '../../../stores/cart.svelte';
+  
   let { products = [] } = $props<{ products: any[] }>();
+
+  // Secure Cart Injection
+  function handleAddToCart(e: Event, product: any) {
+    e.preventDefault(); // Stop the <a> tag from navigating away
+    e.stopPropagation(); // Stop event bubbling
+    
+    // Add to edge cart store with safe fallbacks
+    cart.addItem({
+      id: product.id || product.slug,
+      name: product.title,
+      price: product.base_price || 0,
+      image: product.image_url || '/images/system/fallback.webp',
+      quantity: 1
+    });
+  }
 </script>
 
 {#if products.length === 0}
@@ -27,14 +44,15 @@
     {#each products as product}
       <a
         href={`/shop/product/${product.slug}`}
-        class="group relative flex h-full flex-col overflow-hidden border border-outline bg-surface transition-colors hover:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+        class="group relative flex h-full flex-col border border-outline bg-surface transition-colors hover:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
       >
         <div
           class="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         ></div>
 
+        <!-- THE STICKY ASSASSIN FIX: Removed overflow-hidden from this container -->
         <div
-          class="relative flex aspect-square items-center justify-center border-b border-outline bg-base transition-colors overflow-hidden"
+          class="relative flex aspect-square items-center justify-center border-b border-outline bg-base transition-colors"
         >
           {#if product.image_url}
             <img
@@ -52,14 +70,14 @@
 
           {#if product.retail_price > product.base_price}
             <div
-              class="bg-brand-alert absolute top-4 right-4 z-10 px-2 py-1 text-[9px] font-bold tracking-widest text-black uppercase"
+              class="bg-brand-alert absolute top-4 right-4 z-10 px-2 py-1 text-[9px] font-bold tracking-widest text-black uppercase shadow-sm"
             >
               Deal
             </div>
           {/if}
         </div>
 
-        <div class="flex flex-grow flex-col p-5">
+        <div class="flex flex-grow flex-col p-5 bg-surface relative z-10">
           <span
             class="mb-2 block font-mono text-[9px] tracking-widest text-content-muted uppercase"
             >{product.brand}</span
@@ -72,20 +90,22 @@
 
           <div class="mt-auto flex items-end justify-between">
             <div>
+              <!-- NULL SAFE: Fallback to 0 if database returns null -->
               <span class="block font-mono text-lg font-bold text-content transition-colors group-hover:text-brand"
-                >${product.base_price.toFixed(2)}</span
+                >${(product.base_price || 0).toFixed(2)}</span
               >
               {#if product.retail_price > product.base_price}
                 <span class="font-mono text-[10px] text-content-muted line-through"
-                  >MSRP: ${product.retail_price.toFixed(2)}</span
+                  >MSRP: ${(product.retail_price || 0).toFixed(2)}</span
                 >
               {/if}
             </div>
 
+            <!-- QUICK ADD FIX: Wired up to the Cart Store -->
             <button
               class="flex h-8 w-8 items-center justify-center border border-outline text-content-muted transition-all group-hover:border-brand group-hover:bg-brand group-hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand z-20"
               aria-label="Quick Add"
-              onclick={(e) => e.preventDefault()}
+              onclick={(e) => handleAddToCart(e, product)}
             >
               <svg
                 class="h-4 w-4"

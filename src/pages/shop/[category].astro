@@ -35,17 +35,33 @@ let activeProducts: any[] = [];
 try {
   const db = env.DB as any;
   if (db) {
-    // THE FIX: Exact match against categorySlug instead of fuzzy LIKE
-    const { results } = await db.prepare("SELECT * FROM rapidapi_cache WHERE categorySlug = ?1 LIMIT 50").bind(category).all();
+    // 1. Fetch available products (Ignores entirely empty rows)
+    const { results } = await db.prepare("SELECT * FROM rapidapi_cache WHERE category IS NOT NULL").all();
     
-    activeProducts = results.map((p: any) => ({
-      slug: p.slug,
-      title: p.title,
-      brand: p.brand || 'Symeno Select',
-      basePrice: p.basePrice,
-      retailPrice: p.retailPrice || (p.basePrice * 1.2), // Fallback if API lacks retail price
-      images: p.image_url ? [p.image_url] : []
-    }));
+    // 2. Filter using the exact same logic as the shop index page
+    activeProducts = results.filter((p: any) => {
+      const cSlug = p.categorySlug || p.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      return cSlug === category;
+    }).map((p: any) => {
+      
+      // 3. Image Injection Fix (Grabs the high-res images)
+      let mainImage = p.image_url || '';
+      try {
+        if (p.images_json) {
+          const parsedImages = JSON.parse(p.images_json);
+          if (parsedImages.length > 0) mainImage = parsedImages[0];
+        }
+      } catch(e) {}
+
+      return {
+        slug: p.slug,
+        title: p.title,
+        brand: p.brand || 'Symeno Select',
+        basePrice: p.basePrice || 0,
+        retailPrice: p.retailPrice || (p.basePrice ? p.basePrice * 1.2 : 0), 
+        images: mainImage ? [mainImage] : []
+      };
+    });
   }
 } catch (e) {
   console.error('[CATEGORY_EDGE_ERROR]', e);
