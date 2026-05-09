@@ -2,7 +2,6 @@
 import StorefrontLayout from '../../layouts/Storefront.astro';
 import { env } from "cloudflare:workers";
 
-// FORCE EDGE SSR
 export const prerender = false;
 
 // PERFORMANCE UPGRADE: Cloudflare CDN Caching Strategy
@@ -24,7 +23,6 @@ function formatCategoryName(slug: string) {
 
 const formattedName = formatCategoryName(category as string);
 
-// Dynamic Metadata
 const meta = {
   name: formattedName,
   desc: `Curated ${formattedName.toLowerCase()} sourced directly from our verified supply chain.`,
@@ -35,31 +33,33 @@ let activeProducts: any[] = [];
 try {
   const db = env.DB as any;
   if (db) {
-    // 1. Fetch available products (Ignores entirely empty rows)
-    const { results } = await db.prepare("SELECT * FROM rapidapi_cache WHERE category IS NOT NULL").all();
+    // 100% CLAUDE SCHEMA
+    const { results } = await db.prepare("SELECT * FROM catalog_cache WHERE category IS NOT NULL").all();
     
-    // 2. Filter using the exact same logic as the shop index page
-    activeProducts = results.filter((p: any) => {
-      const cSlug = p.categorySlug || p.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    // Safely fallback to empty array if results is missing
+    const safeResults = results ? [...results] : [];
+    
+    activeProducts = safeResults.filter((p: any) => {
+      // Dynamic HasData slug matching
+      const cSlug = p.category ? p.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '';
       return cSlug === category;
     }).map((p: any) => {
       
-      // 3. Image Injection Fix (Grabs the high-res images)
-      let mainImage = p.image_url || '';
+      let mainImage = '/images/system/fallback.webp';
       try {
-        if (p.images_json) {
+        if (p.images_json && p.images_json !== '[]') {
           const parsedImages = JSON.parse(p.images_json);
           if (parsedImages.length > 0) mainImage = parsedImages[0];
         }
       } catch(e) {}
 
       return {
-        slug: p.slug,
-        title: p.title,
+        slug: p.slug || p.id, 
+        name: p.name,
         brand: p.brand || 'Symeno Select',
-        basePrice: p.basePrice || 0,
-        retailPrice: p.retailPrice || (p.basePrice ? p.basePrice * 1.2 : 0), 
-        images: mainImage ? [mainImage] : []
+        price: p.price || 0,
+        retailPrice: p.price ? p.price * 1.15 : 0, // 15% artificial MSRP padding
+        images: [mainImage] // Wrapped in array to satisfy the inline UI expectation below
       };
     });
   }
@@ -118,24 +118,23 @@ try {
       {
         activeProducts.length > 0 ? (
           activeProducts.map((product: any) => (
-            <a
-              href={`/shop/product/${product.slug}`}
-              class="group relative flex flex-col focus:outline-none"
-            >
+            <div class="group relative flex flex-col focus-within:outline-none focus-within:ring-2 focus-within:ring-brand rounded-sm">
+              <a href={`/shop/product/${product.slug}`} class="absolute inset-0 z-10" aria-label={`View ${product.name}`}></a>
+
               <div class="relative mb-4 flex aspect-[4/5] items-center justify-center overflow-hidden border border-outline bg-surface transition-colors group-hover:border-brand/50">
                 <div class="absolute top-0 left-0 h-2 w-2 border-t border-l border-outline" />
                 <div class="absolute right-0 bottom-0 h-2 w-2 border-r border-b border-outline" />
 
-                {product.retailPrice && product.retailPrice > product.basePrice && (
-                  <div class="absolute top-3 left-3 z-10 border border-brand/30 bg-brand/10 px-2 py-1 text-[9px] font-bold tracking-widest text-brand uppercase backdrop-blur-sm">
-                    Save ${Math.floor(product.retailPrice - product.basePrice)}
+                {product.retailPrice && product.retailPrice > product.price && (
+                  <div class="absolute top-3 left-3 z-20 border border-brand/30 bg-brand/10 px-2 py-1 text-[9px] font-bold tracking-widest text-brand uppercase backdrop-blur-sm">
+                    Save ${Math.floor(product.retailPrice - product.price)}
                   </div>
                 )}
                 
                 {product.images && product.images[0] ? (
                   <img 
                     src={product.images[0]} 
-                    alt={product.title} 
+                    alt={product.name} 
                     loading="lazy"
                     class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                   />
@@ -144,25 +143,27 @@ try {
                 )}
               </div>
 
-              <span class="mb-1 font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors group-hover:text-content">
-                {product.brand}
-              </span>
-
-              <h2 class="mb-1 truncate text-sm font-bold text-content transition-colors group-hover:text-brand">
-                {product.title}
-              </h2>
-
-              <div class="mt-auto flex items-baseline gap-2 font-mono">
-                <span class="text-sm font-bold text-brand">
-                  ${product.basePrice.toFixed(2)}
+              <div class="relative z-0 pointer-events-none flex flex-col flex-1">
+                <span class="mb-1 font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors group-hover:text-content">
+                  {product.brand}
                 </span>
-                {product.retailPrice && product.retailPrice > product.basePrice && (
-                  <span class="text-[10px] text-content-muted line-through">
-                    ${product.retailPrice.toFixed(2)}
+
+                <h2 class="mb-1 truncate text-sm font-bold text-content transition-colors group-hover:text-brand">
+                  {product.name}
+                </h2>
+
+                <div class="mt-auto flex items-baseline gap-2 font-mono">
+                  <span class="text-sm font-bold text-brand">
+                    ${product.price.toFixed(2)}
                   </span>
-                )}
+                  {product.retailPrice && product.retailPrice > product.price && (
+                    <span class="text-[10px] text-content-muted line-through">
+                      ${product.retailPrice.toFixed(2)}
+                    </span>
+                  )}
+                </div>
               </div>
-            </a>
+            </div>
           ))
         ) : (
           <div class="col-span-full border border-outline bg-surface py-20 text-center">

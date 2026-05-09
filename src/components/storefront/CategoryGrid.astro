@@ -32,11 +32,11 @@ const { categories = [] } = Astro.props;
     {categories.length > 0 ? (
       <div class="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">      
         {categories.map((cat) => (
-          <a
-            href={`/shop/${cat.slug}`} 
-            class="group relative block aspect-[4/3] overflow-hidden rounded-xl border border-outline bg-surface transition-all duration-300 hover:border-brand/50 hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)]"
-          >
-            <!-- Discount Badge -->
+          <!-- THE FIX: Converted to a div with a stretched link to unify storefront architecture -->
+          <div class="group relative block aspect-[4/3] overflow-hidden rounded-xl border border-outline bg-surface transition-all duration-300 hover:border-brand/50 hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)] focus-within:outline-none focus-within:ring-2 focus-within:ring-brand">
+            
+            <a href={`/shop/${cat.slug}`} class="absolute inset-0 z-30" aria-label={`Shop ${cat.name}`}></a>
+
             <div class="absolute top-2 right-2 md:top-4 md:right-4 z-20 -rotate-2 transform rounded border border-outline bg-base/90 px-2 py-1 md:px-3 md:py-1.5 shadow-xl backdrop-blur-md">
               <span class="mb-[1px] block font-mono text-[7px] md:text-[10px] leading-none tracking-wider text-content-muted uppercase">
                 Up to
@@ -46,7 +46,6 @@ const { categories = [] } = Astro.props;
               </span>
             </div>
 
-            <!-- THE FIX: Real Images Mapped from D1 -->
             <div class="absolute inset-0 bg-surface">
               {cat.image ? (
                 <img 
@@ -64,8 +63,7 @@ const { categories = [] } = Astro.props;
 
             <div class="absolute inset-0 z-10 bg-gradient-to-t from-base via-base/70 to-transparent opacity-95 transition-opacity duration-300 group-hover:opacity-85" />
 
-            <!-- Category Info -->
-            <div class="absolute bottom-0 left-0 z-20 w-full p-3 md:p-5">
+            <div class="absolute bottom-0 left-0 z-20 w-full p-3 md:p-5 pointer-events-none">
               <h3 class="mb-1 text-base md:text-lg font-bold tracking-wider text-content uppercase transition-colors group-hover:text-brand">        
                 {cat.name}
               </h3>
@@ -83,11 +81,10 @@ const { categories = [] } = Astro.props;
                 )}
               </div>
             </div>
-          </a>
+          </div>
         ))}
       </div>
     ) : (
-      <!-- Empty State Fallback -->
       <div class="flex w-full flex-col items-center justify-center rounded-xl border border-dashed border-outline/50 bg-surface/30 py-24 text-center">
         <svg class="mb-4 h-8 w-8 text-content-muted/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />

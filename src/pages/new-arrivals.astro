@@ -10,14 +10,32 @@ let errorMessage = '';
 try {
   const db = env.DB as any;
   if (db) {
-    // Fetch the most recently added products from the live catalog
+    // 100% CLAUDE SCHEMA: Fetch the most recently added products
     const { results } = await db.prepare(
-      `SELECT id, slug, category, categorySlug, brand, title, basePrice, retailPrice, image_url
-       FROM rapidapi_cache
-       ORDER BY ROWID DESC
+      `SELECT id, slug, name, brand, category, price, images_json
+       FROM catalog_cache
+       ORDER BY scraped_at DESC
        LIMIT 12`
     ).all();
-    newDeployments = results || [];
+    
+    newDeployments = (results || []).map((p: any) => {
+      let mainImage = '';
+      try {
+        if (p.images_json) {
+          const parsed = JSON.parse(p.images_json);
+          if (parsed.length > 0) mainImage = parsed[0];
+        }
+      } catch(e) {}
+
+      return {
+        slug: p.slug,
+        brand: p.brand || 'Symeno Select',
+        name: p.name,
+        price: p.price || 0,
+        retailPrice: p.price ? p.price * 1.15 : 0,
+        image_url: mainImage || '/images/system/fallback.webp'
+      };
+    });
   } else {
     errorMessage = 'Database connection offline.';
   }
@@ -32,15 +50,15 @@ try {
   description="The newest hardware injections to our logistics pipeline."
 >
   <div
-    class="bg-base relative mx-auto max-w-7xl px-4 py-12 transition-colors duration-300 sm:px-6 md:py-20 lg:px-8"
+    class="bg-base relative mx-auto max-w-7xl px-4 py-10 transition-colors duration-300 sm:px-6 md:py-16 lg:px-8"
   >
     <div
-      class="pointer-events-none absolute inset-0 bg-[linear-gradient(var(--color-content)_1px,transparent_1px),linear-gradient(90deg,var(--color-content)_1px,transparent_1px)] bg-[size:32px_32px] opacity-[0.05]"
+      class="pointer-events-none absolute inset-0 bg-[linear-gradient(var(--color-content)_1px,transparent_1px),linear-gradient(90deg,var(--color-content)_1px,transparent_1px)] bg-[size:32px_32px] opacity-[0.03]"
     >
     </div>
 
     <nav
-      class="text-content-muted relative z-10 mb-8 flex font-mono text-[10px] tracking-widest uppercase"
+      class="text-content-muted relative z-10 mb-6 flex font-mono text-[10px] tracking-widest uppercase"
     >
       <a
         href="/"
@@ -51,84 +69,84 @@ try {
     </nav>
 
     <div
-      class="border-outline relative z-10 mb-12 flex flex-col justify-between gap-6 border-b pb-8 md:flex-row md:items-end"
+      class="border-outline relative z-10 mb-10 flex flex-col justify-between gap-6 border-b pb-6 md:flex-row md:items-end"
     >
       <div>
-        <div class="mb-4 flex items-center gap-3">
-          <span class="bg-brand h-2 w-2"></span>
+        <div class="mb-3 flex items-center gap-2">
+          <span class="bg-brand h-1.5 w-1.5"></span>
           <p
-            class="text-content-muted font-mono text-[10px] tracking-widest uppercase"
+            class="text-content-muted font-mono text-[9px] tracking-widest uppercase"
           >
             Fresh Allocations
           </p>
         </div>
         <h1
-          class="text-content mb-2 text-4xl font-bold tracking-tighter uppercase md:text-6xl"
+          class="text-content mb-2 text-3xl font-bold tracking-tighter uppercase md:text-5xl"
         >
           Latest Deployments<span class="text-brand">.</span>
         </h1>
-        <p class="text-content-muted font-mono text-sm">
+        <p class="text-content-muted font-mono text-xs">
           The latest verified hardware injections to our logistics pipeline.
         </p>
       </div>
     </div>
 
     {errorMessage && (
-      <div class="bg-brand-alert/10 border-brand-alert/30 text-brand-alert mb-12 rounded-xl border p-6 text-center font-mono tracking-widest uppercase">
+      <div class="bg-brand-alert/10 border-brand-alert/30 text-brand-alert mb-10 rounded-xl border p-5 text-center font-mono text-xs tracking-widest uppercase">
         {errorMessage}
       </div>
     )}
 
     {newDeployments.length === 0 && !errorMessage && (
-      <div class="bg-surface border-outline mb-12 rounded-xl border p-12 text-center">
-        <p class="text-content-muted font-mono text-xs tracking-widest uppercase">No deployments in the pipeline yet.</p>
+      <div class="bg-surface border-outline mb-10 rounded-xl border p-10 text-center">
+        <p class="text-content-muted font-mono text-[10px] tracking-widest uppercase">No deployments in the pipeline yet.</p>
       </div>
     )}
 
     <div
-      class="relative z-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+      class="relative z-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
     >
       {
         newDeployments.map((product) => (
           <a
             href={`/shop/product/${product.slug}`}
-            class="group bg-surface border-outline hover:border-brand/50 relative flex flex-col border p-4 transition-colors focus:outline-none rounded-xl"
+            class="group bg-surface border-outline hover:border-brand/50 relative flex flex-col border p-3.5 transition-colors focus:outline-none rounded-xl shadow-sm"
           >
-            <div class="mb-4 flex items-start justify-between">
-              <span class="text-content-muted font-mono text-[10px] tracking-widest uppercase">
+            <div class="mb-3 flex items-start justify-between">
+              <span class="text-content-muted font-mono text-[9px] tracking-widest uppercase">
                 {product.brand}
               </span>
-              <span class="text-brand border-brand/30 border px-2 py-1 text-[9px] font-bold tracking-widest uppercase">
+              <span class="text-brand border-brand/30 border px-1.5 py-0.5 text-[8px] font-bold tracking-widest uppercase">
                 NEW
               </span>
             </div>
 
-            <div class="bg-base border-outline/50 relative mb-4 flex aspect-[4/5] items-center justify-center overflow-hidden border rounded-lg">
+            <div class="bg-base border-outline/50 relative mb-3 flex aspect-[4/5] items-center justify-center overflow-hidden border rounded-lg">
               {product.image_url ? (
                 <img
                   src={product.image_url}
-                  alt={product.title}
+                  alt={product.name}
                   loading="lazy"
                   class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                 />
               ) : (
-                <span class="text-content-muted font-mono text-[10px]">
+                <span class="text-content-muted font-mono text-[9px]">
                   No Image
                 </span>
               )}
             </div>
 
-            <h2 class="text-content group-hover:text-brand mb-3 truncate text-sm font-bold transition-colors">
-              {product.title}
+            <h2 class="text-content group-hover:text-brand mb-2.5 truncate text-xs font-bold transition-colors">
+              {product.name}
             </h2>
 
             <div class="mt-auto flex flex-col gap-1 font-mono">
               <div class="flex items-baseline gap-2">
-                <span class="text-brand text-lg font-bold">
-                  ${Number(product.basePrice).toFixed(2)}
+                <span class="text-brand text-base font-bold">
+                  ${Number(product.price).toFixed(2)}
                 </span>
-                {product.retailPrice && product.retailPrice > product.basePrice && (
-                  <span class="text-content-muted text-[10px] line-through">
+                {product.retailPrice && product.retailPrice > product.price && (
+                  <span class="text-content-muted text-[9px] line-through">
                     ${Number(product.retailPrice).toFixed(2)}
                   </span>
                 )}

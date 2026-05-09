@@ -6,12 +6,12 @@
     product: {
       id: string;
       slug: string;
-      title: string;
+      name: string;
       brand: string;
-      basePrice: number;
+      price: number;
       retailPrice: number;
-      stockStatus: string | number;
-      image: string;
+      in_stock: number;
+      images: string[];
     };
   }
 
@@ -46,19 +46,13 @@
     if (isAdding) return;
     isAdding = true;
     
-    const normalizedStock = typeof product.stockStatus === 'string' 
-      ? (product.stockStatus === 'IN_STOCK' ? 1 : 0) 
-      : product.stockStatus;
-
     cart.addItem({
       id: product.id,
       slug: product.slug,
       brand: product.brand,
-      title: product.title,
-      basePrice: product.basePrice,
-      retailPrice: product.retailPrice,
-      stockStatus: normalizedStock,
-      image: product.image
+      name: product.name,
+      price: product.price,
+      image: product.images && product.images.length > 0 ? product.images[0] : '/images/system/fallback.webp'
     }, 1);
 
     cart.openCart();
@@ -73,21 +67,21 @@
 >
   <div class="mx-auto flex max-w-6xl items-center justify-between gap-4">
     <div class="flex flex-1 items-center gap-3 overflow-hidden">
-      {#if product.image}
-        <img src={product.image} alt={product.title} class="border-outline bg-base h-10 w-10 shrink-0 rounded-md border object-cover" />
+      {#if product.images && product.images.length > 0}
+        <img src={product.images[0]} alt={product.name} class="border-outline bg-base h-10 w-10 shrink-0 rounded-md border object-cover" />
       {/if}
       <div class="flex flex-col overflow-hidden">
-        <span class="text-content truncate font-mono text-[10px] tracking-widest uppercase">{product.title}</span>
-        <span class="text-brand font-mono text-[11px] font-bold">${product.basePrice.toFixed(2)}</span>
+        <span class="text-content truncate font-mono text-[10px] tracking-widest uppercase">{product.name}</span>
+        <span class="text-brand font-mono text-[11px] font-bold">${product.price.toFixed(2)}</span>
       </div>
     </div>
 
     <button
       onclick={handleAddToCart}
-      disabled={isAdding || product.stockStatus === 'OUT_OF_STOCK' || product.stockStatus === 0}
+      disabled={isAdding || product.in_stock === 0}
       class="bg-brand text-brand-dark min-w-[120px] shrink-0 rounded-md px-6 py-3 font-mono text-[10px] font-bold tracking-widest uppercase transition-all duration-300 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:cursor-not-allowed disabled:opacity-50"
     >
-      {#if product.stockStatus === 'OUT_OF_STOCK' || product.stockStatus === 0}
+      {#if product.in_stock === 0}
         Depleted
       {:else if isAdding}
         Securing...

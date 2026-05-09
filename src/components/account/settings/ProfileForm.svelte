@@ -3,9 +3,10 @@
     user: { id: string; first_name: string; last_name: string; email: string; phone?: string; };
   }>();
 
-  let firstName = $state(user?.first_name || '');
-  let lastName = $state(user?.last_name || '');
-  let phone = $state(user?.phone || '');
+  let initialUser = structuredClone(user);
+  let firstName = $state(initialUser?.first_name || '');
+  let lastName = $state(initialUser?.last_name || '');
+  let phone = $state(initialUser?.phone || '');
   let isSaving = $state(false);
   let notification = $state<{ type: 'success' | 'error', text: string } | null>(null);
 

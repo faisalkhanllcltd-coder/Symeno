@@ -7,18 +7,20 @@ interface Props {
 const { name, description, url } = Astro.props;
 ---
 
-<a
-  href={url}
-  class="group block border border-outline bg-base p-8 transition-colors hover:border-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
+<div
+  class="group relative block border border-outline bg-base p-8 transition-colors hover:border-content focus-within:outline-none focus-within:ring-2 focus-within:ring-brand rounded-sm"
 >
+  <!-- THE STRETCHED LINK -->
+  <a href={url} class="absolute inset-0 z-10" aria-label={`View ${name} inventory`}></a>
+  
   <h3
     class="mb-2 text-2xl font-bold tracking-tight text-content uppercase transition-colors group-hover:text-brand"
   >
     {name}.
   </h3>
-  <p class="mb-6 line-clamp-2 font-mono text-sm text-content-muted">{description}</p>
+  <p class="mb-6 line-clamp-2 font-mono text-sm text-content-muted relative z-0">{description}</p>
   <span
-    class="border-b border-transparent pb-0.5 text-[10px] font-bold tracking-widest text-content uppercase transition-colors group-hover:border-content"
+    class="border-b border-transparent pb-0.5 text-[10px] font-bold tracking-widest text-content uppercase transition-colors group-hover:border-content relative z-0"
     >View Inventory &rarr;</span
   >
-</a>
+</div>

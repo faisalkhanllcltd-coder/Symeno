@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
   interface AuthSession {
     id: string;
     device: string;
@@ -12,7 +12,7 @@
   let props = $props<{ initialSessions?: AuthSession[] }>();
 
   // 2. Hydrate local state for optimistic UI updates
-  let sessions = $state<AuthSession[]>(props.initialSessions || []);
+  let sessions = $state<AuthSession[]>(structuredClone(props.initialSessions || []));
   let isProcessing = $state(false);
 
   // 3. Maintain edge synchronization if parent data changes

@@ -8,7 +8,6 @@
   
   let searchTimeout: ReturnType<typeof setTimeout> | undefined;
   
-  // FIX: Svelte 5 reactive DOM binding
   let inputRef = $state<HTMLInputElement>();
 
   $effect(() => {
@@ -90,7 +89,7 @@
           <div class="absolute right-16 h-4 w-4 animate-spin rounded-full border-2 border-brand/20 border-t-brand"></div>
         {/if}
         
-        <button onclick={closeSearch} class="absolute right-3 flex min-h-[32px] min-w-[32px] items-center justify-center rounded-md border border-outline/50 bg-base/50 text-content-muted transition-colors hover:border-brand/50 hover:bg-surface hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand">
+        <button onclick={closeSearch} aria-label="Close Search" class="absolute right-3 flex min-h-[32px] min-w-[32px] items-center justify-center rounded-md border border-outline/50 bg-base/50 text-content-muted transition-colors hover:border-brand/50 hover:bg-surface hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand">
           <span class="hidden font-mono text-[9px] font-bold tracking-widest uppercase md:inline-block">ESC</span>
           <svg class="h-4 w-4 md:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>        
         </button>
@@ -115,12 +114,12 @@
                       </div>
                       <div class="min-w-0 flex-1">
                         <h4 class="truncate text-[14px] font-semibold text-content transition-colors group-hover:text-brand">
-                          {product.title}
+                          {product.name}
                         </h4>
                         <span class="font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase">{product.brand}</span>
                       </div>
                       <div class="text-right">
-                        <span class="font-mono text-[13px] font-bold text-brand-alert">${product.base_price.toFixed(2)}</span>
+                        <span class="font-mono text-[13px] font-bold text-brand-alert">${Number(product.price).toFixed(2)}</span>
                       </div>
                     </a>
                   </li>

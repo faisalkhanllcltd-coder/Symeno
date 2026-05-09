@@ -1,32 +1,43 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
+import ProductDataTable from '../../../components/admin/products/ProductDataTable.svelte';
+import { env } from 'cloudflare:workers';
 
-if (!Astro.locals.user) return Astro.redirect('/auth/login');
+if (!Astro.locals.user || (Astro.locals.user.role !== 'admin' && Astro.locals.user.role !== 'staff')) {
+  return Astro.redirect('/auth/login');
+}
+
+let products: any[] = [];
+let error = '';
+
+try {
+  const db = env.DB as any;
+  if (db) {
+    // 100% CLAUDE SCHEMA
+    const { results } = await db.prepare(
+      'SELECT id, name, slug, price, in_stock, category FROM catalog_cache ORDER BY scraped_at DESC LIMIT 500'
+    ).all();
+    products = results || [];
+  }
+} catch (e) {
+  console.error('[ADMIN_PRODUCTS_ERROR]', e);
+  error = 'Failed to load catalog cache.';
+}
 ---
 
 <AdminLayout
   title="Hardware Catalog"
-  subtitle="Database population pending"
+  subtitle="Manage edge inventory and pricing"
   currentPath="/admin/products"
-  primaryAction={{ label: 'Add Hardware', url: '/admin/products/new' }}
+  primaryAction={{ label: 'Inject Asset', url: '/admin/products/new' }}
 >
-  <div
-    class="flex flex-col items-center justify-center border border-outline bg-base p-16 text-center"
-  >
-    <svg
-      class="mb-4 h-12 w-12 text-outline"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke-width="1.5"
-      stroke="currentColor"
-      ><path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"
-      ></path></svg
-    >
-    <p class="font-mono text-xs tracking-widest text-content-muted uppercase">
-      Catalog engine connected. Awaiting D1 population.
-    </p>
+  {error && (
+    <div class="mb-6 rounded-sm border border-brand-alert/30 bg-brand-alert/10 p-4 font-mono text-[10px] tracking-widest text-brand-alert uppercase shadow-sm">
+      {error}
+    </div>
+  )}
+
+  <div class="space-y-6">
+    <ProductDataTable client:load products={products} />
   </div>
 </AdminLayout>

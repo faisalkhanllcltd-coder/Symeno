@@ -15,7 +15,7 @@ if (!Astro.locals.user || (Astro.locals.user.role !== 'admin' && Astro.locals.us
 
 const db = env.DB;
 
-// DEFAULT TELEMETRY STATE (Safeguards against empty/missing tables during initial boot)
+// DEFAULT TELEMETRY STATE
 let metrics = {
   revenueToday: 0, revenueChange: 0, ordersToday: 0, ordersWeek: 0,
   newCustomers: 0, conversionRate: 0, aov: 0, pendingFulfillment: 0,
@@ -29,7 +29,7 @@ let systemFeed: any[] = [{ time: new Date().toLocaleTimeString(), message: "Admi
 
 if (db) {
   try {
-    // 1. Fetch Orders Telemetry — using correct column name: total_amount
+    // 1. Fetch Orders Telemetry
     const ordersData = await db.prepare(
       "SELECT id, customer_email, total_amount, status, created_at FROM orders ORDER BY created_at DESC LIMIT 5"
     ).all();
@@ -41,50 +41,46 @@ if (db) {
       created_at: o.created_at,
     }));
 
-    const pendingOrders = await db.prepare("SELECT COUNT(*) as count FROM orders WHERE status = 'PENDING_DISPATCH' OR status = 'pending'").first();
+    const pendingOrders = await db.prepare("SELECT COUNT(id) as count FROM orders WHERE status = 'PENDING_DISPATCH' OR status = 'pending'").first();
     metrics.pendingFulfillment = (pendingOrders?.count as number) || 0;
 
-    // Compute total revenue from all orders
-    const revenueResult = await db.prepare("SELECT COALESCE(SUM(total_amount), 0) as total_revenue, COUNT(*) as order_count FROM orders").first();
+    // Compute total revenue
+    const revenueResult = await db.prepare("SELECT COALESCE(SUM(total_amount), 0) as total_revenue, COUNT(id) as order_count FROM orders").first();
     const totalRevenue = (revenueResult?.total_revenue as number) || 0;
     const orderCount = (revenueResult?.order_count as number) || 0;
     metrics.aov = orderCount > 0 ? totalRevenue / orderCount : 0;
     metrics.revenueToday = totalRevenue;
     metrics.ordersWeek = orderCount;
 
-    // 2. Fetch Top Products from actual catalog by price tier (real data)
+    // 2. Fetch Top Products from catalog_cache
     const topProductsResult = await db.prepare(
-      `SELECT title, basePrice as revenue FROM rapidapi_cache ORDER BY basePrice DESC LIMIT 5`
+      `SELECT name as title, price as revenue FROM catalog_cache ORDER BY price DESC LIMIT 5`
     ).all();
     topProducts = (topProductsResult.results || []).map((p: any) => ({
       title: p.title,
       revenue: p.revenue,
     }));
 
-    // 3. Chart Data derived from catalog distribution by category (real data)
+    // 3. Chart Data derived from catalog_cache category distribution
     const catDistribution = await db.prepare(
-      `SELECT category as date, COUNT(*) as amount FROM rapidapi_cache GROUP BY category ORDER BY amount DESC`
+      `SELECT category as date, COUNT(id) as amount FROM catalog_cache WHERE category IS NOT NULL GROUP BY category ORDER BY amount DESC`
     ).all();
     chartData = (catDistribution.results || []).map((row: any) => ({
       date: row.date,
       amount: row.amount,
     }));
 
-    // 4. Inventory telemetry — check products table if it has data
+    // 4. Inventory telemetry — Querying new in_stock boolean logic
     try {
-      const productCount = await db.prepare("SELECT COUNT(*) as cnt FROM products WHERE stock <= 5 AND stock >= 0").first();
+      const productCount = await db.prepare("SELECT COUNT(id) as cnt FROM catalog_cache WHERE in_stock = 0").first();
       metrics.lowStockCount = (productCount?.cnt as number) || 0;
-    } catch {
-      // products table may have different schema, fail silently
-    }
+    } catch {}
 
     // 5. Customer count
     try {
-      const customerCount = await db.prepare("SELECT COUNT(*) as cnt FROM customers").first();
+      const customerCount = await db.prepare("SELECT COUNT(id) as cnt FROM customers").first();
       metrics.newCustomers = (customerCount?.cnt as number) || 0;
-    } catch {
-      // customers table may be empty, fail silently
-    }
+    } catch {}
 
   } catch (error: unknown) {
     if (error instanceof Error) console.error("[DASHBOARD_DB_ERROR]", error.message);
@@ -93,26 +89,26 @@ if (db) {
 ---
 
 <AdminLayout title="Command Center">
-  <div class="max-w-7xl space-y-6">
+  <div class="max-w-7xl space-y-5">
 
-    <div class="flex flex-wrap items-center gap-4">
-      <a href="/admin/products/new" class="bg-brand text-brand-dark px-6 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors hover:opacity-80">
-        + New Product
+    <div class="flex flex-wrap items-center gap-3">
+      <a href="/admin/products/new" class="bg-brand text-brand-dark rounded-sm px-5 py-2 text-[9px] font-bold uppercase tracking-widest transition-all hover:bg-white hover:shadow-[0_0_15px_rgba(54,244,164,0.3)]">
+        + Inject Asset
       </a>
       {metrics.pendingFulfillment > 0 && (
-        <a href="/admin/orders" class="border border-outline bg-surface text-content flex items-center gap-2 px-4 py-2 font-mono text-[10px] tracking-widest transition-colors hover:border-brand/30">
-          <span class="h-2 w-2 animate-pulse rounded-full bg-amber-400"></span>
-          Pending Orders: {metrics.pendingFulfillment}
+        <a href="/admin/orders" class="border border-outline bg-surface rounded-sm text-content flex items-center gap-2 px-4 py-2 font-mono text-[9px] tracking-widest transition-colors hover:border-brand/30">
+          <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400"></span>
+          Pending Dispatch: {metrics.pendingFulfillment}
         </a>
       )}
-      <a href="/admin/returns" class="border border-outline text-content-muted px-4 py-2 font-mono text-[10px] tracking-widest transition-colors hover:text-content">
+      <a href="/admin/returns" class="border border-outline rounded-sm text-content-muted bg-surface px-4 py-2 font-mono text-[9px] tracking-widest transition-colors hover:text-content hover:border-outline/80">
         Process Returns
       </a>
     </div>
 
     <KPICards client:load metrics={metrics} />
 
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
       <div class="lg:col-span-2">
         <RevenueChart client:load data={chartData} />
       </div>
@@ -121,11 +117,11 @@ if (db) {
       </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
       <div class="lg:col-span-2">
         <RecentOrders client:load orders={recentOrders} />
       </div>
-      <div class="space-y-6">
+      <div class="space-y-5">
         <LowStockAlert client:load items={lowStockItems} />
         <ActivityFeed client:load activities={systemFeed} />
       </div>

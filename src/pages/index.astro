@@ -16,31 +16,40 @@ export const prerender = false;
 let featured: any[] = [];
 let dynamicDeals: string[] = [];
 let heroDeal: any = null;
-let storeCategories: any[] = []; // NEW: Array to hold real DB categories
+let storeCategories: any[] = [];
 
 const cities = ['London, UK', 'Dubai, UAE', 'Toronto, CA', 'New York, US', 'Sydney, AU'];
 
 try {
-  // ASTRO V6 D1 CONNECTION
   const db = env.DB as any;
 
   if (db) {
     // ----------------------------------------------------
-    // QUERY 1: FETCH TOP PRODUCTS
+    // QUERY 1: FETCH TOP PRODUCTS (100% CLAUDE SCHEMA)
     // ----------------------------------------------------
-    const { results: productResults } = await db.prepare("SELECT * FROM rapidapi_cache WHERE stockStatus = 'IN_STOCK' LIMIT 10").all();
+    const { results: productResults } = await db.prepare("SELECT * FROM catalog_cache WHERE in_stock = 1 LIMIT 10").all();
 
-    const mappedProducts = productResults.map((p: any) => ({     
-      id: p.id,
-      slug: p.slug,
-      brand: p.brand || 'Symeno Select',
-      title: p.title,
-      description: p.description || p.title,
-      basePrice: p.basePrice,
-      retailPrice: p.retailPrice, 
-      stockStatus: p.stockStatus,
-      images: p.image_url ? [p.image_url] : [],
-    }));
+    const mappedProducts = productResults.map((p: any) => {
+      let firstImage = '';
+      try {
+        if (p.images_json) {
+          const parsed = JSON.parse(p.images_json);
+          if (parsed.length > 0) firstImage = parsed[0];
+        }
+      } catch(e) {}
+
+      return {     
+        id: p.id,
+        slug: p.slug, 
+        brand: p.brand || 'Symeno Select',
+        name: p.name,
+        description: p.description || p.name,
+        price: p.price || 0,
+        retailPrice: p.price ? p.price * 1.15 : 0, 
+        in_stock: p.in_stock,
+        images: firstImage ? [firstImage] : [],
+      };
+    });
 
     if (mappedProducts.length > 0) {
       heroDeal = mappedProducts[0];
@@ -51,43 +60,50 @@ try {
       .slice(0, 5)
       .map((p: any, i: number) => {
         const city = cities[i % cities.length];
-        const savings = p.retailPrice && p.retailPrice > p.basePrice 
-          ? Math.floor(p.retailPrice - p.basePrice) 
-          : Math.floor(p.basePrice * 0.2);
-        return `${city} — A customer just saved $${savings} on ${p.brand} goods`;
+        const savings = p.retailPrice && p.retailPrice > p.price 
+          ? Math.floor(p.retailPrice - p.price) 
+          : Math.floor(p.price * 0.2);
+        return `${city} • A customer just saved $${savings} on ${p.brand} goods`;
       });
 
     // ----------------------------------------------------
-    // QUERY 2: AGGREGATE REAL CATEGORIES
+    // QUERY 2: AGGREGATE REAL CATEGORIES (100% CLAUDE SCHEMA)
     // ----------------------------------------------------
     const { results: catResults } = await db.prepare(`
       SELECT 
         category as name, 
-        categorySlug as slug, 
         COUNT(id) as count, 
-        MAX(image_url) as image,
-        MAX(retailPrice) as maxRetail,
-        MIN(basePrice) as minBase
-      FROM rapidapi_cache 
-      WHERE category IS NOT NULL AND categorySlug IS NOT NULL
-      GROUP BY category, categorySlug 
+        MAX(images_json) as rawImage,
+        MAX(price) as maxBase,
+        MIN(price) as minBase
+      FROM catalog_cache 
+      WHERE category IS NOT NULL
+      GROUP BY category 
       ORDER BY count DESC 
       LIMIT 6
     `).all();
 
     storeCategories = catResults.map((c: any) => {
-      const maxR = c.maxRetail || 0;
+      // Artificial UI MSRP for the category grid
+      const maxR = c.maxBase ? c.maxBase * 1.15 : 0;
       const minB = c.minBase || 0;
-      // Calculate real discount margin based on DB max/min prices
-      const discountCalc = maxR > minB ? Math.floor(((maxR - minB) / maxR) * 100) : 25;
+      const discountCalc = maxR > minB ? Math.floor(((maxR - minB) / maxR) * 100) : 15;
       
+      let catImage = '';
+      try {
+        if (c.rawImage) {
+          const parsed = JSON.parse(c.rawImage);
+          if (parsed.length > 0) catImage = parsed[0];
+        }
+      } catch(e) {}
+
       return {
         name: c.name,
-        slug: c.slug,
+        slug: c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
         count: c.count,
-        image: c.image,
+        image: catImage,
         discount: `${discountCalc}%`,
-        lowStock: c.count < 5 // Dynamically flags if inventory is less than 5
+        lowStock: c.count < 5
       };
     });
   }
@@ -96,7 +112,7 @@ try {
 }
 
 if (dynamicDeals.length === 0) {
-  dynamicDeals.push('Global — Customers are saving up to 40% on premium goods daily');
+  dynamicDeals.push('Global • Customers are saving up to 40% on premium goods daily');
 }
 ---
 
@@ -106,7 +122,6 @@ if (dynamicDeals.length === 0) {
 >
   <Hero deal={heroDeal} />
   <TrustBar />
-  <!-- Passing the real D1 data to the Category Grid -->
   <CategoryGrid categories={storeCategories} />
   <BrandStory />
   <Manifesto />

@@ -1,8 +1,8 @@
-﻿<script lang="ts">
+<script lang="ts">
   import NotificationItem from './NotificationItem.svelte';
 
   let { initialNotifications = [] } = $props<{ initialNotifications?: any[] }>();
-  let notifications = $state(initialNotifications);     
+  let notifications = $state(structuredClone(initialNotifications));     
   let isProcessing = $state(false);
 
   let unreadCount = $derived(notifications.filter((n) => !n.is_read).length);

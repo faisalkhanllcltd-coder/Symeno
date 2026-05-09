@@ -1,4 +1,4 @@
-﻿---
+---
 import '../styles/global.css';
 import CartDrawer from '../components/storefront/cart/CartDrawer.svelte';
 import MetaTags from '../components/seo/MetaTags.astro';  
@@ -10,16 +10,17 @@ import GlobalSearch from '../components/storefront/search/GlobalSearch.svelte';
 interface Props {
   title: string;
   description?: string;
+  image?: string;
 }
 
-const { title, description = 'Top Brands. Real Prices. No Games.' } = Astro.props;
+const { title, description = 'Top Brands. Real Prices. No Games.', image } = Astro.props;
 const isLoggedIn = !!Astro.locals.user;
 ---
 <!doctype html>
 <!-- THE FIX: Stripped ALL overflow classes from html to guarantee position: sticky works -->
 <html lang="en" class="scroll-smooth w-full">
   <head>
-    <MetaTags title={`${title} | Symeno`} description={description} />
+    <MetaTags title={`${title} | Symeno`} description={description} image={image} />
     
     <!-- PWA Manifest & Icons -->
     <link rel="manifest" href="/site.webmanifest" />
@@ -45,7 +46,7 @@ const isLoggedIn = !!Astro.locals.user;
     <CartDrawer client:load />
     <script is:inline define:vars={{ isLoggedIn }}>window.SYMENO_IS_LOGGED_IN = isLoggedIn;</script>
     <script>
-      import { wishlist } from '../stores/wishlist.svelte'; 
+      import { wishlist } from '../stores/wishlist.svelte.ts'; 
       wishlist.init((window as any).SYMENO_IS_LOGGED_IN);
     </script>
   </body>

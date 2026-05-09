@@ -24,7 +24,6 @@ export const POST: APIRoute = async (context) => {
     await kv.put(`reset:${resetToken}`, user.id as string, { expirationTtl: 900 });
 
     // PRO TIP: Trigger your transactional email webhook here, passing the resetToken
-    console.log(`[DEV] Password reset token for: ${resetToken}`);
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (err) {

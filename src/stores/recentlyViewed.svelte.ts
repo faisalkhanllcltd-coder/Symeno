@@ -1,11 +1,10 @@
-// src/stores/recentlyViewed.svelte.ts
 const STORAGE_KEY = 'symeno_recent_items';
 const MAX_ITEMS = 10;
 
 export interface RecentItem {
   id: string;
   slug: string;
-  title: string;
+  name: string;
   price: number;
   image_url: string;
 }

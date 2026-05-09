@@ -5,37 +5,45 @@ import { env } from "cloudflare:workers";
 export const prerender = false;
 
 const { shareId } = Astro.params;
-const db = env.DB;
+const db = env.DB as any;
 
 let ownerName = 'Someone';
 let wishlistItems: any[] = [];
 
 if (db) {
   try {
-    // FIX: Using the correct 'customers' table as defined in your schema
     const user = await db
       .prepare(
         'SELECT id, first_name FROM customers WHERE id = ? LIMIT 1'
       )
       .bind(shareId)
-      .first<{ id: string, first_name: string }>();
+      .first();
 
     if (user) {
       ownerName = user.first_name || 'A User';
+      
+      // 100% CLAUDE SCHEMA: Join against catalog_cache instead of legacy products
       const { results } = await db
-        .prepare(
-          `
-        SELECT p.title, p.slug, p.basePrice, p.image_url, COALESCE(v.inventory_quantity, 0) as stock
-        FROM wishlists w
-        JOIN products p ON w.product_id = p.id
-        LEFT JOIN product_variants v ON p.id = v.product_id AND v.is_default = 1
-        WHERE w.customer_id = ?1
-        ORDER BY w.created_at DESC
-      `
-        )
+        .prepare(`
+          SELECT p.name, p.slug, p.price, p.images_json, p.in_stock as stock
+          FROM wishlists w
+          JOIN catalog_cache p ON w.product_id = p.id
+          WHERE w.customer_id = ?1
+          ORDER BY w.created_at DESC
+        `)
         .bind(user.id)
         .all();
-      wishlistItems = results || [];
+
+      wishlistItems = (results || []).map((item: any) => {
+        let mainImg = '/images/system/fallback.webp';
+        try {
+          if (item.images_json) {
+            const parsed = JSON.parse(item.images_json);
+            if (parsed.length > 0) mainImg = parsed[0];
+          }
+        } catch (e) {}
+        return { ...item, image_url: mainImg };
+      });
     }
   } catch (e) {
     console.error('[WISHLIST_DB_ERROR]', e);
@@ -48,41 +56,42 @@ if (wishlistItems.length === 0) {
 ---
 
 <StorefrontLayout title={`${ownerName}'s Wishlist | Symeno`}>
-  <main class="mx-auto max-w-6xl px-6 pt-32 pb-24">
-    <div class="border-outline mb-12 border-b pb-6 text-center">
-      <h1 class="text-content text-3xl font-bold tracking-widest uppercase">
+  <main class="mx-auto max-w-6xl px-4 pt-24 pb-20 sm:px-6">
+    <div class="border-outline mb-10 border-b pb-6 text-center">
+      <h1 class="text-content text-2xl font-bold tracking-widest uppercase md:text-3xl">
         {ownerName}'s Wishlist
       </h1>
-      <p class="text-content-muted mt-2 font-mono text-xs">
+      <p class="text-content-muted mt-2 font-mono text-[10px] tracking-widest uppercase">
         Shared inventory selection
       </p>
     </div>
 
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-4">
+    <div class="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5">
       {
         wishlistItems.map((item: any) => (
           <a
             href={`/shop/product/${item.slug}`}
-            class="bg-surface border-outline hover:border-brand/50 group flex flex-col border transition-colors"
+            class="bg-surface border-outline hover:border-brand/50 group flex flex-col border transition-colors rounded-xl overflow-hidden shadow-sm"
           >
-            <div class="bg-base relative aspect-square overflow-hidden">
+            <div class="bg-base relative aspect-square overflow-hidden border-b border-outline/50">
               <img
-                src={item.image_url || '/placeholder.webp'}
-                alt={item.title}
-                class="h-full w-full object-cover opacity-80 transition-all duration-500 group-hover:scale-105 group-hover:opacity-100"
+                src={item.image_url}
+                alt={item.name}
+                loading="lazy"
+                class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
-              {item.stock <= 0 && (
-                <div class="absolute bottom-0 left-0 w-full bg-rose-500/90 py-1 text-center text-[10px] font-bold tracking-widest text-white uppercase">
-                  Out of Stock
+              {item.stock === 0 && (
+                <div class="absolute bottom-0 left-0 w-full bg-brand-alert/90 py-1.5 text-center text-[9px] font-bold tracking-widest text-brand-dark uppercase backdrop-blur-sm">
+                  Depleted
                 </div>
               )}
             </div>
-            <div class="p-4">
-              <h3 class="text-content mb-1 truncate text-xs font-bold">
-                {item.title}
+            <div class="p-3.5 flex flex-col flex-grow">
+              <h3 class="text-content mb-2 line-clamp-2 text-xs font-bold leading-tight group-hover:text-brand transition-colors">
+                {item.name}
               </h3>
-              <p class="text-brand font-mono text-[10px] font-bold">
-                ${item.basePrice?.toFixed(2)}
+              <p class="text-brand font-mono text-sm font-bold mt-auto">
+                ${Number(item.price || 0).toFixed(2)}
               </p>
             </div>
           </a>

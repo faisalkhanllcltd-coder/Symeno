@@ -1,5 +1,5 @@
-﻿// src/types/admin.ts
-import type { User, Product, Order } from './database';
+// src/types/admin.ts
+import type { User, Order } from './database';
 
 export interface DashboardStats {
   revenue: number;

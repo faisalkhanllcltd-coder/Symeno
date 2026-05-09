@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
   import ReviewForm from './ReviewForm.svelte';
 
   let { productId, initialReviews = [] } = $props<{     
@@ -6,7 +6,7 @@
     initialReviews?: any[];
   }>();
   
-  let reviews = $state(initialReviews);
+  let reviews = $derived(initialReviews);
   let showForm = $state(false);
   let submitted = $state(false);
 

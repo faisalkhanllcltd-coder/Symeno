@@ -1,17 +1,16 @@
 <script lang="ts">
   let { 
     images = [], 
-    title = 'Product Image',
+    name = 'Product Image',
     activeImage = ''
   } = $props<{
     images: string[];
-    title: string;
+    name: string;
     activeImage?: string;
   }>();
 
   let activeIndex = $state(0);
 
-  // If a parent component changes the activeImage, update index
   $effect(() => {
     if (activeImage) {
       const idx = images.indexOf(activeImage);
@@ -25,7 +24,6 @@
 </script>
 
 <div class="flex flex-col-reverse lg:flex-row gap-4 w-full h-full">
-  <!-- Amazon-Style Thumbnails (Left on Desktop, Bottom on Mobile) -->
   {#if images.length > 1}
     <div class="custom-scrollbar flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto lg:w-20 shrink-0 pb-2 lg:pb-0 lg:pr-2 lg:max-h-[600px]">
       {#each images as img, i}
@@ -35,18 +33,17 @@
           {activeIndex === i ? 'border-brand ring-2 ring-brand/20' : 'border-transparent hover:border-outline opacity-70 hover:opacity-100'}"
           aria-label={`Select view ${i + 1}`}
         >
-          <img src={img} alt="" class="h-full w-full object-cover" loading="lazy" />
+          <img src={img} alt={`${name} - Thumbnail ${i + 1}`} class="h-full w-full object-cover" loading="lazy" />
         </button>
       {/each}
     </div>
   {/if}
 
-  <!-- Main Display -->
   <div class="bg-base border-outline relative aspect-square w-full flex-1 overflow-hidden rounded-xl border shadow-sm">
     {#if images.length > 0}
       <img
         src={images[activeIndex]}
-        alt={`${title} - View ${activeIndex + 1}`}
+        alt={`${name} - View ${activeIndex + 1}`}
         class="h-full w-full object-cover transition-opacity duration-300"
         loading="eager"
         decoding="sync"

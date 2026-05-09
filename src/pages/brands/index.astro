@@ -12,14 +12,14 @@ try {
   if (!db) {
     errorMessage = 'Database connection offline.';
   } else {
-    // Dynamically aggregate real brands and count their active SKUs
+    // 100% CLAUDE SCHEMA: Dynamically aggregate real brands and count their active SKUs
     const { results } = await db.prepare(
-      "SELECT brand, COUNT(*) as nodes FROM rapidapi_cache WHERE brand IS NOT NULL AND brand != '' GROUP BY brand ORDER BY nodes DESC"
+      "SELECT brand, COUNT(id) as nodes FROM catalog_cache WHERE brand IS NOT NULL AND brand != '' GROUP BY brand ORDER BY nodes DESC"
     ).all();
 
     brands = results.map((row: any) => ({
       name: row.brand,
-      // Create a URL-safe slug from the brand name (e.g., "Paws & Trek" -> "paws-trek")
+      // Create a URL-safe slug from the brand name
       slug: row.brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
       status: 'Verified',
       nodes: row.nodes
@@ -35,7 +35,7 @@ try {
   title="Authorized Brands | Symeno"
   description="Our network of verified hardware suppliers."
 >
-  <div class="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-20 lg:px-8">
+  <div class="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 md:py-16 lg:px-8">
     <div
       class="pointer-events-none absolute inset-0 opacity-[0.02]"
       style="background-image: linear-gradient(var(--color-outline) 1px, transparent 1px), linear-gradient(90deg, var(--color-outline) 1px, transparent 1px); background-size: 32px 32px;"
@@ -43,22 +43,20 @@ try {
     </div>
 
     <nav
-      class="relative z-10 mb-8 flex font-mono text-[10px] tracking-widest text-content-muted uppercase"
+      class="relative z-10 mb-6 flex font-mono text-[10px] tracking-widest text-content-muted uppercase"
     >
-      <a href="/" class="transition-colors hover:text-content focus:outline-none"
-        >Base</a
-      >
+      <a href="/" class="transition-colors hover:text-content focus:outline-none">Base</a>
       <span class="mx-2">/</span>
       <span class="text-brand">Directory</span>
     </nav>
 
-    <div class="relative z-10 mb-12 border-b border-outline pb-8">
+    <div class="relative z-10 mb-10 border-b border-outline pb-6">
       <h1
-        class="mb-4 text-4xl font-bold tracking-tighter text-content uppercase md:text-6xl"
+        class="mb-3 text-3xl font-bold tracking-tighter text-content uppercase md:text-5xl"
       >
         Supplier <span class="text-brand">Nodes.</span>
       </h1>
-      <p class="max-w-xl font-mono text-sm text-content-muted">
+      <p class="max-w-xl font-mono text-xs text-content-muted">
         We only interface with tier-1 manufacturers. Every brand listed here is
         cryptographically verified and subject to our zero-markup wholesale
         guarantee.
@@ -66,48 +64,46 @@ try {
     </div>
 
     {errorMessage && (
-      <div class="bg-brand-alert/10 border-brand-alert/30 text-brand-alert relative z-10 mb-12 rounded-xl border p-6 text-center font-mono tracking-widest uppercase">
+      <div class="bg-brand-alert/10 border-brand-alert/30 text-brand-alert relative z-10 mb-10 rounded-xl border p-5 text-center font-mono text-xs tracking-widest uppercase">
         {errorMessage}
       </div>
     )}
 
     {!errorMessage && brands.length === 0 && (
-      <div class="bg-surface border-outline relative z-10 mb-12 rounded-xl border p-12 text-center">
-        <h2 class="text-content mb-4 font-mono text-xl tracking-widest uppercase">No Suppliers Indexed</h2>
-        <p class="text-content-muted font-mono text-sm">The edge datastore returned zero verified brands.</p>
+      <div class="bg-surface border-outline relative z-10 mb-10 rounded-xl border p-10 text-center">
+        <h2 class="text-content mb-2 font-mono text-lg tracking-widest uppercase">No Suppliers Indexed</h2>
+        <p class="text-content-muted font-mono text-xs">The edge datastore returned zero verified brands.</p>
       </div>
     )}
 
-    <div
-      class="relative z-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
-    >
+    <div class="relative z-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {
         brands.map((brand) => (
           <a
             href={`/shop?brand=${brand.slug}`}
-            class="group flex items-center justify-between border border-outline bg-surface p-6 transition-colors hover:border-brand/50 focus:outline-none"
+            class="group flex items-center justify-between border border-outline bg-surface p-4 transition-colors hover:border-brand/50 focus:outline-none rounded-lg shadow-sm"
           >
-            <div class="flex items-center gap-4">
-              <div class="flex h-12 w-12 items-center justify-center border border-outline bg-base font-mono text-[8px] text-content-muted transition-colors group-hover:text-brand">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 items-center justify-center border border-outline bg-base font-mono text-[7px] text-content-muted transition-colors group-hover:text-brand rounded-md">
                 LOGO
               </div>
               <div>
-                <h2 class="text-lg font-bold tracking-tight text-content uppercase transition-colors group-hover:text-brand">
+                <h2 class="text-sm font-bold tracking-tight text-content uppercase transition-colors group-hover:text-brand truncate max-w-[120px]">
                   {brand.name}
                 </h2>
-                <div class="mt-1 flex items-center gap-2">
-                  <span class="h-1.5 w-1.5 bg-brand animate-pulse" />
-                  <span class="font-mono text-[10px] tracking-widest text-content-muted uppercase">
+                <div class="mt-0.5 flex items-center gap-1.5">
+                  <span class="h-1 w-1 bg-brand animate-pulse rounded-full" />
+                  <span class="font-mono text-[9px] tracking-widest text-content-muted uppercase">
                     {brand.status}
                   </span>
                 </div>
               </div>
             </div>
             <div class="flex flex-col items-end">
-              <span class="font-mono text-xs font-bold text-content">
+              <span class="font-mono text-[11px] font-bold text-content">
                 {brand.nodes} SKUs
               </span>
-              <span class="mt-1 font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors group-hover:text-content">
+              <span class="mt-1 font-mono text-[9px] tracking-widest text-content-muted uppercase transition-colors group-hover:text-content">
                 Access &rarr;
               </span>
             </div>

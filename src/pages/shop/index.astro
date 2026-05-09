@@ -6,6 +6,12 @@ import ProductGrid from '../../components/storefront/catalog/ProductGrid.svelte'
 
 export const prerender = false;
 
+// PERFORMANCE UPGRADE: Cloudflare CDN Caching Strategy
+Astro.response.headers.set(
+  'Cache-Control',
+  'public, s-maxage=3600, stale-while-revalidate=86400'
+);
+
 let liveProducts: any[] = [];
 let dynamicCategories: { name: string; slug: string; count: number }[] = [];
 let dynamicBrands: { name: string; slug: string; count: number }[] = [];
@@ -22,19 +28,19 @@ try {
   const db = env.DB as any;
   if (!db) throw new Error("DB Offline");
 
-  const { results } = await db.prepare('SELECT * FROM rapidapi_cache').all();  
+  // 100% CLAUDE SCHEMA: Fetch the entire catalog from the Edge Cache
+  const { results } = await db.prepare('SELECT * FROM catalog_cache').all();  
   
-  // THE FIX: We MUST clone the D1 array using [...results] 
-  // Cloudflare often freezes the original array, making .sort() throw a fatal crash.
-  let filtered = [...results] as any[];
+  // THE FIX: Safe array cloning. If results is null/undefined, fallback to empty array.
+  let filtered = results ? [...results] : [];
 
-  // 1. DYNAMIC SIDEBAR DATA EXTRACTION
+  // 1. DYNAMIC SIDEBAR DATA EXTRACTION (Category & Brand aggregation)
   const categoryMap = new Map();
   const brandMap = new Map();
 
   filtered.forEach((p: any) => {
     if (p.category) {
-      const cSlug = p.categorySlug || p.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      const cSlug = p.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
       categoryMap.set(cSlug, { name: p.category, slug: cSlug, count: (categoryMap.get(cSlug)?.count || 0) + 1 });
     }
     if (p.brand) {
@@ -49,15 +55,16 @@ try {
   // 2. EDGE FILTERING PIPELINE
   if (q) {
     filtered = filtered.filter(p =>
-      (p.title && p.title.toLowerCase().includes(q)) ||   
+      (p.name && p.name.toLowerCase().includes(q)) ||   
       (p.brand && p.brand.toLowerCase().includes(q)) ||
-      (p.category && p.category.toLowerCase().includes(q))
+      (p.category && p.category.toLowerCase().includes(q)) ||
+      (p.slug && p.slug.toLowerCase().includes(q)) 
     );
   }
 
   if (filterCategory) {
     filtered = filtered.filter(p => {
-      const cSlug = p.categorySlug || (p.category ? p.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '');
+      const cSlug = p.category ? p.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '';
       return cSlug === filterCategory;
     });
   }
@@ -69,34 +76,39 @@ try {
     });
   }
 
+  // 3. SORTING PIPELINE
   if (sort === 'price_asc') {
-    filtered.sort((a, b) => (a.basePrice || 0) - (b.basePrice || 0));
+    filtered.sort((a, b) => (a.price || 0) - (b.price || 0));
   } else if (sort === 'price_desc') {
-    filtered.sort((a, b) => (b.basePrice || 0) - (a.basePrice || 0));
+    filtered.sort((a, b) => (b.price || 0) - (a.price || 0));
   } else {
-    filtered.reverse(); 
+    filtered.sort((a, b) => (b.scraped_at || 0) - (a.scraped_at || 0)); // Sort by newest scraped
   }
 
   totalProducts = filtered.length;
 
-  // 3. SECURE DATA MAPPING 
+  // 4. SECURE DATA MAPPING TO FRONTEND COMPONENT PROPS
   liveProducts = filtered.map((p: any) => {
-    let mainImage = p.image_url || '';
+    let mainImage = '/images/system/fallback.webp'; // Immediate fallback
+    
+    // Safely parse the JSON string array without crashing the loop
     try {
-      if (p.images_json) {
+      if (p.images_json && p.images_json !== '[]') {
         const parsedImages = JSON.parse(p.images_json);
         if (parsedImages.length > 0) mainImage = parsedImages[0]; 
       }
-    } catch(e) {}
+    } catch(e) {
+      // Silently catch bad JSON so the product still renders
+    }
 
     return { 
-      id: p.id,
-      slug: p.slug,
+      id: p.id, 
+      slug: p.slug || p.id, 
       brand: p.brand || 'Symeno Select',
-      category: p.category,
-      title: p.title,
-      base_price: p.basePrice,
-      retail_price: p.retailPrice,
+      category: p.category || 'Uncategorized',
+      name: p.name,
+      price: p.price || 0,
+      retail_price: p.price ? p.price * 1.15 : 0, 
       image_url: mainImage
     };
   });
@@ -117,15 +129,15 @@ try {
   title="Complete Wholesale Catalog | Symeno" 
   description="Verified inventory. Shop top brands across our curated lifestyle categories."
 >
-  <div class="bg-base min-h-screen pt-12 pb-24 transition-colors duration-300">
+  <div class="bg-base min-h-screen pt-10 pb-20 transition-colors duration-300">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       
-      <div class="mb-8 border-b border-outline pb-8">
-        <h1 class="text-content mb-4 text-4xl font-bold tracking-tighter uppercase md:text-5xl">        
+      <div class="mb-8 border-b border-outline pb-6">
+        <h1 class="text-content mb-3 text-3xl font-bold tracking-tighter uppercase md:text-4xl">        
           {q ? `Search: "${q}"` : filterCategory ? filterCategory.replace(/-/g, ' ') : 'The Catalog.'}        
         </h1>
         <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <p class="text-content-muted font-mono text-sm">
+          <p class="text-content-muted font-mono text-xs">
             {q ? `We found assets matching your query.` : 'Browse our complete inventory of premium lifestyle goods.'}
           </p>
           <span class="border border-outline bg-surface px-3 py-1 font-mono text-[10px] tracking-widest text-content-muted uppercase shadow-sm">
@@ -134,7 +146,7 @@ try {
         </div>
       </div>
 
-      <div class="grid grid-cols-1 gap-12 lg:grid-cols-4 mt-8">
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-4 mt-6">
         <aside class="hidden lg:block relative w-full h-full">
            <div class="sticky top-24 z-10 self-start">
              <FilterSidebar 
@@ -151,17 +163,17 @@ try {
 
         <div class="lg:col-span-3">
           {dbError ? (
-             <div class="bg-brand-alert/10 border-brand-alert/30 text-brand-alert rounded-xl border p-6 text-center font-mono tracking-widest uppercase">
+             <div class="bg-brand-alert/10 border-brand-alert/30 text-brand-alert rounded-xl border p-6 text-center font-mono tracking-widest uppercase text-xs">
                Database Connection Offline. Please check your edge bindings.
              </div>
           ) : liveProducts.length > 0 ? (
              <ProductGrid products={liveProducts} client:load />        
           ) : (
-            <div class="bg-surface border-outline rounded-xl border p-12 text-center">
-               <h3 class="text-content mb-2 font-mono text-xl tracking-widest uppercase">No Matches Found</h3>
-               <p class="text-content-muted text-sm">Try adjusting your filters or search parameters.</p>
-               <a href="/shop" class="text-brand mt-6 inline-block text-sm font-bold hover:underline">Clear All Filters</a>
-            </div>
+             <div class="bg-surface border-outline rounded-xl border p-10 text-center">
+               <h3 class="text-content mb-2 font-mono text-lg tracking-widest uppercase">No Matches Found</h3>
+               <p class="text-content-muted text-xs">Try adjusting your filters or search parameters.</p>
+               <a href="/shop" class="text-brand mt-6 inline-block text-xs font-bold hover:underline">Clear All Filters</a>
+             </div>
           )}
         </div>
       </div>

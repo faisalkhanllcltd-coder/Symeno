@@ -8,6 +8,12 @@ import CheckoutStickyBar from '../../../components/storefront/cart/CheckoutStick
 
 export const prerender = false;
 
+// PERFORMANCE UPGRADE: Cloudflare CDN Caching Strategy
+Astro.response.headers.set(
+  'Cache-Control',
+  'public, s-maxage=3600, stale-while-revalidate=86400'
+);
+
 const { slug } = Astro.params;
 let product: any = null;
 let relatedProducts: any[] = [];
@@ -19,8 +25,8 @@ try {
   if (!db) {
     errorMessage = 'Database connection offline.';        
   } else {
-    // 1. Fetch Main Product
-    const rawProduct = await db.prepare("SELECT * FROM rapidapi_cache WHERE slug = ?1").bind(slug).first();
+    // 1. Fetch Main Product (100% CLAUDE SCHEMA)
+    const rawProduct = await db.prepare("SELECT * FROM catalog_cache WHERE slug = ?1").bind(slug).first();
 
     if (rawProduct) {
       let parsedImages = [];
@@ -29,47 +35,52 @@ try {
       } catch(e) { console.error('Image parse failed', e); }
       
       // Fallback if the array is empty
-      if (parsedImages.length === 0 && rawProduct.image_url) {
-        parsedImages = [rawProduct.image_url];
+      if (parsedImages.length === 0 && rawProduct.source_url) {
+        parsedImages = ['/images/system/fallback.webp'];
       }
-
-      try {
-        if (rawProduct.features_json) descriptionBullets = JSON.parse(rawProduct.features_json);
-      } catch(e) { console.error('Features parse failed', e); }
 
       product = {
         id: rawProduct.id,
         slug: rawProduct.slug,
         brand: rawProduct.brand ?? 'Symeno Select',    
         category: rawProduct.category,
-        categorySlug: rawProduct.categorySlug,
-        title: rawProduct.title,
-        description: rawProduct.description || rawProduct.title,
-        basePrice: rawProduct.basePrice,
-        retailPrice: rawProduct.retailPrice, 
-        stockStatus: rawProduct.stockStatus,
+        name: rawProduct.name,
+        description: rawProduct.description || rawProduct.name,
+        price: rawProduct.price || 0,
+        retailPrice: (rawProduct.price || 0) * 1.15, // Artificial 15% MSRP padding for UI
+        in_stock: rawProduct.in_stock,
+        rating: rawProduct.rating,
+        reviewCount: rawProduct.review_count,
         images: parsedImages
       };
 
-      if (descriptionBullets.length === 0 && product.description && product.description.length > 50) {
+      // Extract bullet points dynamically from the HasData description block
+      if (product.description && product.description.length > 50) {
         descriptionBullets = product.description
           .split(/(?<=\.)\s+/)
           .filter((sentence: string) => sentence.trim().length > 5);
       }
 
-      // 2. Fetch Related Products
+      // 2. Fetch Related Products (100% CLAUDE SCHEMA)
       const { results: related } = await db.prepare(
-        "SELECT slug, title, brand, basePrice, retailPrice, image_url FROM rapidapi_cache WHERE category = ?1 AND id != ?2 LIMIT 4"
+        "SELECT slug, name, brand, price, images_json FROM catalog_cache WHERE category = ?1 AND id != ?2 LIMIT 4"
       ).bind(product.category, product.id).all();
 
-      relatedProducts = related.map((p: any) => ({
-        slug: p.slug,
-        title: p.title,
-        brand: p.brand || 'Symeno Select',
-        basePrice: p.basePrice,
-        retailPrice: p.retailPrice || (p.basePrice * 1.2),
-        image: p.image_url
-      }));
+      relatedProducts = related.map((p: any) => {
+        let relImages = [];
+        try {
+          if (p.images_json) relImages = JSON.parse(p.images_json);
+        } catch(e) {}
+        
+        return {
+          slug: p.slug,
+          name: p.name,
+          brand: p.brand || 'Symeno Select',
+          price: p.price,
+          retailPrice: p.price * 1.15,
+          image: relImages.length > 0 ? relImages[0] : '/images/system/fallback.webp'
+        };
+      });
     }
   }
 } catch (e) {
@@ -78,8 +89,8 @@ try {
 }
 
 const isWishlisted = false;
-const hasDiscount = product?.retailPrice && product.retailPrice > product.basePrice;
-const isInStock = product?.stockStatus === 'IN_STOCK';
+const hasDiscount = product?.retailPrice && product.retailPrice > product.price;
+const isInStock = product?.in_stock === 1;
 
 const productSpecs = [
   { label: 'Brand', value: product?.brand ?? 'N/A' },
@@ -91,8 +102,9 @@ const productSpecs = [
 ---
 
 <StorefrontLayout
-  title={product ? `${product.title} | Symeno` : 'Asset Not Found | Symeno'}
-  description={product ? `Secure the ${product.title} at true wholesale pricing.` : 'Item unavailable.'}  
+  title={product ? `${product.name} | Symeno` : 'Asset Not Found | Symeno'}
+  description={product ? `Secure the ${product.name} at true wholesale pricing.` : 'Item unavailable.'}  
+  image={product?.images[0]}
 >
   {
     product && (
@@ -102,7 +114,7 @@ const productSpecs = [
         set:html={JSON.stringify({
           '@context': 'https://schema.org/',
           '@type': 'Product',
-          name: product.title,
+          name: product.name,
           description: product.description,
           brand: {
             '@type': 'Brand',
@@ -113,7 +125,7 @@ const productSpecs = [
             '@type': 'Offer',
             url: `https://symeno.com/shop/product/${product.slug}`,
             priceCurrency: 'USD',
-            price: product.basePrice.toString(),
+            price: product.price.toString(),
             availability: isInStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
             itemCondition: 'https://schema.org/NewCondition',
           },
@@ -156,8 +168,8 @@ const productSpecs = [
               id: product.id,
               slug: product.slug,
               brand: product.brand,
-              title: product.title,
-              basePrice: product.basePrice,
+              name: product.name,
+              price: product.price,
               retailPrice: product.retailPrice,
               stockStatus: isInStock ? 1 : 0,
               image: product.images[0] || ''
@@ -177,12 +189,11 @@ const productSpecs = [
 
           <div class="relative z-10 mb-20 flex flex-col gap-12 lg:flex-row lg:gap-16 lg:items-start">
             
-            <!-- THE FIX: Unrestricted Gallery Container -->
             <div class="w-full lg:w-6/12 lg:sticky lg:top-24 shrink-0 relative">
               <ProductGallery
                 client:load
                 images={product.images as string[]}
-                title={product.title as string}
+                name={product.name as string}
               />
               <div class="absolute top-4 right-4 z-20"> 
                 <WishlistButton
@@ -193,15 +204,25 @@ const productSpecs = [
               </div>
             </div>
 
-            <!-- ZONE 2: The Buy Box & Data -->
             <div class="flex-1 flex flex-col">    
               <h1 class="text-content mb-4 text-2xl sm:text-3xl lg:text-4xl leading-tight font-bold tracking-tight uppercase transition-colors duration-300">
-                {product.title}
+                {product.name}
               </h1>
+
+              {/* Review Metric Injection */}
+              {product.rating && (
+                <div class="mb-4 flex items-center gap-2 font-mono text-xs text-brand">
+                  <span class="flex items-center">
+                     {'★'.repeat(Math.round(product.rating))}{'☆'.repeat(5 - Math.round(product.rating))}
+                  </span>
+                  <span>{product.rating} / 5</span>
+                  <span class="text-content-muted">({product.reviewCount} Reviews)</span>
+                </div>
+              )}
 
               <div class="mb-6 flex flex-wrap items-end gap-4 font-mono transition-colors duration-300 border-b border-outline/50 pb-6">
                 <span class="text-brand text-3xl sm:text-4xl font-bold tracking-tighter transition-colors duration-300">        
-                  ${Number(product.basePrice).toFixed(2)}
+                  ${Number(product.price).toFixed(2)}
                 </span>
 
                 {hasDiscount && (
@@ -210,7 +231,7 @@ const productSpecs = [
                       Retail: ${Number(product.retailPrice).toFixed(2)}
                     </span>
                     <span class="text-brand-alert text-xs font-bold tracking-widest uppercase transition-colors duration-300">
-                      Save ${Math.floor(product.retailPrice - product.basePrice)}
+                      Save ${Math.floor(product.retailPrice - product.price)}
                     </span>
                   </div>
                 )}
@@ -233,7 +254,7 @@ const productSpecs = [
                 <div class="mb-8 space-y-3">
                   <h3 class="font-mono text-xs tracking-widest text-content-muted uppercase">Product Highlights</h3>
                   <ul class="space-y-2">
-                    {descriptionBullets.map((bullet: string) => (
+                    {descriptionBullets.map((bullet) => (
                       <li class="flex items-start gap-3 text-sm text-content/90 leading-relaxed">
                         <span class="text-brand mt-2 h-1.5 w-1.5 shrink-0 rounded-full"></span>
                         <span>{bullet.trim()}{bullet.endsWith('.') ? '' : '.'}</span>
@@ -316,32 +337,36 @@ const productSpecs = [
               <h2 class="mb-8 text-xl font-bold tracking-tighter text-content uppercase">Similar Items</h2>
               <div class="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
                 {relatedProducts.map((rp) => (
-                  <a href={`/shop/product/${rp.slug}`} class="group relative flex flex-col focus:outline-none">
+                  <div class="group relative flex flex-col focus-within:outline-none focus-within:ring-2 focus-within:ring-brand rounded-sm">
+                    <a href={`/shop/product/${rp.slug}`} class="absolute inset-0 z-10" aria-label={`View ${rp.name}`}></a>
+
                     <div class="relative mb-4 flex aspect-square items-center justify-center overflow-hidden border border-outline bg-surface transition-colors group-hover:border-brand/50 rounded-xl">
-                      {rp.retailPrice && rp.retailPrice > rp.basePrice && (
-                        <div class="absolute top-2 left-2 z-10 border border-brand/30 bg-brand/10 px-1.5 py-0.5 text-[8px] font-bold tracking-widest text-brand uppercase backdrop-blur-sm">
-                          Save ${Math.floor(rp.retailPrice - rp.basePrice)}
+                      {rp.retailPrice && rp.retailPrice > rp.price && (
+                        <div class="absolute top-2 left-2 z-20 border border-brand/30 bg-brand/10 px-1.5 py-0.5 text-[8px] font-bold tracking-widest text-brand uppercase backdrop-blur-sm">
+                          Save ${Math.floor(rp.retailPrice - rp.price)}
                         </div>
                       )}
                       {rp.image ? (
-                        <img src={rp.image} alt={rp.title} loading="lazy" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" />
+                        <img src={rp.image} alt={rp.name} loading="lazy" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" />
                       ) : (
                         <span class="font-mono text-[10px] text-content-muted">No Image</span>
                       )}
                     </div>
-                    <span class="mb-1 truncate font-mono text-[9px] tracking-widest text-content-muted uppercase transition-colors group-hover:text-content">
-                      {rp.brand}
-                    </span>
-                    <h3 class="mb-1 truncate text-xs font-bold text-content transition-colors group-hover:text-brand">
-                      {rp.title}
-                    </h3>
-                    <div class="mt-auto flex items-baseline gap-2 font-mono">
-                      <span class="text-sm font-bold text-brand">${rp.basePrice.toFixed(2)}</span>
-                      {rp.retailPrice && rp.retailPrice > rp.basePrice && (
-                        <span class="text-[9px] text-content-muted line-through">${rp.retailPrice.toFixed(2)}</span>
-                      )}
+                    <div class="relative z-0 pointer-events-none flex flex-col flex-1">
+                      <span class="mb-1 truncate font-mono text-[9px] tracking-widest text-content-muted uppercase transition-colors group-hover:text-content">
+                        {rp.brand}
+                      </span>
+                      <h3 class="mb-1 truncate text-xs font-bold text-content transition-colors group-hover:text-brand">
+                        {rp.name}
+                      </h3>
+                      <div class="mt-auto flex items-baseline gap-2 font-mono">
+                        <span class="text-sm font-bold text-brand">${rp.price.toFixed(2)}</span>
+                        {rp.retailPrice && rp.retailPrice > rp.price && (
+                          <span class="text-[9px] text-content-muted line-through">${rp.retailPrice.toFixed(2)}</span>
+                        )}
+                      </div>
                     </div>
-                  </a>
+                  </div>
                 ))}
               </div>
             </div>
@@ -365,26 +390,25 @@ const productSpecs = [
   import { cart } from '../../../stores/cart.svelte.ts';
 
   const waitlistBtn = document.getElementById('join-waitlist-btn');
-  const emailInput = document.getElementById('waitlist-email') as HTMLInputElement;
+  const emailInput = document.getElementById('waitlist-email');
   const successMsg = document.getElementById('waitlist-success');
 
   waitlistBtn?.addEventListener('click', () => {
-    const email = emailInput?.value;
+    const email = emailInput instanceof HTMLInputElement ? emailInput.value : '';
     if (!email || !email.includes('@')) {
       alert('Please provide a valid comm link (email).'); 
       return;
     }
-    console.log(`[PAINTED DOOR] Waitlist captured for: ${waitlistBtn.dataset.productId} | Email: ${email}`);
-    waitlistBtn.style.display = 'none';
-    emailInput.style.display = 'none';
+    if (waitlistBtn) waitlistBtn.style.display = 'none';
+    if (emailInput) emailInput.style.display = 'none';
     if (successMsg) successMsg.classList.remove('hidden');
   });
 
-  const cartBtn = document.getElementById('add-to-cart-btn') as HTMLButtonElement | null;
+  const cartBtn = document.getElementById('add-to-cart-btn');
   cartBtn?.addEventListener('click', () => {
     const originalText = cartBtn.innerText;
     cartBtn.innerText = 'SECURING...';
-    cartBtn.disabled = true;
+    if (cartBtn instanceof HTMLButtonElement) cartBtn.disabled = true;
     
     setTimeout(() => {
       const metaEl = document.getElementById('product-meta'); 
@@ -404,7 +428,7 @@ const productSpecs = [
       
       setTimeout(() => {
         cartBtn.innerText = originalText;
-        cartBtn.disabled = false;
+        if (cartBtn instanceof HTMLButtonElement) cartBtn.disabled = false;
         cartBtn.classList.remove('bg-transparent', 'border', 'border-brand', 'text-brand');
         cartBtn.classList.add('bg-brand', 'text-brand-dark');
       }, 2000);
@@ -420,8 +444,8 @@ const productSpecs = [
           recentStore.add({
             id: p.id,
             slug: p.slug,
-            title: p.title,
-            price: p.basePrice,
+            name: p.name,
+            price: p.price,
             image_url: p.image
           });
         }

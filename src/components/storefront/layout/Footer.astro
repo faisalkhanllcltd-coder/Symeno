@@ -5,194 +5,126 @@ const currentYear = new Date().getFullYear();
 
 <footer class="border-t border-outline bg-base pt-16 pb-8 transition-colors duration-300">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">  
-    <div
-      class="mb-16 grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-8"
-    >
+    <div class="mb-16 grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-8">
+      
       <div class="lg:col-span-4">
         <a
           href="/"
-          class="mb-4 block text-xl font-bold tracking-tighter text-content uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand w-max"
-          >Symeno<span class="text-brand">.</span></a
+          class="mb-4 inline-block text-xl font-bold tracking-tighter text-content uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
         >
-        <p
-          class="mb-6 max-w-sm font-mono text-xs leading-relaxed text-content-muted"
-        >
+          Symeno<span class="text-brand">.</span>
+        </a>
+        <p class="mb-6 max-w-sm font-mono text-xs leading-relaxed text-content-muted">
           Operational efficiency applied to consumer electronics. We leverage
           global arbitrage to secure premium hardware at zero-markup wholesale
           rates.
         </p>
         
         <div class="mb-8">
-            <NewsletterCapture client:load />
+          <NewsletterCapture client:load />
         </div>
 
-        <div
-          class="mb-6 space-y-1 font-mono text-[10px] tracking-widest text-content-muted uppercase"
-        >
+        <div class="mb-6 space-y-1 font-mono text-[10px] tracking-widest text-content-muted uppercase">
           <p>Company Reg No. 15389422</p>
           <p>128 City Road, London, EC1V 2NX</p>
         </div>
+        
         <div class="flex gap-3">
-          <div
-            class="flex h-5 w-8 items-center justify-center border border-outline bg-surface font-mono text-[8px] text-content-muted"      
-          >
+          <div class="flex h-5 w-8 items-center justify-center border border-outline bg-surface font-mono text-[8px] text-content-muted">
             X
           </div>
-          <div
-            class="flex h-5 w-8 items-center justify-center border border-outline bg-surface font-mono text-[8px] text-content-muted"      
-          >
+          <div class="flex h-5 w-8 items-center justify-center border border-outline bg-surface font-mono text-[8px] text-content-muted">
             IN
           </div>
-          <div
-            class="flex h-5 w-8 items-center justify-center border border-outline bg-surface font-mono text-[8px] text-content-muted"      
-          >
+          <div class="flex h-5 w-8 items-center justify-center border border-outline bg-surface font-mono text-[8px] text-content-muted">
             PAY
           </div>
-          <div
-            class="flex h-5 w-8 items-center justify-center border border-outline bg-surface font-mono text-[8px] text-content-muted"      
-          >
+          <div class="flex h-5 w-8 items-center justify-center border border-outline bg-surface font-mono text-[8px] text-content-muted">
             SEC
           </div>
         </div>
       </div>
 
       <div class="lg:col-span-2">
-        <h3
-          class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content uppercase"
-        >
+        <h3 class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content uppercase">
           The Catalog
         </h3>
         <ul class="space-y-3 text-sm text-content-muted">
           <li>
-            <a
-              href="/shop"
-              class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand"
-              >Shop All</a>
+            <a href="/shop" class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Shop All</a>
           </li>
           <li>
-            <a
-              href="/brands"
-              class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand"
-              >Top Brands</a>
+            <a href="/brands" class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Top Brands</a>
           </li>
           <li>
-            <a
-              href="/deals"
-              class="font-bold transition-colors text-brand-alert hover:opacity-80 focus-visible:outline-none focus-visible:underline"  
-              >Arbitrage Deals</a>
+            <a href="/deals" class="font-bold transition-colors text-brand-alert hover:opacity-80 focus-visible:outline-none focus-visible:underline">Arbitrage Deals</a>
           </li>
           <li>
-            <a
-              href="/b2b"
-              class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand"
-              >B2B / Bulk</a>
+            <a href="/b2b" class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">B2B / Bulk</a>
           </li>
           <li>
-            <a
-              href="/new-arrivals"
-              class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand"
-              >New Deployments</a>
+            <a href="/new-arrivals" class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">New Deployments</a>
           </li>
         </ul>
       </div>
 
       <div class="lg:col-span-2">
-        <h3
-          class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content uppercase"
-        >
+        <h3 class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content uppercase">
           Support Ops
         </h3>
         <ul class="space-y-3 text-sm text-content-muted">
           <li>
-            <a
-              href="/support/track-order"
-              class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand"
-              >Track Order</a>
+            <a href="/support/track-order" class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Track Order</a>
           </li>
           <li>
-            <a
-              href="/support/start-return"
-              class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand"
-              >Start a Return</a>
+            <a href="/support/start-return" class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Start a Return</a>
           </li>
           <li>
-            <a
-              href="/faq"
-              class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand"
-              >FAQ / Knowledge Base</a>
+            <a href="/faq" class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">FAQ / Knowledge Base</a>
           </li>
           <li>
-            <a
-              href="/contact"
-              class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand"
-              >Contact Operations</a>
+            <a href="/contact" class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Contact Operations</a>
           </li>
         </ul>
       </div>
 
       <div class="lg:col-span-2">
-        <h3
-          class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content uppercase"
-        >
+        <h3 class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content uppercase">
           Intelligence
         </h3>
         <ul class="space-y-3 text-sm text-content-muted">
           <li>
-            <a
-              href="/about"
-              class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand"
-              >About Symeno</a>
+            <a href="/about" class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">About Symeno</a>
           </li>
           <li>
-            <a
-              href="/policies/authenticity"
-              class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand"
-              >Authenticity Protocol</a>
+            <a href="/policies/authenticity" class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Authenticity Protocol</a>
           </li>
         </ul>
       </div>
 
       <div class="lg:col-span-2">
-        <h3
-          class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content uppercase"
-        >
+        <h3 class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content uppercase">
           Legal
         </h3>
         <ul class="space-y-3 text-sm text-content-muted">   
           <li>
-            <a
-              href="/policies/privacy"
-              class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand"
-              >Privacy Policy</a>
+            <a href="/policies/privacy" class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Privacy Policy</a>
           </li>
           <li>
-            <a
-              href="/policies/terms"
-              class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand"
-              >Terms of Service</a>
+            <a href="/policies/terms" class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Terms of Service</a>
           </li>
           <li>
-            <a
-              href="/policies/shipping"
-              class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand"
-              >Shipping Policy</a>
+            <a href="/policies/shipping" class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Shipping Policy</a>
           </li>
           <li>
-            <a
-              href="/policies/returns"
-              class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand"
-              >Returns Policy</a>
+            <a href="/policies/returns" class="transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Returns Policy</a>
           </li>
         </ul>
       </div>
     </div>
 
-    <div
-      class="flex flex-col items-center justify-center gap-4 border-t border-outline pt-8 text-center"
-    >
-      <p
-        class="font-mono text-[10px] leading-relaxed tracking-widest text-content-muted uppercase"
-      >
+    <div class="flex flex-col items-center justify-center gap-4 border-t border-outline pt-8 text-center">
+      <p class="font-mono text-[10px] leading-relaxed tracking-widest text-content-muted uppercase">
         &copy; {currentYear} Symeno Ltd &middot; Registered in UK &middot; Reg. No.
         15389422 &middot; All prices include VAT
       </p>

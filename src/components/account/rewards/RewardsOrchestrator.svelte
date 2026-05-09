@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
   import PointsBalance from './PointsBalance.svelte';   
   import PointsHistory from './PointsHistory.svelte';   
   import RewardsProgram from './RewardsProgram.svelte'; 
@@ -6,7 +6,7 @@
   let { initialData = { stats: {}, history: [] } } = $props<{
     initialData?: any;
   }>();
-  let data = $state(initialData);
+  let data = $state(structuredClone(initialData));
   let generatedCode = $state<string | null>(null);      
 
   async function handleRedeem(points: number) {

@@ -21,11 +21,11 @@
     />
   </svg>
 
-  {#if cart.itemCount > 0}
+  {#if cart.totalItems > 0}
     <span
       class="bg-brand text-brand-dark absolute -top-1.5 -right-2 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 font-mono text-[10px] font-bold shadow-[0_0_10px_rgba(54,244,164,0.4)]"
     >
-      {cart.itemCount}
+      {cart.totalItems}
     </span>
   {/if}
 </a>

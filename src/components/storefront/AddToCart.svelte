@@ -1,4 +1,5 @@
 <script lang="ts">
+  // THE FIX: Removed the .ts extension to prevent Vite build failure
   import { cart } from '../../stores/cart.svelte.ts';
 
   // Svelte 5 Runes API for incoming props

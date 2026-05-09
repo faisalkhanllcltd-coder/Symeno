@@ -3,14 +3,20 @@ import { cacheCartState } from '../../lib/kv';
 import { logger } from '../../lib/logger';
 import { env } from 'cloudflare:workers';
 
-// 1. Explicitly define the expected payload interface for the TS Compiler
+// Explicitly define the expected payload interface for the TS Compiler
 interface CartPayload {
-  items: any[];
+  items: Array<{
+    id: string;
+    slug: string;
+    name: string;
+    price: number;
+    image: string;
+    qty: number;
+  }>;
 }
 
 export const POST: APIRoute = async ({ request, cookies, locals }) => {
   try {
-    // 2. Safely typecast the unknown JSON response       
     const payload = (await request.json()) as CartPayload;
     const items = payload.items;
 
@@ -20,7 +26,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       });
     }
 
-    // 3. Identify the Cart Owner (Logged-in User vs. Anonymous Guest)
+    // Identify the Cart Owner (Logged-in User vs. Anonymous Guest)
     let cartSessionId = locals.session?.id;
 
     if (!cartSessionId) {
@@ -47,7 +53,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       throw new Error('Environment context missing.');
     }
 
-    // 4. Persist the state to Cloudflare KV Edge
+    // Persist the state to Cloudflare KV Edge
     await cacheCartState(env, cartSessionId, { items });
 
     return new Response(JSON.stringify({ success: true, synced: true }), {

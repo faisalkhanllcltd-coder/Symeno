@@ -6,17 +6,17 @@ const { deal } = Astro.props;
 let displayDeal = null;
 let dbError = false;
 
-// 1. EDGE AUTONOMY: If parent doesn't pass a deal, fetch the latest enriched asset from D1
+// 1. EDGE AUTONOMY: Fetch latest HasData asset
 if (!deal) {
   try {
     const db = env.DB as any;
     if (db) {
-      // We specifically query for a product that our Node engine has already enriched
-      const { results } = await db.prepare("SELECT slug, title, brand, basePrice, retailPrice, image_url, images_json FROM rapidapi_cache WHERE images_json IS NOT NULL ORDER BY id DESC LIMIT 1").all();
+      // 100% CLAUDE SCHEMA UPDATE: Swapped rapidapi_cache to catalog_cache
+      const { results } = await db.prepare("SELECT id, slug, name, brand, price, images_json FROM catalog_cache WHERE images_json IS NOT NULL AND images_json != '[]' ORDER BY scraped_at DESC LIMIT 1").all();
       
       if (results.length > 0) {
         const p = results[0];
-        let mainImage = p.image_url;
+        let mainImage = '';
         
         try {
           if (p.images_json) {
@@ -26,12 +26,12 @@ if (!deal) {
         } catch(e) {}
 
         displayDeal = {
-          slug: p.slug,
+          slug: p.slug || p.id,
           brand: p.brand || 'Symeno Select',
-          title: p.title,
-          basePrice: p.basePrice || 0,
-          retailPrice: p.retailPrice,
-          images: [mainImage]
+          title: p.name, // Mapped to maintain compatibility with your original template below
+          basePrice: p.price || 0,
+          retailPrice: p.price ? p.price * 1.15 : 0, // Generated MSRP
+          images: mainImage ? [mainImage] : ['https://placehold.co/600x400/1a1a1a/36F4A4?text=Image+Unavailable']
         };
       }
     }
@@ -43,7 +43,7 @@ if (!deal) {
   displayDeal = deal;
 }
 
-// 2. FAIL-SAFE GRACEFUL DEGRADATION: Prevent 500 error if DB is empty or offline
+// 2. FAIL-SAFE GRACEFUL DEGRADATION
 if (!displayDeal) {
   displayDeal = {
     slug: 'shop',
@@ -121,7 +121,7 @@ const discount = displayDeal.retailPrice && displayDeal.retailPrice > displayDea
               {displayDeal.title}
             </h3>
 
-            <div class="mb-6 flex items-end gap-3">       
+            <div class="mb-6 flex items-end gap-3">        
               <span class="text-brand font-mono text-3xl font-bold tracking-tight">${Number(displayDeal.basePrice).toFixed(2)}</span>
               {displayDeal.retailPrice && displayDeal.retailPrice > displayDeal.basePrice && (
                 <span class="text-content-muted mb-1 font-mono text-sm line-through transition-colors duration-300">RRP ${Number(displayDeal.retailPrice).toFixed(2)}</span>

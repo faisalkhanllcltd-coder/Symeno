@@ -2,7 +2,6 @@
 import StorefrontLayout from '../../layouts/Storefront.astro';
 import { env } from "cloudflare:workers";
 
-// FORCE EDGE SSR
 export const prerender = false;
 
 const { brand } = Astro.params;
@@ -11,18 +10,31 @@ const displayName = brand ? brand.toString().replace(/-/g, ' ').replace(/\b\w/g,
 let activeProducts: any[] = [];
 
 try {
-  const db = env.DB;
+  const db = env.DB as any;
   if (db) {
-    const { results } = await db.prepare("SELECT * FROM rapidapi_cache WHERE LOWER(category) = LOWER(?1) OR LOWER(title) LIKE LOWER(?2) LIMIT 50").bind(brand, `%${brand}%`).all();
+    // 100% CLAUDE SCHEMA: Search the catalog_cache for the specific brand
+    const { results } = await db.prepare(
+      "SELECT * FROM catalog_cache WHERE LOWER(brand) = LOWER(?1) OR LOWER(name) LIKE LOWER(?2) LIMIT 50"
+    ).bind(brand, `%${brand}%`).all();
     
-    activeProducts = results.map((p: any) => ({
-      slug: p.slug,
-      title: p.title,
-      category: p.category || 'Hardware',
-      basePrice: p.basePrice,
-      retailPrice: p.basePrice * 1.2,
-      images: p.image_url ? [p.image_url] : []
-    }));
+    activeProducts = results.map((p: any) => {
+      let mainImage = '';
+      try {
+        if (p.images_json) {
+          const parsedImages = JSON.parse(p.images_json);
+          if (parsedImages.length > 0) mainImage = parsedImages[0];
+        }
+      } catch(e) {}
+
+      return {
+        slug: p.slug,
+        name: p.name,
+        category: p.category || 'Hardware',
+        price: p.price || 0,
+        retailPrice: p.price ? p.price * 1.15 : 0,
+        image_url: mainImage || '/images/system/fallback.webp'
+      };
+    });
   }
 } catch (e) {
   console.error('[BRAND_EDGE_ERROR]', e);
@@ -33,7 +45,7 @@ try {
   title={`${displayName} Hardware | Symeno`}
   description={`Verified wholesale arbitrage for ${displayName} hardware.`}
 >
-  <div class="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-20 lg:px-8">
+  <div class="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 md:py-16 lg:px-8">
     <div
       class="pointer-events-none absolute inset-0 opacity-[0.02]"
       style="background-image: linear-gradient(var(--color-outline) 1px, transparent 1px), linear-gradient(90deg, var(--color-outline) 1px, transparent 1px); background-size: 32px 32px;"
@@ -41,7 +53,7 @@ try {
     </div>
 
     <nav
-      class="relative z-10 mb-8 flex font-mono text-[10px] tracking-widest text-content-muted uppercase"
+      class="relative z-10 mb-6 flex font-mono text-[10px] tracking-widest text-content-muted uppercase"
     >
       <a href="/" class="transition-colors hover:text-content">Base</a>
       <span class="mx-2">/</span>
@@ -51,88 +63,89 @@ try {
     </nav>
 
     <div
-      class="relative z-10 mb-12 flex flex-col justify-between gap-6 border-b border-outline pb-8 md:flex-row md:items-end"
+      class="relative z-10 mb-10 flex flex-col justify-between gap-6 border-b border-outline pb-6 md:flex-row md:items-end"
     >
       <div>
-        <div class="mb-4 flex items-center gap-3">
-          <span class="h-2 w-2 bg-brand"></span>
+        <div class="mb-3 flex items-center gap-2">
+          <span class="h-1.5 w-1.5 bg-brand"></span>
           <p
-            class="font-mono text-[10px] tracking-widest text-content-muted uppercase"
+            class="font-mono text-[9px] tracking-widest text-content-muted uppercase"
           >
             Authorized Supplier Node
           </p>
         </div>
         <h1
-          class="text-4xl font-bold tracking-tighter text-content uppercase md:text-6xl"
+          class="text-3xl font-bold tracking-tighter text-content uppercase md:text-5xl"
         >
           {displayName}<span class="text-brand">.</span>
         </h1>
       </div>
 
       <div
-        class="flex gap-6 border border-outline bg-surface px-4 py-3 font-mono text-[10px] tracking-widest uppercase"
+        class="flex gap-5 border border-outline bg-surface px-4 py-2.5 font-mono text-[9px] tracking-widest uppercase rounded-md shadow-sm"
       >
         <div>
-          <span class="mb-1 block text-content-muted">Status</span><span
-            class="text-brand">Verified</span>
+          <span class="mb-0.5 block text-content-muted">Status</span><span
+            class="text-brand font-bold">Verified</span>
         </div>
-        <div>
-          <span class="mb-1 block text-content-muted">Active SKUs</span><span
-            class="text-content">{activeProducts.length}</span>
+        <div class="border-l border-outline/50 pl-5">
+          <span class="mb-0.5 block text-content-muted">Active SKUs</span><span
+            class="text-content font-bold">{activeProducts.length}</span>
         </div>
       </div>
     </div>
 
     <div
-      class="relative z-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+      class="relative z-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
     >
       {
         activeProducts.length > 0 ? (
           activeProducts.map((product: any) => (
             <a
               href={`/shop/product/${product.slug}`}
-              class="group flex flex-col focus:outline-none"
+              class="group bg-surface border-outline hover:border-brand/50 relative flex flex-col border p-3.5 transition-colors focus:outline-none rounded-xl shadow-sm"
             >
-              <div class="relative mb-4 flex aspect-[4/5] items-center justify-center overflow-hidden border border-outline bg-surface transition-colors group-hover:border-brand/50">
-                {product.retailPrice && product.retailPrice > product.basePrice && (
-                  <div class="absolute top-3 left-3 z-10 border border-brand/30 bg-brand/10 px-2 py-1 text-[9px] font-bold tracking-widest text-brand uppercase">
-                    Save ${Math.floor(product.retailPrice - product.basePrice)}
-                  </div>
-                )}
-                {/* FIX: Wired the Amazon images natively */}
-                {product.images && product.images[0] ? (
-                  <img 
-                    src={product.images[0]} 
-                    alt={product.title} 
-                    loading="lazy"
-                    class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                ) : (
-                  <span class="font-mono text-[10px] text-content-muted">Unit Visual</span>
-                )}
-              </div>
-              <span class="mb-1 font-mono text-[10px] tracking-widest text-content-muted uppercase">
-                {product.category}
-              </span>
-              <h2 class="mb-1 truncate text-sm font-bold text-content transition-colors group-hover:text-brand">
-                {product.title}
-              </h2>
-              <div class="mt-auto flex items-baseline gap-2 font-mono">
-                <span class="text-sm font-bold text-brand">
-                  ${product.basePrice.toFixed(2)}
+              <div class="mb-3 flex items-start justify-between">
+                <span class="text-content-muted font-mono text-[9px] tracking-widest uppercase">
+                  {product.category}
                 </span>
-
-                {product.retailPrice && product.retailPrice > product.basePrice && (
-                  <span class="text-[10px] text-content-muted line-through">
-                    ${product.retailPrice.toFixed(2)}
+                {product.retailPrice && product.retailPrice > product.price && (
+                  <span class="text-brand border-brand/30 bg-brand/5 border px-1.5 py-0.5 text-[8px] font-bold tracking-widest uppercase rounded-sm">
+                    SAVE ${Math.floor(product.retailPrice - product.price)}
                   </span>
                 )}
+              </div>
+
+              <div class="bg-base border-outline/50 relative mb-3 flex aspect-[4/5] items-center justify-center overflow-hidden border rounded-lg">
+                <img 
+                  src={product.image_url} 
+                  alt={product.name} 
+                  loading="lazy"
+                  class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
+
+              <h2 class="text-content group-hover:text-brand mb-2.5 truncate text-xs font-bold transition-colors">
+                {product.name}
+              </h2>
+
+              <div class="mt-auto flex flex-col gap-1 font-mono">
+                <div class="flex items-baseline gap-2">
+                  <span class="text-brand text-base font-bold">
+                    ${Number(product.price).toFixed(2)}
+                  </span>
+                  {product.retailPrice && product.retailPrice > product.price && (
+                    <span class="text-content-muted text-[9px] line-through">
+                      ${Number(product.retailPrice).toFixed(2)}
+                    </span>
+                  )}
+                </div>
               </div>
             </a>
           ))
         ) : (
-          <div class="col-span-full border border-outline bg-surface py-20 text-center">
-            <p class="font-mono text-xs tracking-widest text-content-muted uppercase">
+          <div class="col-span-full border border-outline bg-surface py-16 rounded-xl text-center">
+            <p class="font-mono text-[10px] tracking-widest text-content-muted uppercase">
               No units currently secured from this supplier.
             </p>
           </div>

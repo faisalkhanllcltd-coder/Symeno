@@ -6,7 +6,7 @@
   }>();
 
   // 2. Initialize local state using the prop fallback
-  let isSaved = $state(props.initialState ?? false);
+  let isSaved = $state(Boolean(props.initialState));
   let isProcessing = $state(false);
 
   // 3. Keep edge-synced if the parent explicitly updates the prop later

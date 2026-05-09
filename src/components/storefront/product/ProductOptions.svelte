@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
   interface Variant {
     id: string;
     name: string;
@@ -23,19 +25,19 @@
     onVariantChange?: (selectedOptions: Record<string, string>) => void;
   }>();
 
-  // Track the selected value for each option group (e.g., { Color: 'Black', Size: 'Large' })
-  let selected = $state<Record<string, string>>({});
+  // THE FIX: Synchronous initialization to prevent Svelte 5 double-renders and layout shifts
+  let selected = $state<Record<string, string>>(
+    options.reduce((acc, opt) => {
+      const available = opt.values.find(v => v.inStock);
+      if (available) acc[opt.name] = available.value;
+      return acc;
+    }, {} as Record<string, string>)
+  );
 
-  // Initialize defaults
-  $effect(() => {
-    if (Object.keys(selected).length === 0 && options.length > 0) {
-      const defaults: Record<string, string> = {};
-      options.forEach(opt => {
-        const available = opt.values.find(v => v.inStock);
-        if (available) defaults[opt.name] = available.value;
-      });
-      selected = defaults;
-      if (onVariantChange) onVariantChange(selected);
+  // Safely inform the parent component of the defaults only once after the DOM is ready
+  onMount(() => {
+    if (onVariantChange && Object.keys(selected).length > 0) {
+      onVariantChange(selected);
     }
   });
 
@@ -44,7 +46,6 @@
     if (onVariantChange) onVariantChange(selected);
   }
 
-  // Derive if the current selection combination is actually purchasable
   let isPurchasable = $derived(stockStatus > 0);
 </script>
 

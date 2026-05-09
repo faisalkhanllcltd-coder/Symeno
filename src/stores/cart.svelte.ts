@@ -1,122 +1,85 @@
-import { logger } from '../lib/logger';
-
 export interface CartItem {
-  id: string; // Composite key: productId + variantId
-  productId: string;
-  variantId?: string;
-  qty: number;
-  brand: string;
+  id: string;
+  slug: string;
   name: string;
   price: number;
-  was: number;
-  stock: number;
   image: string;
+  qty: number;
+  variantId?: string;
 }
 
 function createCartStore() {
-  // 1. Initialize Svelte 5 Reactive State
   let items = $state<CartItem[]>([]);
   let isOpen = $state(false);
+  let isInitialized = false;
 
-  // 2. Hydrate from LocalStorage (Client-side primary fallback)
   if (typeof window !== 'undefined') {
-    const stored = localStorage.getItem('symeno_cart');
-    if (stored) {
-      try {
-        items = JSON.parse(stored);
-      } catch (e) {
-        logger.error('Cart payload corrupted. Purging local state.');
-        localStorage.removeItem('symeno_cart');
+    queueMicrotask(() => {
+      const stored = localStorage.getItem('symeno_cart');
+      if (stored) {
+        try {
+          items = JSON.parse(stored);
+        } catch (e) {
+          console.error('[CART_STORE] Payload corrupted. Purging state.');
+          localStorage.removeItem('symeno_cart');
+        }
       }
-    }
+      isInitialized = true;
+    });
   }
 
-  // Private sync function: Updates Local Storage AND fires background Edge sync
   let syncTimeout: ReturnType<typeof setTimeout>;
+
   function sync() {
-    if (typeof window !== 'undefined') {
-      // Immediate local hydration
+    if (typeof window !== 'undefined' && isInitialized) {
       localStorage.setItem('symeno_cart', JSON.stringify(items));
 
-      // INFRASTRUCTURE UPGRADE: Debounced Edge KV Hydration (Non-blocking)
       clearTimeout(syncTimeout);
       syncTimeout = setTimeout(() => {
-        // Pings the API endpoint to store cart in Cloudflare KV via sessionId
         fetch('/api/cart', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ items }),
-        }).catch((err) =>
-          logger.warn(
-            '[EDGE_SYNC_WARNING] Cart failed to sync with KV. Local fallback active.',
-            err
-          )
-        );
+        }).catch(() => console.warn('[EDGE_SYNC_WARNING] Cart sync failed. Local fallback active.'));
       }, 1000);
     }
   }
 
   return {
-    // 3. Expose Reactive Getters
-    get items() {
-      return items;
-    },
-    get isOpen() {
-      return isOpen;
-    },
+    get items() { return items; },
+    get isOpen() { return isOpen; },
 
-    get totalItems() {
-      return items.reduce((total, item) => total + item.qty, 0);
-    },
+    get totalItems() { return items.reduce((total: number, item: CartItem) => total + item.qty, 0); },
+    get subtotal() { return items.reduce((total: number, item: CartItem) => total + item.price * item.qty, 0); },
 
-    get subtotal() {
-      return items.reduce((total, item) => total + item.price * item.qty, 0);
-    },
+    toggleCart() { isOpen = !isOpen; },
+    openCart() { isOpen = true; },
+    closeCart() { isOpen = false; },
 
-    get savings() {
-      return items.reduce((total, item) => total + (item.was - item.price) * item.qty, 0);
-    },
+    addItem(product: any, quantity: number = 1) {
+      const id = product.id || product.slug;
 
-    // 4. Expose Controlled Mutators
-    toggleCart() {
-      isOpen = !isOpen;
-    },
-
-    openCart() {
-      isOpen = true;
-    },
-
-    closeCart() {
-      isOpen = false;
-    },
-
-    addItem(
-      product: { id: string; productId: string; brand: string; name: string; price: number; was: number; stock: number; image: string },
-      quantity: number = 1
-    ) {
-      const existingItem = items.find((i) => i.id === product.id);
+      const existingItem = items.find((i: CartItem) => i.id === id);
 
       if (existingItem) {
         existingItem.qty += quantity;
       } else {
         items.push({
-          id: product.id,
-          productId: product.productId,
+          id: id,
+          slug: product.slug || id,
+          name: product.name || 'Unknown Item',
+          price: product.price || 0,
+          image: product.image || product.image_url || ((product.images && product.images.length > 0) ? product.images[0] : '/images/system/fallback.webp'),
           qty: quantity,
-          brand: product.brand,
-          name: product.name,
-          price: product.price,
-          was: product.was,
-          stock: product.stock,
-          image: product.image,
         });
       }
 
       sync();
+      isOpen = true;
     },
 
     updateQuantity(id: string, qty: number) {
-      const item = items.find((i) => i.id === id);
+      const item = items.find((i: CartItem) => i.id === id);
       if (item) {
         item.qty = Math.max(1, qty);
         sync();
@@ -124,7 +87,7 @@ function createCartStore() {
     },
 
     removeItem(id: string) {
-      items = items.filter((i) => i.id !== id);
+      items = items.filter((i: CartItem) => i.id !== id);
       sync();
     },
 
@@ -135,5 +98,4 @@ function createCartStore() {
   };
 }
 
-// Export globally reactive singleton
 export const cart = createCartStore();

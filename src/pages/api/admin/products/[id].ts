@@ -7,18 +7,23 @@ export const PUT: APIRoute = async ({ request, params, locals }) => {
   }
 
   try {
-    const data = await request.json();
-    const db = env.DB;
+    const data = await request.json() as any;
+    const db = env.DB as any;
 
+    // 100% CLAUDE SCHEMA: Updating only the specific edge columns
     await db.prepare(`
-      UPDATE products 
-      SET title = ?1, base_price = ?2, retail_price = ?3, description = ?4, updated_at = CURRENT_TIMESTAMP 
-      WHERE id = ?5
+      UPDATE catalog_cache 
+      SET name = ?1, slug = ?2, brand = ?3, category = ?4, price = ?5, description = ?6, in_stock = ?7, scraped_at = ?8 
+      WHERE id = ?9
     `).bind(
-      (data as any).title,
-      (data as any).base_price,
-      (data as any).retail_price,
-      (data as any).description,
+      data.name,
+      data.slug,
+      data.brand,
+      data.category,
+      data.price,
+      data.description,
+      data.in_stock,
+      Math.floor(Date.now() / 1000), // Refresh the timestamp on edit
       params.id
     ).run();
 
@@ -34,12 +39,10 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
   }
 
   try {
-    const db = env.DB;
+    const db = env.DB as any;
 
-    await db.batch([
-      db.prepare('DELETE FROM product_variants WHERE product_id = ?1').bind(params.id),
-      db.prepare('DELETE FROM products WHERE id = ?1').bind(params.id)
-    ]);
+    // Direct deletion from the singular unified cache table
+    await db.prepare('DELETE FROM catalog_cache WHERE id = ?1').bind(params.id).run();
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (error: any) {

@@ -1,15 +1,16 @@
 <script lang="ts">
+  // FIX: Removed the explicit .ts extension 
   import { cart } from '../../stores/cart.svelte.ts';
 
   let { initialItems = [], shareId = '' } = $props<{    
     initialItems?: any[];
     shareId?: string;
   }>();
-  let items = $state(initialItems);
+  let items = $state(structuredClone(initialItems));
   let shareCopied = $state(false);
 
   async function removeItem(productId: string) {        
-    items = items.filter((i) => i.product_id !== productId); // Optimistic
+    items = items.filter((i) => i.product_id !== productId); 
     await fetch('/api/account/wishlist', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },    
@@ -34,7 +35,6 @@
   }
 
   async function moveToCart(item: any) {
-    // Wired to Svelte 5 Cart Store natively
     cart.addItem({
       id: item.product_id,
       productId: item.product_id,
@@ -63,7 +63,6 @@
       class="flex items-center justify-between border border-outline bg-surface p-4"
     >
       <div class="font-mono text-xs text-content-muted">  
-
         {items.length} Items Saved
       </div>
       <button
@@ -89,17 +88,21 @@
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       {#each items as item}
         <div
-          class="group flex flex-col border border-outline bg-surface transition-colors hover:border-content-muted" 
+          class="group relative flex flex-col border border-outline bg-surface transition-colors hover:border-content-muted focus-within:ring-2 focus-within:ring-brand" 
         >
+
+          <a href={`/shop/product/${item.slug}`} class="absolute inset-0 z-10" aria-label={`View ${item.title}`}></a>
+
           <div class="relative aspect-square overflow-hidden bg-base">
             <img
               src={item.image_url || '/placeholder.webp'} 
               alt={item.title}
               class="h-full w-full object-cover opacity-80 transition-opacity group-hover:opacity-100"
             />
+
             <button
               onclick={() => removeItem(item.product_id)} 
-              class="absolute top-2 right-2 rounded-full bg-base/50 p-2 text-content-muted transition-colors hover:bg-base hover:text-brand-alert focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-alert"       
+              class="absolute top-2 right-2 z-20 rounded-full bg-base/50 p-2 text-content-muted transition-colors hover:bg-base hover:text-brand-alert focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-alert"       
             >
               <svg
                 class="h-4 w-4"
@@ -116,24 +119,23 @@
             </button>
             {#if item.stock <= 0}
               <div
-                class="absolute bottom-0 left-0 w-full bg-brand-alert/90 py-1 text-center text-[10px] font-bold tracking-widest text-brand-dark uppercase"
+                class="absolute bottom-0 left-0 w-full bg-brand-alert/90 py-1 text-center text-[10px] font-bold tracking-widest text-brand-dark uppercase z-0"
               >
                 Out of Stock
               </div>
             {/if}
           </div>
 
-          <div class="flex flex-1 flex-col p-4">
-            <a
-              href={`/shop/product/${item.slug}`}
-              class="mb-1 block truncate text-xs font-bold text-content hover:text-brand focus-visible:outline-none focus-visible:underline rounded-sm"
-              >{item.title}</a
+          <div class="flex flex-1 flex-col p-4 relative z-0 pointer-events-none">
+            <h3
+              class="mb-1 block truncate text-xs font-bold text-content transition-colors group-hover:text-brand rounded-sm"
+              >{item.title}</h3
             >
             <p class="mb-4 font-mono text-[10px] font-bold text-brand">
-              ${item.base_price?.toFixed(2)}
+              ${(item.base_price || 0).toFixed(2)}
             </p>
 
-            <div class="mt-auto mb-4 space-y-2 border-t border-outline pt-4">
+            <div class="mt-auto mb-4 space-y-2 border-t border-outline pt-4 pointer-events-auto relative z-20">
               <label
                 class="group/toggle flex cursor-pointer items-center gap-2"
               >
@@ -150,7 +152,6 @@
                 />
                 <span
                   class="font-mono text-[9px] text-content-muted transition-colors group-hover/toggle:text-content" 
-
                   >Notify on price drop</span
                 >
               </label>
@@ -177,10 +178,11 @@
               {/if}
             </div>
 
+
             <button
               onclick={() => moveToCart(item)}
               disabled={item.stock <= 0}
-              class="w-full border border-outline px-4 py-2 font-mono text-[10px] tracking-widest text-content uppercase transition-colors hover:bg-base disabled:opacity-30 disabled:hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"   
+              class="pointer-events-auto relative z-20 w-full border border-outline px-4 py-2 font-mono text-[10px] tracking-widest text-content uppercase transition-colors hover:bg-base disabled:opacity-30 disabled:hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"   
             >
               {item.stock > 0 ? 'Move to Cart' : 'Unavailable'}
             </button>

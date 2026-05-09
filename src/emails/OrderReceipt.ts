@@ -4,35 +4,36 @@ export function generateOrderReceiptHTML(order: any, items: any[]): string {
     .map(
       (i) => `
     <tr>
-      <td style="padding: 12px; border-bottom: 1px solid var(--color-outline);">
-        <p style="margin:0; font-weight: bold; color: var(--color-content);">${i.title}</p>
-        <p style="margin:0; font-size: 12px; color: var(--color-content-muted);">Slug: ${i.slug}</p>
+      <td style="padding: 14px 12px; border-bottom: 1px solid var(--color-outline);">
+        <p style="margin:0 0 4px 0; font-weight: bold; color: var(--color-content); font-size: 13px;">${i.name}</p>
+        <p style="margin:0; font-size: 10px; color: var(--color-content-muted); text-transform: uppercase;">ID: ${i.productId}</p>
       </td>
-      <td style="padding: 12px; border-bottom: 1px solid var(--color-outline); text-align: center; color: var(--color-content);">${i.quantity}</td>
-      <td style="padding: 12px; border-bottom: 1px solid var(--color-outline); text-align: right; color: var(--color-brand);">$${(i.basePrice * i.quantity).toFixed(2)}</td>
+      <td style="padding: 14px 12px; border-bottom: 1px solid var(--color-outline); text-align: center; color: var(--color-content); font-size: 13px;">${i.qty}</td>
+      <td style="padding: 14px 12px; border-bottom: 1px solid var(--color-outline); text-align: right; color: var(--color-brand); font-weight: bold; font-size: 13px;">$${(i.price * i.qty).toFixed(2)}</td>
     </tr>
   `
     )
     .join('');
 
   return `
-    <div style="font-family: 'Courier New', Courier, monospace; color: var(--color-content); background-color: var(--color-base); max-width: 600px; margin: 0 auto; border: 1px solid var(--color-outline); padding: 30px;">
-      <div style="border-bottom: 2px solid var(--color-brand); padding-bottom: 20px; margin-bottom: 20px;">
-        <h1 style="color: var(--color-brand); font-size: 24px; text-transform: uppercase; margin: 0; letter-spacing: 2px;">Symeno Operations</h1>
-        <p style="color: var(--color-content-muted); font-size: 12px; margin-top: 5px;">Secure Transaction Receipt</p>
+    <div style="font-family: 'Courier New', Courier, monospace; color: var(--color-content); background-color: var(--color-base); max-width: 600px; margin: 0 auto; border: 1px solid var(--color-outline); border-radius: 8px; padding: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+      
+      <div style="border-bottom: 1px solid var(--color-brand); padding-bottom: 24px; margin-bottom: 24px;">
+        <h1 style="color: var(--color-brand); font-size: 20px; text-transform: uppercase; margin: 0; letter-spacing: 2px;">Symeno Operations</h1>
+        <p style="color: var(--color-content-muted); font-size: 10px; margin-top: 6px; letter-spacing: 1px; text-transform: uppercase;">Secure Transaction Receipt</p>
       </div>
       
-      <div style="margin-bottom: 30px;">
-        <p style="margin: 5px 0; font-size: 14px;"><strong>Order ID:</strong> ${order.id.toUpperCase()}</p>
-        <p style="margin: 5px 0; font-size: 14px;"><strong>Status:</strong> ${order.status}</p>
+      <div style="margin-bottom: 32px; background-color: var(--color-surface); border: 1px solid var(--color-outline); border-radius: 6px; padding: 16px;">
+        <p style="margin: 0 0 8px 0; font-size: 12px;"><strong style="color: var(--color-content-muted); text-transform: uppercase; letter-spacing: 1px;">Order ID:</strong> <span style="font-weight: bold;">${order.id.toUpperCase()}</span></p>
+        <p style="margin: 0; font-size: 12px;"><strong style="color: var(--color-content-muted); text-transform: uppercase; letter-spacing: 1px;">Status:</strong> <span style="color: var(--color-brand); font-weight: bold;">${order.status.toUpperCase()}</span></p>
       </div>
 
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 32px;">
         <thead>
-          <tr style="background-color: var(--color-surface);">
-            <th style="padding: 12px; text-align: left; font-size: 12px; color: var(--color-content-muted); text-transform: uppercase;">Asset</th>
-            <th style="padding: 12px; text-align: center; font-size: 12px; color: var(--color-content-muted); text-transform: uppercase;">Qty</th>
-            <th style="padding: 12px; text-align: right; font-size: 12px; color: var(--color-content-muted); text-transform: uppercase;">Value</th>
+          <tr style="background-color: var(--color-surface); border-radius: 6px;">
+            <th style="padding: 10px 12px; text-align: left; font-size: 10px; color: var(--color-content-muted); text-transform: uppercase; letter-spacing: 1px;">Asset</th>
+            <th style="padding: 10px 12px; text-align: center; font-size: 10px; color: var(--color-content-muted); text-transform: uppercase; letter-spacing: 1px;">Qty</th>
+            <th style="padding: 10px 12px; text-align: right; font-size: 10px; color: var(--color-content-muted); text-transform: uppercase; letter-spacing: 1px;">Value</th>
           </tr>
         </thead>
         <tbody>
@@ -40,13 +41,14 @@ export function generateOrderReceiptHTML(order: any, items: any[]): string {
         </tbody>
       </table>
 
-      <div style="text-align: right; font-size: 18px; font-weight: bold; color: var(--color-brand);">
-        TOTAL: $${order.total.toFixed(2)}
+      <div style="text-align: right; font-size: 16px; font-weight: bold; color: var(--color-content); padding-top: 16px;">
+        <span style="font-size: 12px; color: var(--color-content-muted); text-transform: uppercase; letter-spacing: 1px; margin-right: 12px;">Final Total</span> 
+        <span style="color: var(--color-brand); font-size: 20px;">$${order.total.toFixed(2)}</span>
       </div>
 
-      <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--color-outline); text-align: center; font-size: 10px; color: var(--color-content-muted);">
-        <p>This telemetry was automatically generated by the Symeno Logistics Engine.</p>
-        <p>DO NOT REPLY TO THIS TRANSMISSION.</p>
+      <div style="margin-top: 48px; padding-top: 24px; border-top: 1px dashed var(--color-outline); text-align: center; font-size: 9px; color: var(--color-content-muted); letter-spacing: 1px;">
+        <p style="margin-bottom: 4px;">This telemetry was automatically generated by the Symeno Logistics Engine.</p>
+        <p style="margin: 0; color: var(--color-brand-alert);">DO NOT REPLY TO THIS TRANSMISSION.</p>
       </div>
     </div>
   `;

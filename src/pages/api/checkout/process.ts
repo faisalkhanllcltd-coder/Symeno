@@ -1,4 +1,3 @@
-// src/pages/api/checkout/process.ts
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 
@@ -24,12 +23,13 @@ export const POST: APIRoute = async (context) => {
 
     // 2. EXTRACT IDs FOR BATCH QUERY
     // We only trust the productId and the requested quantity from the client.
-    const productIds = items.map((i: any) => i.productId);
+    const productIds = items.map((i: any) => i.productId || i.id);
     const placeholders = productIds.map(() => '?').join(',');
 
     // 3. QUERY THE EDGE DATABASE (The Absolute Source of Truth)
+    // 100% CLAUDE SCHEMA: Querying catalog_cache for 'price' and 'name'
     const { results: realProducts } = await db.prepare(
-      `SELECT id, basePrice, title FROM rapidapi_cache WHERE id IN (${placeholders})`
+      `SELECT id, price, name FROM catalog_cache WHERE id IN (${placeholders})`
     ).bind(...productIds).all();
 
     // 4. SERVER-SIDE CRYPTOGRAPHIC CALCULATION
@@ -37,24 +37,24 @@ export const POST: APIRoute = async (context) => {
     const verifiedLineItems = [];
 
     for (const clientItem of items) {
-      const realProduct = realProducts.find((p: any) => p.id === clientItem.productId);
+      const realProduct = realProducts.find((p: any) => p.id === (clientItem.productId || clientItem.id));
 
       // Defend against stale data (user trying to buy a product that was deleted from the catalog)
       if (!realProduct) {
         return new Response(JSON.stringify({
-          error: `Item "${clientItem.name}" is no longer available in our catalog. Please update your cart.`
+          error: `Item "${clientItem.name || clientItem.title}" is no longer available in our catalog. Please update your cart.`
         }), { status: 409 });
       }
 
       // Defend against negative numbers or string injection in quantity
       const qty = Math.max(1, parseInt(clientItem.qty, 10) || 1);
-      const securePrice = realProduct.basePrice || 0;
+      const securePrice = realProduct.price || 0;
 
       verifiedTotal += securePrice * qty;
 
       verifiedLineItems.push({
         productId: realProduct.id,
-        title: realProduct.title,
+        name: realProduct.name,
         price: securePrice,
         qty: qty
       });

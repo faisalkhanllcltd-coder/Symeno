@@ -13,14 +13,12 @@
   });
 </script>
 
-<!-- HEAVY OVERLAY -->
 <div
   class="fixed inset-0 z-[60] bg-base/80 backdrop-blur-md transition-opacity duration-300 md:hidden {ui.isMobileMenuOpen ? 'opacity-100' : 'pointer-events-none opacity-0'}"
   onclick={closeMenu}
   role="presentation"
 ></div>
 
-<!-- DRAWER PANEL -->
 <div
   class="fixed inset-y-0 left-0 z-[70] flex w-full max-w-[320px] transform flex-col border-r border-outline/40 bg-base/95 backdrop-blur-2xl shadow-2xl transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] md:hidden {ui.isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}"
 >

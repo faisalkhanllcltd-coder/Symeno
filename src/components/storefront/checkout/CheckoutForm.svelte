@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { ui } from '../../../stores/ui.svelte';
+  import { ui } from '../../../stores/ui.svelte.ts';
 
   let isLoading = $state(true);
   let isProcessing = $state(false);
@@ -102,7 +102,7 @@
 
   <form onsubmit={handleSubmit} id="payment-form" class="space-y-8 {isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-500'}">
 
-    <!-- SECTION 1: NATIVE LOGISTICS DESTINATION -->      
+
     <div>
       <h3 class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase">
         1. Logistics Destination
@@ -143,14 +143,14 @@
       </div>
     </div>
 
-    <!-- SECTION 2: SETTLEMENT METHOD -->
+
     <div>
       <h3 class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase">
         2. Financial Authorization Method
       </h3>
       <div class="space-y-3 font-mono text-xs">
 
-        <!-- Option A: Bank Transfer -->
+
         <label class="flex cursor-pointer items-center gap-3 border border-outline bg-base p-4 transition-colors hover:border-brand has-[:checked]:border-brand has-[:checked]:bg-brand/5">
           <input
             type="radio"
@@ -164,7 +164,7 @@
           </div>
         </label>
 
-        <!-- Option B: Pre-Order -->
+
         <label class="flex cursor-pointer items-center gap-3 border border-outline bg-base p-4 transition-colors hover:border-brand has-[:checked]:border-brand has-[:checked]:bg-brand/5">
           <input
             type="radio"

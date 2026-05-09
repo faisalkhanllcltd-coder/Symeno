@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ui } from '../../stores/ui.svelte';
+  import { ui } from '../../stores/ui.svelte.ts';
 
   // HARDENING: Allow environment variable injection for production
   // Fallback to testing key only if the environment variable is missing
