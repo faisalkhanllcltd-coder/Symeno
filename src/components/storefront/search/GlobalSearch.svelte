@@ -2,6 +2,9 @@
   import { onMount } from 'svelte';
   import { ui } from '../../../stores/ui.svelte.ts';
 
+  // EDGE ECOSYSTEM UPGRADE: Accept dynamic nodes from the server, with intelligent fallbacks matching your live catalog.
+  let { trendingNodes = ['Kitchen Tools', 'Everyday Carry', 'Wellness Accessories', 'Home Organization'] } = $props();
+
   let query = $state('');
   let results = $state<any[]>([]);
   let isSearching = $state(false);
@@ -81,7 +84,7 @@
           type="text"
           bind:value={query}
           oninput={handleInput}
-          placeholder="Search hardware, brands, or SKUs..."
+          placeholder="Search categories, brands, or products..."
           class="w-full bg-transparent pl-4 pr-20 text-[15px] font-medium tracking-wide text-content placeholder:text-content-muted focus:outline-none"        
         />
 
@@ -148,9 +151,14 @@
           <div class="p-6">
             <p class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase">Trending Nodes</p>
             <div class="flex flex-wrap gap-2.5">
-              <button onclick={() => { query = 'Sony XM5'; handleInput(); }} class="rounded-full border border-outline/50 bg-surface/50 px-4 py-2 font-mono text-[11px] font-bold tracking-widest text-content-muted transition-colors hover:border-brand/50 hover:bg-base hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand">Sony XM5</button>
-              <button onclick={() => { query = 'Apple Audio'; handleInput(); }} class="rounded-full border border-outline/50 bg-surface/50 px-4 py-2 font-mono text-[11px] font-bold tracking-widest text-content-muted transition-colors hover:border-brand/50 hover:bg-base hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand">Apple Audio</button>
-              <button onclick={() => { query = 'Displays'; handleInput(); }} class="rounded-full border border-outline/50 bg-surface/50 px-4 py-2 font-mono text-[11px] font-bold tracking-widest text-content-muted transition-colors hover:border-brand/50 hover:bg-base hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand">OLED Displays</button>
+              {#each trendingNodes as node}
+                <button 
+                  onclick={() => { query = node; handleInput(); }} 
+                  class="rounded-full border border-outline/50 bg-surface/50 px-4 py-2 font-mono text-[11px] font-bold tracking-widest text-content-muted transition-colors hover:border-brand/50 hover:bg-base hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                >
+                  {node}
+                </button>
+              {/each}
             </div>
           </div>
         {/if}

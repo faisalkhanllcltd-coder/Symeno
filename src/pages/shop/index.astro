@@ -6,7 +6,6 @@ import ProductGrid from '../../components/storefront/catalog/ProductGrid.svelte'
 
 export const prerender = false;
 
-// PERFORMANCE UPGRADE: Cloudflare CDN Caching Strategy
 Astro.response.headers.set(
   'Cache-Control',
   'public, s-maxage=3600, stale-while-revalidate=86400'
@@ -25,26 +24,25 @@ const filterBrand = url.searchParams.get('brand')?.toLowerCase() || '';
 const sort = url.searchParams.get('sort') || 'newest';    
 
 try {
-  const db = env.DB as any;
-  if (!db) throw new Error("DB Offline");
+  // ARMOR: Bulletproof bindings for edge execution
+  const db = (env.DB as any) || (Astro.locals as any).runtime?.env?.DB;
+  if (!db) throw new Error("DB Offline - Check Edge Bindings");
 
-  // 100% CLAUDE SCHEMA: Fetch the entire catalog from the Edge Cache
-  const { results } = await db.prepare('SELECT * FROM catalog_cache').all();  
+  // SAFETY: Limit response to prevent memory overflow on the edge
+  const { results } = await db.prepare('SELECT * FROM catalog_cache ORDER BY scraped_at DESC LIMIT 1000').all();  
   
-  // THE FIX: Safe array cloning. If results is null/undefined, fallback to empty array.
   let filtered = results ? [...results] : [];
 
-  // 1. DYNAMIC SIDEBAR DATA EXTRACTION (Category & Brand aggregation)
   const categoryMap = new Map();
   const brandMap = new Map();
 
   filtered.forEach((p: any) => {
     if (p.category) {
-      const cSlug = p.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      const cSlug = String(p.category).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
       categoryMap.set(cSlug, { name: p.category, slug: cSlug, count: (categoryMap.get(cSlug)?.count || 0) + 1 });
     }
     if (p.brand) {
-      const bSlug = p.brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      const bSlug = String(p.brand).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
       brandMap.set(bSlug, { name: p.brand, slug: bSlug, count: (brandMap.get(bSlug)?.count || 0) + 1 });
     }
   });
@@ -52,54 +50,48 @@ try {
   dynamicCategories = Array.from(categoryMap.values()).sort((a, b) => b.count - a.count);
   dynamicBrands = Array.from(brandMap.values()).sort((a, b) => b.count - a.count);
 
-  // 2. EDGE FILTERING PIPELINE
   if (q) {
     filtered = filtered.filter(p =>
-      (p.name && p.name.toLowerCase().includes(q)) ||   
-      (p.brand && p.brand.toLowerCase().includes(q)) ||
-      (p.category && p.category.toLowerCase().includes(q)) ||
-      (p.slug && p.slug.toLowerCase().includes(q)) 
+      (p.name && String(p.name).toLowerCase().includes(q)) ||   
+      (p.brand && String(p.brand).toLowerCase().includes(q)) ||
+      (p.category && String(p.category).toLowerCase().includes(q)) ||
+      (p.slug && String(p.slug).toLowerCase().includes(q)) 
     );
   }
 
   if (filterCategory) {
     filtered = filtered.filter(p => {
-      const cSlug = p.category ? p.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '';
+      const cSlug = p.category ? String(p.category).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '';
       return cSlug === filterCategory;
     });
   }
 
   if (filterBrand) {
     filtered = filtered.filter(p => {
-      const bSlug = p.brand ? p.brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '';
+      const bSlug = p.brand ? String(p.brand).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '';
       return bSlug === filterBrand;
     });
   }
 
-  // 3. SORTING PIPELINE
   if (sort === 'price_asc') {
-    filtered.sort((a, b) => (a.price || 0) - (b.price || 0));
+    filtered.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
   } else if (sort === 'price_desc') {
-    filtered.sort((a, b) => (b.price || 0) - (a.price || 0));
+    filtered.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
   } else {
-    filtered.sort((a, b) => (b.scraped_at || 0) - (a.scraped_at || 0)); // Sort by newest scraped
+    filtered.sort((a, b) => (Number(b.scraped_at) || 0) - (Number(a.scraped_at) || 0));
   }
 
   totalProducts = filtered.length;
 
-  // 4. SECURE DATA MAPPING TO FRONTEND COMPONENT PROPS
   liveProducts = filtered.map((p: any) => {
-    let mainImage = '/images/system/fallback.webp'; // Immediate fallback
+    let mainImage = '/images/system/fallback.webp'; 
     
-    // Safely parse the JSON string array without crashing the loop
     try {
       if (p.images_json && p.images_json !== '[]') {
         const parsedImages = JSON.parse(p.images_json);
         if (parsedImages.length > 0) mainImage = parsedImages[0]; 
       }
-    } catch(e) {
-      // Silently catch bad JSON so the product still renders
-    }
+    } catch(e) {}
 
     return { 
       id: p.id, 
@@ -107,6 +99,8 @@ try {
       brand: p.brand || 'Symeno Select',
       category: p.category || 'Uncategorized',
       name: p.name,
+      title: p.name,
+      basePrice: p.price || 0, // Mapped for Svelte components
       price: p.price || 0,
       retail_price: p.price ? p.price * 1.15 : 0, 
       image_url: mainImage

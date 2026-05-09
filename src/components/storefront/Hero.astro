@@ -6,12 +6,11 @@ const { deal } = Astro.props;
 let displayDeal = null;
 let dbError = false;
 
-// 1. EDGE AUTONOMY: Fetch latest HasData asset
 if (!deal) {
   try {
-    const db = env.DB as any;
+    // ARMOR: Fallback binding
+    const db = (env.DB as any) || (Astro.locals as any).runtime?.env?.DB;
     if (db) {
-      // 100% CLAUDE SCHEMA UPDATE: Swapped rapidapi_cache to catalog_cache
       const { results } = await db.prepare("SELECT id, slug, name, brand, price, images_json FROM catalog_cache WHERE images_json IS NOT NULL AND images_json != '[]' ORDER BY scraped_at DESC LIMIT 1").all();
       
       if (results.length > 0) {
@@ -28,9 +27,9 @@ if (!deal) {
         displayDeal = {
           slug: p.slug || p.id,
           brand: p.brand || 'Symeno Select',
-          title: p.name, // Mapped to maintain compatibility with your original template below
-          basePrice: p.price || 0,
-          retailPrice: p.price ? p.price * 1.15 : 0, // Generated MSRP
+          title: p.name, 
+          basePrice: p.price || 0, // FIXED: Now outputs a secure number
+          retailPrice: p.price ? p.price * 1.15 : 0, 
           images: mainImage ? [mainImage] : ['https://placehold.co/600x400/1a1a1a/36F4A4?text=Image+Unavailable']
         };
       }
@@ -43,7 +42,6 @@ if (!deal) {
   displayDeal = deal;
 }
 
-// 2. FAIL-SAFE GRACEFUL DEGRADATION
 if (!displayDeal) {
   displayDeal = {
     slug: 'shop',

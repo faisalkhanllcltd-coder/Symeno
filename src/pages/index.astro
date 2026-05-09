@@ -21,12 +21,10 @@ let storeCategories: any[] = [];
 const cities = ['London, UK', 'Dubai, UAE', 'Toronto, CA', 'New York, US', 'Sydney, AU'];
 
 try {
-  const db = env.DB as any;
+  // ARMOR: Fallback to Astro.locals if standard env binding drops
+  const db = (env.DB as any) || (Astro.locals as any).runtime?.env?.DB;
 
   if (db) {
-    // ----------------------------------------------------
-    // QUERY 1: FETCH TOP PRODUCTS (100% CLAUDE SCHEMA)
-    // ----------------------------------------------------
     const { results: productResults } = await db.prepare("SELECT * FROM catalog_cache WHERE in_stock = 1 LIMIT 10").all();
 
     const mappedProducts = productResults.map((p: any) => {
@@ -40,14 +38,16 @@ try {
 
       return {     
         id: p.id,
-        slug: p.slug, 
+        slug: p.slug || p.id, 
         brand: p.brand || 'Symeno Select',
+        title: p.name, // FIXED: Map name to title for components
         name: p.name,
         description: p.description || p.name,
+        basePrice: p.price || 0, // FIXED: Map price to basePrice
         price: p.price || 0,
         retailPrice: p.price ? p.price * 1.15 : 0, 
         in_stock: p.in_stock,
-        images: firstImage ? [firstImage] : [],
+        images: firstImage ? [firstImage] : ['https://placehold.co/600x400/1a1a1a/36F4A4?text=Image+Unavailable'],
       };
     });
 
@@ -60,15 +60,12 @@ try {
       .slice(0, 5)
       .map((p: any, i: number) => {
         const city = cities[i % cities.length];
-        const savings = p.retailPrice && p.retailPrice > p.price 
-          ? Math.floor(p.retailPrice - p.price) 
-          : Math.floor(p.price * 0.2);
+        const savings = p.retailPrice && p.retailPrice > p.basePrice 
+          ? Math.floor(p.retailPrice - p.basePrice) 
+          : Math.floor(p.basePrice * 0.2);
         return `${city} • A customer just saved $${savings} on ${p.brand} goods`;
       });
 
-    // ----------------------------------------------------
-    // QUERY 2: AGGREGATE REAL CATEGORIES (100% CLAUDE SCHEMA)
-    // ----------------------------------------------------
     const { results: catResults } = await db.prepare(`
       SELECT 
         category as name, 
@@ -84,7 +81,6 @@ try {
     `).all();
 
     storeCategories = catResults.map((c: any) => {
-      // Artificial UI MSRP for the category grid
       const maxR = c.maxBase ? c.maxBase * 1.15 : 0;
       const minB = c.minBase || 0;
       const discountCalc = maxR > minB ? Math.floor(((maxR - minB) / maxR) * 100) : 15;
