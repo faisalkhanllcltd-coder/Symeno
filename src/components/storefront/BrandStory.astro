@@ -2,37 +2,39 @@
 // src/components/storefront/BrandStory.astro
 ---
 
-<section class="w-full overflow-hidden bg-base py-12 sm:py-16 lg:py-24">
+<section class="relative w-full overflow-hidden bg-base py-16 sm:py-20 lg:py-32 border-t border-outline/30">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 items-center gap-10 sm:gap-12 md:grid-cols-12 lg:gap-16">
+    <div class="grid grid-cols-1 items-center gap-12 md:grid-cols-12 lg:gap-20">
       
-      <div class="relative order-2 md:order-1 md:col-span-5">
+      <div class="relative order-2 md:order-1 md:col-span-5 flex flex-col justify-center">
         <div
-          class="pointer-events-none absolute -top-10 -left-6 sm:-top-16 sm:-left-12 font-mono text-[8rem] sm:text-[12rem] font-bold text-content/[0.02] select-none"
+          class="pointer-events-none absolute -top-12 -left-8 z-0 font-mono text-[9rem] sm:text-[14rem] font-black text-content opacity-5 select-none leading-none tracking-tighter"
         >
           34%
         </div>
+        
         <div class="relative z-10 pl-2 sm:pl-0">
           <span
-            class="mb-2 sm:mb-4 block font-mono text-5xl sm:text-6xl font-bold tracking-tighter text-content lg:text-7xl"
+            class="mb-3 block font-mono text-6xl sm:text-7xl font-bold tracking-tighter text-content lg:text-8xl"
             >34<span class="text-brand">%</span></span
           >
           <p
-            class="max-w-[180px] sm:max-w-[200px] font-mono text-xs tracking-widest text-content-muted uppercase leading-relaxed"
+            class="max-w-[220px] font-mono text-[11px] sm:text-[12px] tracking-widest text-content-muted uppercase leading-relaxed font-bold border-l-2 border-brand/50 pl-4"
           >
-            Average customer savings across all categories since launch.
+            Average customer savings across all hardware categories since launch.
           </p>
         </div>
       </div>
 
-      <div class="order-1 md:order-2 md:col-span-7">
+      <div class="relative z-20 order-1 md:order-2 md:col-span-7 flex flex-col min-w-0">
         <h2
-          class="mb-5 sm:mb-8 text-2xl leading-tight font-bold tracking-tight text-content sm:text-3xl lg:text-4xl"
+          class="mb-6 text-3xl leading-tight font-bold tracking-tight text-content sm:text-4xl lg:text-5xl text-balance"
         >
           Built for people who refuse to overpay.
         </h2>
+        
         <div
-          class="max-w-xl space-y-4 sm:space-y-5 text-sm sm:text-base leading-relaxed font-light text-content-muted"
+          class="max-w-2xl space-y-5 text-[14px] sm:text-[16px] leading-relaxed text-content-muted font-medium"
         >
           <p>
             Symeno wasn't founded by retailers. It was founded by analysts who
@@ -49,12 +51,13 @@
             structural best price, every single day.
           </p>
         </div>
-        <div class="mt-8 sm:mt-10">
+        
+        <div class="mt-10">
           <a
             href="/about"
-            class="group inline-flex items-center gap-2 border-b border-brand/40 pb-1 text-xs sm:text-sm font-bold text-content transition-colors hover:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+            class="group inline-flex items-center gap-3 border-b border-brand/40 pb-1.5 text-[12px] sm:text-[14px] font-bold tracking-widest uppercase text-content transition-all hover:border-brand hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
           >
-            Our Sourcing Ethics <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
+            Our Sourcing Ethics <span class="transition-transform group-hover:translate-x-2 text-brand">&rarr;</span>
           </a>
         </div>
       </div>

@@ -1,26 +1,25 @@
 <script lang="ts">
-  // THE FIX: Removed the .ts extension to prevent Vite build failure
   import { cart } from '../../stores/cart.svelte.ts';
 
-  // Svelte 5 Runes API for incoming props
   let { product } = $props<{ product: any }>();
   
   let status = $state<'idle' | 'adding' | 'success'>('idle');
 
   function handleAdd() {
-    if (product.stock <= 0) return;
+    if (!product || product.stockStatus <= 0) return;
 
     status = 'adding';
 
+    // THE FIX: Aligned perfectly with our D1 Edge Database schema
     cart.addItem(
       {
         id: product.id,
-        productId: product.productId,
+        slug: product.slug,
         brand: product.brand,
         name: product.name,
         price: product.price,
-        was: product.was,
-        stock: product.stock,
+        retailPrice: product.retailPrice,
+        stockStatus: product.stockStatus,
         image: product.image,
       },
       1
@@ -37,20 +36,20 @@
 
 <button
   onclick={handleAdd}
-  disabled={product.stock <= 0 || status !== 'idle'}
-  class="w-full py-4 text-sm font-bold tracking-widest uppercase shadow-[0_10px_20px_-10px_var(--color-brand)] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand
+  disabled={product.stockStatus <= 0 || status !== 'idle'}
+  class="w-full min-h-[48px] rounded py-3 text-sm font-bold tracking-widest uppercase transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus:ring-offset-2 focus:ring-offset-base
     {status === 'success'
-    ? 'bg-content text-base shadow-[0_0_20px_var(--color-content)]'
-    : 'bg-brand text-brand-dark hover:opacity-80'}
+    ? 'bg-content text-base shadow-[0_0_20px_rgba(var(--color-content-rgb),0.2)]'
+    : 'bg-brand text-brand-dark hover:opacity-90 shadow-[0_0_15px_rgba(54,244,164,0.15)] hover:shadow-[0_0_25px_rgba(54,244,164,0.3)]'}
     disabled:cursor-not-allowed disabled:opacity-50"
 >
   {#if status === 'success'}
-    Added to Secure Cart &check;
+    Allocation Secured &check;
   {:else if status === 'adding'}
     Processing...
-  {:else if product.stock <= 0}
-    Out of Stock
+  {:else if product.stockStatus <= 0}
+    Allocation Exhausted
   {:else}
-    Add to Secure Cart
+    Add to Cart
   {/if}
 </button>

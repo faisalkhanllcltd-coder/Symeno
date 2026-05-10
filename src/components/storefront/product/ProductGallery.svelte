@@ -29,22 +29,22 @@
       {#each images as img, i}
         <button
           onclick={() => setIndex(i)}
-          class="bg-base relative aspect-square w-16 lg:w-full shrink-0 overflow-hidden rounded-xl border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand
+          class="bg-surface relative aspect-square w-16 lg:w-full shrink-0 overflow-hidden rounded-xl border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand
           {activeIndex === i ? 'border-brand ring-2 ring-brand/20' : 'border-transparent hover:border-outline opacity-70 hover:opacity-100'}"
           aria-label={`Select view ${i + 1}`}
         >
-          <img src={img} alt={`${name} - Thumbnail ${i + 1}`} class="h-full w-full object-cover" loading="lazy" />
+          <img src={img} alt={`${name} - Thumbnail ${i + 1}`} class="h-full w-full object-contain p-1.5" loading="lazy" />
         </button>
       {/each}
     </div>
   {/if}
 
-  <div class="bg-base border-outline relative aspect-square w-full flex-1 overflow-hidden rounded-xl border shadow-sm">
+  <div class="bg-surface border-outline/50 relative aspect-square w-full flex-1 overflow-hidden rounded-xl border shadow-sm p-4 sm:p-8 flex items-center justify-center">
     {#if images.length > 0}
       <img
         src={images[activeIndex]}
         alt={`${name} - View ${activeIndex + 1}`}
-        class="h-full w-full object-cover transition-opacity duration-300"
+        class="h-full w-full object-contain transition-opacity duration-300 drop-shadow-sm"
         loading="eager"
         decoding="sync"
       />

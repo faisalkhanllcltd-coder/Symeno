@@ -1,4 +1,4 @@
-﻿---
+---
 import { env } from "cloudflare:workers";
 import StorefrontLayout from '../layouts/Storefront.astro';
 import Hero from '../components/storefront/Hero.astro';   
@@ -21,34 +21,46 @@ try {
   const db = (env.DB as any) || (Astro.locals as any).runtime?.env?.DB;
 
   if (db) {
-    const { results: productResults } = await db.prepare("SELECT * FROM catalog_cache WHERE in_stock = 1 LIMIT 10").all();
+    // We pull extra rows (15 instead of 10) so we have backup inventory if we filter things out
+    const { results: productResults } = await db.prepare("SELECT * FROM catalog_cache WHERE in_stock = 1 LIMIT 15").all();
 
-    const mappedProducts = productResults.map((p: any) => {
-      let firstImage = '';
-      try {
-        if (p.images_json) {
-          const parsed = JSON.parse(p.images_json);
-          if (parsed.length > 0) firstImage = parsed[0];
-        }
-      } catch(e) {}
+    // THE FIX: The Curation Blacklist
+    // Add any part of a product name here to instantly banish it from the homepage
+    const HOMEPAGE_BLACKLIST = ['kitchenaid', 'kitchen aid'];
 
-      return {     
-        id: p.id,
-        slug: p.slug || p.id, 
-        brand: p.brand || 'Symeno Select',
-        title: p.name, 
-        name: p.name,
-        description: p.description || p.name,
-        basePrice: p.price || 0, 
-        price: p.price || 0,
-        retailPrice: p.price ? p.price * 1.15 : 0, 
-        in_stock: p.in_stock,
-        images: firstImage ? [firstImage] : ['/assets/placeholders/product-unavailable.webp'],
-      };
-    });
+    const mappedProducts = productResults
+      .map((p: any) => {
+        let firstImage = '';
+        try {
+          if (p.images_json) {
+            const parsed = JSON.parse(p.images_json);
+            if (parsed.length > 0) firstImage = parsed[0];
+          }
+        } catch(e) {}
+
+        return {     
+          id: p.id,
+          slug: p.slug || p.id, 
+          brand: p.brand || 'Symeno Select',
+          title: p.name, 
+          name: p.name,
+          description: p.description || p.name,
+          basePrice: p.price || 0, 
+          price: p.price || 0,
+          retailPrice: p.price ? p.price * 1.15 : 0, 
+          in_stock: p.in_stock,
+          images: firstImage ? [firstImage] : ['/assets/placeholders/product-unavailable.webp'],
+        };
+      })
+      // Intercept and purge bad products before they hit the UI
+      .filter((product: any) => {
+        const titleLower = product.name.toLowerCase();
+        return !HOMEPAGE_BLACKLIST.some(badWord => titleLower.includes(badWord));
+      });
 
     if (mappedProducts.length > 0) {
       heroDeal = mappedProducts[0];
+      // Safely slice the next 4 products for the grid
       featured = mappedProducts.slice(1, 5);
     }
 

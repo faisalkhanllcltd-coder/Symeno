@@ -21,47 +21,51 @@ let descriptionBullets: string[] = [];
 let errorMessage = '';
 
 try {
-  const db = env.DB as any;      
+  const db = (env.DB as any) || (Astro.locals as any).runtime?.env?.DB;      
   if (!db) {
     errorMessage = 'Database connection offline.';        
   } else {
-    // 1. Fetch Main Product (100% CLAUDE SCHEMA)
     const rawProduct = await db.prepare("SELECT * FROM catalog_cache WHERE slug = ?1").bind(slug).first();
 
     if (rawProduct) {
       let parsedImages = [];
       try {
-        if (rawProduct.images_json) parsedImages = JSON.parse(rawProduct.images_json);
+        if (rawProduct.images_json && rawProduct.images_json !== '[]') {
+          parsedImages = JSON.parse(rawProduct.images_json);
+        }
       } catch(e) { console.error('Image parse failed', e); }
       
-      // Fallback if the array is empty
-      if (parsedImages.length === 0 && rawProduct.source_url) {
-        parsedImages = ['/images/system/fallback.webp'];
+      if (parsedImages.length === 0) {
+        parsedImages = ['/assets/placeholders/product-unavailable.webp'];
       }
 
       product = {
         id: rawProduct.id,
         slug: rawProduct.slug,
         brand: rawProduct.brand ?? 'Symeno Select',    
-        category: rawProduct.category,
+        category: rawProduct.category || 'Hardware',
         name: rawProduct.name,
         description: rawProduct.description || rawProduct.name,
-        price: rawProduct.price || 0,
-        retailPrice: (rawProduct.price || 0) * 1.15, // Artificial 15% MSRP padding for UI
+        price: Number(rawProduct.price) || 0,
+        retailPrice: Number(rawProduct.price) > 0 ? Number(rawProduct.price) * 1.15 : 0, 
         in_stock: rawProduct.in_stock,
-        rating: rawProduct.rating,
-        reviewCount: rawProduct.review_count,
+        rating: rawProduct.rating || 0,
+        reviewCount: rawProduct.review_count || 0,
         images: parsedImages
       };
 
-      // Extract bullet points dynamically from the HasData description block
-      if (product.description && product.description.length > 50) {
-        descriptionBullets = product.description
-          .split(/(?<=\.)\s+/)
-          .filter((sentence: string) => sentence.trim().length > 5);
+      if (product.description && product.description.length > 20) {
+        let rawText = product.description.replace(/<[^>]*>?/gm, ''); 
+        if (rawText.includes('\n')) {
+          descriptionBullets = rawText.split('\n');
+        } else {
+          descriptionBullets = rawText.split(/(?<=\.)\s+/);
+        }
+        descriptionBullets = descriptionBullets
+          .map((s: string) => s.trim())
+          .filter((s: string) => s.length > 5);
       }
 
-      // 2. Fetch Related Products (100% CLAUDE SCHEMA)
       const { results: related } = await db.prepare(
         "SELECT slug, name, brand, price, images_json FROM catalog_cache WHERE category = ?1 AND id != ?2 LIMIT 4"
       ).bind(product.category, product.id).all();
@@ -69,16 +73,16 @@ try {
       relatedProducts = related.map((p: any) => {
         let relImages = [];
         try {
-          if (p.images_json) relImages = JSON.parse(p.images_json);
+          if (p.images_json && p.images_json !== '[]') relImages = JSON.parse(p.images_json);
         } catch(e) {}
         
         return {
           slug: p.slug,
           name: p.name,
           brand: p.brand || 'Symeno Select',
-          price: p.price,
-          retailPrice: p.price * 1.15,
-          image: relImages.length > 0 ? relImages[0] : '/images/system/fallback.webp'
+          price: Number(p.price) || 0,
+          retailPrice: Number(p.price) > 0 ? Number(p.price) * 1.15 : 0,
+          image: relImages.length > 0 ? relImages[0] : '/assets/placeholders/product-unavailable.webp'
         };
       });
     }
@@ -134,16 +138,14 @@ const productSpecs = [
     )
   }
 
-  <div class="relative mx-auto max-w-7xl px-4 py-12 transition-colors duration-300 sm:px-6 lg:px-8">
+  <div class="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
     <div
-      class="pointer-events-none absolute inset-0 opacity-[0.03] transition-opacity duration-300"
-      style="background-image: linear-gradient(var(--color-content) 1px, transparent 1px), linear-gradient(90deg, var(--color-content) 1px, transparent 1px); background-size: 32px 32px;"
-    >
-    </div>
+      class="pointer-events-none absolute inset-0 opacity-[0.02] bg-[linear-gradient(var(--color-outline)_1px,transparent_1px),linear-gradient(90deg,var(--color-outline)_1px,transparent_1px)] bg-[size:32px_32px]"
+    ></div>
 
     {
       errorMessage && (
-        <div class="bg-brand-alert/10 border-brand-alert/30 text-brand-alert mb-12 rounded-xl border p-6 text-center font-mono tracking-widest uppercase">
+        <div class="bg-brand-alert/10 border-brand-alert/30 text-brand-alert relative z-10 mb-8 rounded border p-5 text-center font-mono text-[10px] sm:text-xs tracking-widest uppercase">
           {errorMessage}
         </div>
       )
@@ -151,10 +153,10 @@ const productSpecs = [
 
     {
       !product && !errorMessage && (
-        <div class="bg-surface border-outline mb-12 rounded-xl border p-12 text-center">
-          <h1 class="text-content font-mono text-2xl tracking-widest uppercase mb-4">Asset Not Found</h1>
-          <p class="text-content-muted">This unit is not currently indexed in our edge cache.</p>
-          <a href="/shop" class="text-brand mt-6 inline-block font-bold hover:underline">Return to Catalog</a>      
+        <div class="bg-surface border-outline/50 relative z-10 mb-12 rounded-lg border p-12 text-center">
+          <h1 class="text-content mb-4 font-mono text-xl sm:text-2xl font-bold tracking-widest uppercase">Asset Not Found</h1>
+          <p class="text-content-muted font-mono text-xs">This unit is not currently indexed in our edge cache.</p>
+          <a href="/shop" class="text-brand mt-6 inline-block font-mono text-xs tracking-widest uppercase font-bold hover:underline min-h-[44px] focus:outline-none">Return to Catalog</a>      
         </div>
       )
     }
@@ -177,60 +179,64 @@ const productSpecs = [
             style="display:none;"
           />
 
-          <nav class="text-content-muted relative z-10 mb-8 flex font-mono text-[10px] tracking-widest uppercase transition-colors duration-300">
-            <a href="/" class="hover:text-brand transition-colors focus:outline-none">Base</a>
+          <nav class="text-content-muted relative z-10 mb-6 flex flex-wrap items-center font-mono text-[9px] sm:text-[10px] tracking-widest uppercase">
+            <a href="/" class="hover:text-content transition-colors focus:outline-none min-h-[44px] flex items-center">Base</a>
             <span class="mx-2">/</span>
-            <a href="/shop" class="hover:text-brand transition-colors focus:outline-none">Catalog</a>
+            <a href="/shop" class="hover:text-content transition-colors focus:outline-none min-h-[44px] flex items-center">Catalog</a>
             <span class="mx-2">/</span>
-            <a href={`/shop/${product.categorySlug || ''}`} class="hover:text-brand transition-colors focus:outline-none">{product.category}</a>
-            <span class="mx-2">/</span>
-            <span class="text-brand max-w-[150px] truncate sm:max-w-none">{product.brand}</span>
+            <span class="text-content font-bold truncate max-w-[120px] sm:max-w-[200px] min-h-[44px] flex items-center">{product.brand}</span>
           </nav>
 
-          <div class="relative z-10 mb-20 flex flex-col gap-12 lg:flex-row lg:gap-16 lg:items-start">
+          <div class="relative z-10 mb-16 flex flex-col gap-10 lg:flex-row lg:gap-16">
             
-            <div class="w-full lg:w-6/12 lg:sticky lg:top-24 shrink-0 relative">
-              <ProductGallery
-                client:load
-                images={product.images as string[]}
-                name={product.name as string}
-              />
-              <div class="absolute top-4 right-4 z-20"> 
-                <WishlistButton
+            <div class="w-full lg:w-1/2 shrink-0 relative">
+              <div class="lg:sticky lg:top-24">
+                <ProductGallery
                   client:load
-                  productId={product.id as string}
-                  initialState={isWishlisted as boolean}    
+                  images={product.images as string[]}
+                  name={product.name as string}
                 />
+                <div class="absolute top-4 right-4 z-20"> 
+                  <WishlistButton
+                    client:load
+                    productId={product.id as string}
+                    initialState={isWishlisted as boolean}   
+                  />
+                </div>
               </div>
             </div>
 
-            <div class="flex-1 flex flex-col">    
-              <h1 class="text-content mb-4 text-2xl sm:text-3xl lg:text-4xl leading-tight font-bold tracking-tight uppercase transition-colors duration-300">
+            <div class="flex-1 flex flex-col w-full lg:w-1/2 max-w-xl">    
+              
+              <div class="mb-3 flex items-center gap-2">
+                <span class="text-content-muted font-mono text-[10px] tracking-widest uppercase">{product.brand}</span>
+              </div>
+
+              <h1 class="text-content mb-4 text-xl sm:text-2xl lg:text-3xl font-bold leading-snug tracking-tight text-balance">
                 {product.name}
               </h1>
 
-              {/* Review Metric Injection */}
-              {product.rating && (
-                <div class="mb-4 flex items-center gap-2 font-mono text-xs text-brand">
-                  <span class="flex items-center">
-                     {'★'.repeat(Math.round(product.rating))}{'☆'.repeat(5 - Math.round(product.rating))}
+              {product.rating > 0 && (
+                <div class="mb-4 flex items-center gap-2 font-mono text-[10px] sm:text-xs text-brand">
+                  <span class="flex items-center tracking-widest text-brand">
+                      {'★'.repeat(Math.round(product.rating))}{'☆'.repeat(5 - Math.round(product.rating))}
                   </span>
-                  <span>{product.rating} / 5</span>
+                  <span class="font-bold text-content">{product.rating} / 5</span>
                   <span class="text-content-muted">({product.reviewCount} Reviews)</span>
                 </div>
               )}
 
-              <div class="mb-6 flex flex-wrap items-end gap-4 font-mono transition-colors duration-300 border-b border-outline/50 pb-6">
-                <span class="text-brand text-3xl sm:text-4xl font-bold tracking-tighter transition-colors duration-300">        
+              <div class="mb-6 flex flex-wrap items-baseline gap-3 sm:gap-4 border-b border-outline/50 pb-6">
+                <span class="text-brand text-3xl sm:text-4xl font-bold tracking-tight">        
                   ${Number(product.price).toFixed(2)}
                 </span>
 
                 {hasDiscount && (
-                  <div class="flex flex-col pb-1 transition-colors duration-300">
-                    <span class="text-content-muted text-[10px] tracking-widest uppercase line-through">
-                      Retail: ${Number(product.retailPrice).toFixed(2)}
+                  <div class="flex items-center gap-3">
+                    <span class="text-content-muted text-[10px] sm:text-xs line-through">
+                      ${Number(product.retailPrice).toFixed(2)}
                     </span>
-                    <span class="text-brand-alert text-xs font-bold tracking-widest uppercase transition-colors duration-300">
+                    <span class="bg-brand/10 border border-brand/20 text-brand px-2 py-1 text-[9px] font-bold tracking-widest uppercase rounded-sm">
                       Save ${Math.floor(product.retailPrice - product.price)}
                     </span>
                   </div>
@@ -239,130 +245,141 @@ const productSpecs = [
 
               <div class="mb-8">
                 {isInStock ? (
-                  <span class="inline-flex items-center gap-1.5 rounded bg-brand/10 px-2.5 py-1 font-mono text-[10px] tracking-widest text-brand uppercase border border-brand/20">
+                  <span class="inline-flex items-center gap-1.5 rounded-sm bg-brand/10 px-2 py-1 font-mono text-[9px] sm:text-[10px] font-bold tracking-widest text-brand uppercase border border-brand/20">
                     <span class="h-1.5 w-1.5 rounded-full bg-brand animate-pulse"></span>
                     Available for Dispatch
                   </span>
                 ) : (
-                  <span class="inline-flex items-center gap-1.5 rounded bg-brand-alert/10 px-2.5 py-1 font-mono text-[10px] tracking-widest text-brand-alert uppercase border border-brand-alert/20">
+                  <span class="inline-flex items-center gap-1.5 rounded-sm bg-brand-alert/10 px-2 py-1 font-mono text-[9px] sm:text-[10px] font-bold tracking-widest text-brand-alert uppercase border border-brand-alert/20">
                     Allocation Exhausted
                   </span>
                 )}
               </div>
 
-              {descriptionBullets.length > 0 && (
-                <div class="mb-8 space-y-3">
-                  <h3 class="font-mono text-xs tracking-widest text-content-muted uppercase">Product Highlights</h3>
-                  <ul class="space-y-2">
-                    {descriptionBullets.map((bullet) => (
-                      <li class="flex items-start gap-3 text-sm text-content/90 leading-relaxed">
-                        <span class="text-brand mt-2 h-1.5 w-1.5 shrink-0 rounded-full"></span>
-                        <span>{bullet.trim()}{bullet.endsWith('.') ? '' : '.'}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
               {isInStock ? (
-                <div id="main-add-to-cart" class="mb-12 flex flex-col gap-4 bg-surface/30 p-5 rounded-xl border border-outline/50">
+                <div id="main-add-to-cart" class="flex flex-col gap-4 bg-surface border border-outline/60 p-4 sm:p-5 rounded-lg shadow-sm">
                   <button
                     type="button"
                     id="add-to-cart-btn"
-                    class="bg-brand text-brand-dark w-full rounded-md py-4 text-sm font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(54,244,164,0.15)] transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_25px_rgba(54,244,164,0.3)] focus:outline-none"
+                    class="bg-brand text-brand-dark w-full min-h-[48px] rounded py-3 text-sm font-bold tracking-widest uppercase transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_20px_rgba(54,244,164,0.2)] focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-base"
                     data-product-id={product.id}
                   >
                     Add to Cart
                   </button>
                   
-                  <div class="text-content-muted flex items-center justify-center gap-6 font-mono text-[10px] tracking-widest uppercase transition-colors duration-300 mt-2">
+                  <div class="text-content-muted flex items-center justify-center gap-4 sm:gap-6 font-mono text-[8px] sm:text-[9px] tracking-widest uppercase">
                     <div class="flex items-center gap-1.5">     
-                      <svg class="text-brand h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />      
-                      </svg> Verified Authentic
+                      <svg class="text-content h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Verified Authentic
                     </div>
                     <div class="flex items-center gap-1.5">     
-                      <svg class="text-brand h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />      
-                      </svg> Fast Dispatch
+                      <svg class="text-content h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> Fast Dispatch
                     </div>
                   </div>
                 </div>
               ) : (
-                <div class="bg-surface border-brand/30 shadow-ambient group relative mb-12 overflow-hidden rounded-xl border p-6 transition-colors duration-300">
+                <div class="bg-surface border-brand/30 shadow-sm relative overflow-hidden rounded-lg border p-5 sm:p-6 transition-colors duration-300">
                   <div class="from-brand/5 pointer-events-none absolute top-0 right-0 h-full w-32 bg-gradient-to-l to-transparent" />
                   <div class="mb-4">
-                    <h3 class="text-brand mb-1 text-sm font-bold tracking-widest uppercase">Join Waitlist</h3> 
-                    <p class="text-content-muted font-mono text-xs">Due to high demand, this unit is currently backordered. Secure your priority position for the next supply drop.</p>
+                    <h3 class="text-content mb-1 text-xs font-bold tracking-widest uppercase">Join Waitlist</h3> 
+                    <p class="text-content-muted font-mono text-[10px] sm:text-xs">Due to high demand, this unit is currently backordered. Secure your priority position for the next supply drop.</p>
                   </div>
                   <div class="flex flex-col gap-3">
                     <input
                       type="email" 
                       id="waitlist-email"
                       placeholder="ENTER COMM LINK (EMAIL)..."
-                      class="bg-base border-outline text-content focus:ring-brand shadow-ambient w-full rounded-md border px-4 py-3 font-mono text-sm transition-colors duration-300 focus:ring-1 focus:outline-none"
+                      class="bg-base border-outline/60 text-content placeholder:text-content-muted focus:border-brand focus:ring-brand w-full min-h-[44px] rounded-md border px-4 py-2 font-mono text-[10px] sm:text-xs transition-colors duration-300 focus:ring-1 focus:outline-none"
                     />
                     <button
                       type="button"
                       id="join-waitlist-btn"
-                      class="bg-brand text-brand-dark w-full rounded-md py-4 text-sm font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(54,244,164,0.15)] transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_25px_rgba(54,244,164,0.3)] focus:outline-none"
-                      data-product-id={product.id}
+                      class="bg-brand text-brand-dark w-full min-h-[48px] rounded py-3 text-xs font-bold tracking-widest uppercase transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_20px_rgba(54,244,164,0.2)] focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-base"
                     >
                       Secure Position
                     </button>
                   </div>
-                  <p id="waitlist-success" class="text-brand hidden mt-4 text-center font-mono text-xs tracking-widest uppercase">Protocol Accepted. You are on the list.</p>   
+                  <p id="waitlist-success" class="text-content hidden mt-4 text-center font-bold font-mono text-[9px] tracking-widest uppercase">Protocol Accepted. You are on the list.</p>   
                 </div>
               )}
-
-              <div class="overflow-hidden rounded-xl border border-outline bg-surface shadow-sm mb-12">
-                <div class="px-6 py-5 border-b border-outline bg-base/50">
-                  <h2 class="text-sm font-bold tracking-widest text-content uppercase">Detailed Specifications</h2>
-                </div>
-                <div class="divide-y divide-outline/50">
-                  {productSpecs.map((spec) => (
-                    <div class="grid grid-cols-1 sm:grid-cols-3 px-6 py-4 transition-colors hover:bg-base/30 gap-1 sm:gap-4">
-                      <div class="font-mono text-[10px] sm:text-xs text-content-muted uppercase tracking-wider flex items-center">{spec.label}</div>
-                      <div class="col-span-2 text-sm font-medium text-content">{spec.value}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
 
             </div>
           </div>
 
+          <div class="relative z-10 mb-16 pt-12 border-t border-outline/30 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+            
+            <div>
+              {descriptionBullets.length > 0 ? (
+                <div class="space-y-4">
+                  <h3 class="font-mono text-[11px] font-bold tracking-widest text-content uppercase border-b border-outline/30 pb-3">Product Highlights</h3>
+                  <ul class="space-y-3">
+                    {descriptionBullets.map((bullet) => (
+                      <li class="flex items-start gap-3 text-xs sm:text-sm text-content-muted leading-relaxed">
+                        <span class="text-brand mt-1.5 h-1 w-1 shrink-0 rounded-full bg-brand"></span>
+                        <span>{bullet.trim()}{bullet.endsWith('.') || bullet.endsWith('!') ? '' : '.'}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <div class="space-y-4">
+                  <h3 class="font-mono text-[11px] font-bold tracking-widest text-content uppercase border-b border-outline/30 pb-3">Product Highlights</h3>
+                  <p class="text-xs sm:text-sm text-content-muted italic">Detailed documentation currently unavailable.</p>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <div class="overflow-hidden rounded-lg border border-outline/50 bg-surface shadow-sm">
+                <div class="px-5 py-4 border-b border-outline/50 bg-base/30">
+                  <h3 class="font-mono text-[11px] font-bold tracking-widest text-content uppercase">Detailed Specifications</h3>
+                </div>
+                <div class="divide-y divide-outline/30">
+                  {productSpecs.map((spec) => (
+                    <div class="grid grid-cols-1 sm:grid-cols-3 px-5 py-3 transition-colors hover:bg-base/50 gap-1 sm:gap-4">
+                      <div class="font-mono text-[9px] sm:text-[10px] text-content-muted uppercase tracking-wider flex items-center">{spec.label}</div>
+                      <div class="col-span-2 text-xs sm:text-sm font-medium text-content">{spec.value}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+          </div>
+
           {relatedProducts.length > 0 && (
-            <div class="relative z-10 mb-20 pt-12 border-t border-outline">
-              <h2 class="mb-8 text-xl font-bold tracking-tighter text-content uppercase">Similar Items</h2>
-              <div class="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+            <div class="relative z-10 mb-16 pt-10 sm:pt-12 border-t border-outline/30">
+              <h2 class="mb-6 sm:mb-8 text-lg sm:text-xl font-bold tracking-tighter text-content uppercase">Similar Items</h2>
+              <div class="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">
                 {relatedProducts.map((rp) => (
-                  <div class="group relative flex flex-col focus-within:outline-none focus-within:ring-2 focus-within:ring-brand rounded-sm">
+                  <div class="group relative flex flex-col focus-within:outline-none focus-within:ring-2 focus-within:ring-brand rounded-md bg-surface border border-outline/60 p-3 sm:p-4 hover:border-content/30 transition-colors shadow-sm hover:shadow-[0_8px_25px_-8px_rgba(0,0,0,0.15)]">
                     <a href={`/shop/product/${rp.slug}`} class="absolute inset-0 z-10" aria-label={`View ${rp.name}`}></a>
 
-                    <div class="relative mb-4 flex aspect-square items-center justify-center overflow-hidden border border-outline bg-surface transition-colors group-hover:border-brand/50 rounded-xl">
+                    <div class="mb-3 flex items-start justify-between">
+                      <span class="text-content-muted font-mono text-[8px] sm:text-[9px] tracking-widest uppercase truncate max-w-[60%]">
+                        {rp.brand}
+                      </span>
                       {rp.retailPrice && rp.retailPrice > rp.price && (
-                        <div class="absolute top-2 left-2 z-20 border border-brand/30 bg-brand/10 px-1.5 py-0.5 text-[8px] font-bold tracking-widest text-brand uppercase backdrop-blur-sm">
-                          Save ${Math.floor(rp.retailPrice - rp.price)}
-                        </div>
+                        <span class="bg-brand/10 border border-brand/20 text-brand px-1.5 py-0.5 text-[7px] sm:text-[8px] font-bold tracking-widest uppercase rounded-sm">
+                          SAVE ${Math.floor(rp.retailPrice - rp.price)}
+                        </span>
                       )}
-                      {rp.image ? (
-                        <img src={rp.image} alt={rp.name} loading="lazy" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" />
+                    </div>
+
+                    <div class="bg-surface-hover border-outline/30 relative mb-3 sm:mb-4 flex aspect-square p-2 sm:p-4 items-center justify-center overflow-hidden border rounded transition-colors">
+                      {rp.image !== '/assets/placeholders/product-unavailable.webp' ? (
+                        <img src={rp.image} alt={rp.name} loading="lazy" class="h-full w-full object-contain transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" />
                       ) : (
-                        <span class="font-mono text-[10px] text-content-muted">No Image</span>
+                        <span class="font-mono text-[9px] sm:text-[10px] text-content-muted">Visual Missing</span>
                       )}
                     </div>
                     <div class="relative z-0 pointer-events-none flex flex-col flex-1">
-                      <span class="mb-1 truncate font-mono text-[9px] tracking-widest text-content-muted uppercase transition-colors group-hover:text-content">
-                        {rp.brand}
-                      </span>
-                      <h3 class="mb-1 truncate text-xs font-bold text-content transition-colors group-hover:text-brand">
+                      <h3 class="mb-2 truncate text-[10px] sm:text-xs font-bold text-content group-hover:underline">
                         {rp.name}
                       </h3>
                       <div class="mt-auto flex items-baseline gap-2 font-mono">
-                        <span class="text-sm font-bold text-brand">${rp.price.toFixed(2)}</span>
+                        <span class="text-[14px] sm:text-[16px] font-bold text-brand">${rp.price.toFixed(2)}</span>
                         {rp.retailPrice && rp.retailPrice > rp.price && (
-                          <span class="text-[9px] text-content-muted line-through">${rp.retailPrice.toFixed(2)}</span>
+                          <span class="text-[9px] sm:text-[10px] text-content-muted line-through">${rp.retailPrice.toFixed(2)}</span>
                         )}
                       </div>
                     </div>
@@ -372,7 +389,7 @@ const productSpecs = [
             </div>
           )}
 
-          <div class="relative z-10 mt-12 border-t border-outline pt-12">
+          <div class="relative z-10 mt-10 border-t border-outline/30 pt-10 sm:pt-12">
             <RecentlyViewed
               client:only="svelte"
               currentProductId={product.id as string}        
@@ -423,14 +440,12 @@ const productSpecs = [
       }
 
       cartBtn.innerText = 'ADDED TO CART ✓';
-      cartBtn.classList.add('bg-transparent', 'border', 'border-brand', 'text-brand');
-      cartBtn.classList.remove('bg-brand', 'text-brand-dark');
+      cartBtn.classList.add('bg-brand', 'text-brand-dark', 'shadow-[0_0_20px_rgba(54,244,164,0.3)]');
       
       setTimeout(() => {
         cartBtn.innerText = originalText;
         if (cartBtn instanceof HTMLButtonElement) cartBtn.disabled = false;
-        cartBtn.classList.remove('bg-transparent', 'border', 'border-brand', 'text-brand');
-        cartBtn.classList.add('bg-brand', 'text-brand-dark');
+        cartBtn.classList.remove('shadow-[0_0_20px_rgba(54,244,164,0.3)]');
       }, 2000);
     }, 400);
   });
