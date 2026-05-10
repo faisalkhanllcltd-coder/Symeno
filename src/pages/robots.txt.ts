@@ -1,4 +1,4 @@
-﻿import type { APIRoute } from 'astro';
+import type { APIRoute } from 'astro';
 
 export const GET: APIRoute = ({ site }) => {
   const robotsTxt = `User-agent: *
@@ -9,7 +9,7 @@ Disallow: /api/
 Disallow: /auth/
 Disallow: /checkout/
 
-Sitemap: ${site ? new URL('sitemap.xml', site).href : 'https://symeno.com/sitemap.xml'}`.trim();
+Sitemap: https://symeno.com/sitemap.xml`.trim();
 
   return new Response(robotsTxt, { headers: { 'Content-Type': 'text/plain' } });
 };

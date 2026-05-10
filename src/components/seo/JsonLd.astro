@@ -2,20 +2,43 @@
 // src/components/seo/JsonLd.astro
 
 interface Props {
-  schema: Record<string, any>;
+  schema?: Record<string, any>;
 }
 
 const { schema } = Astro.props;
 
-// Ensure the schema.org context is universally applied
-const structuredData = {
+const orgSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "SYMENO LLC",
+  "url": "https://symeno.com",
+  "email": "contact@symeno.com",
+  "telephone": "+13073107918",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "30 N Gould St",
+    "addressLocality": "Sheridan",
+    "addressRegion": "WY",
+    "postalCode": "82801",
+    "addressCountry": "US"
+  }
+};
+
+const structuredData = schema ? {
   '@context': 'https://schema.org',
   ...schema,
-};
+} : null;
 ---
 
 <script
   type="application/ld+json"
   is:inline
+  set:html={JSON.stringify(orgSchema)}
+/>
+{structuredData && (
+<script
+  type="application/ld+json"
+  is:inline
   set:html={JSON.stringify(structuredData)}
 />
+)}

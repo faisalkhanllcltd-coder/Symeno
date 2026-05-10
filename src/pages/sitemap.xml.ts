@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 
 export const GET: APIRoute = async ({ site }) => {
-  const baseUrl = site ? site.toString() : 'https://www.symeno.com';
+  const baseUrl = 'https://symeno.com';
 
   // In production, fetch your live products and categories from D1 here.
   const staticPages = [

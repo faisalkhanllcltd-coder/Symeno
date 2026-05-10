@@ -19,7 +19,7 @@ const {
   price,
 } = Astro.props;
 
-const siteOrigin = Astro.site || Astro.url.origin;
+const siteOrigin = 'https://symeno.com';
 const imageUrl = new URL(image, siteOrigin);
 ---
 
@@ -33,6 +33,7 @@ const imageUrl = new URL(image, siteOrigin);
 <link rel="canonical" href={canonicalUrl} />
 
 {/* Open Graph */}
+<meta property="og:site_name" content="SYMENO" />
 <meta property="og:type" content={type} />
 <meta property="og:url" content={canonicalUrl} />
 <meta property="og:title" content={title} />
