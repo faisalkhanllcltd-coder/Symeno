@@ -41,7 +41,10 @@ export const GET: APIRoute = async ({ request }) => {
 
     return new Response(JSON.stringify(results), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=60' // THE FIX: Added Cache-Control to offload D1
+      },
     });
   } catch (e: any) {
     return new Response(JSON.stringify({ error: 'Search telemetry failed.' }), {

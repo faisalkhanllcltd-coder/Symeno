@@ -21,13 +21,13 @@ const currentYear = new Date().getFullYear();
     />
   </head>
   <body
-    class="flex min-h-screen flex-col bg-[#F9FAFB] font-sans text-gray-900 antialiased selection:bg-[#10b981]/20 selection:text-black"
+    class="flex min-h-screen flex-col bg-base font-sans text-content antialiased selection:bg-brand/20 selection:text-content"
   >
     <header class="flex w-full shrink-0 items-center justify-center py-8">
       <a
         href="/"
-        class="text-3xl font-bold tracking-tighter text-black uppercase focus:outline-none"
-        >Symeno<span class="text-[#10b981]">.</span></a
+        class="text-3xl font-bold tracking-tighter text-content uppercase focus:outline-none"
+        >Symeno<span class="text-brand">.</span></a
       >
     </header>
 
@@ -39,18 +39,18 @@ const currentYear = new Date().getFullYear();
 
     <footer class="w-full shrink-0 py-8">
       <div
-        class="mx-auto flex max-w-7xl flex-col items-center justify-center gap-6 px-4 font-mono text-[10px] tracking-widest text-gray-400 uppercase md:flex-row"
+        class="mx-auto flex max-w-7xl flex-col items-center justify-center gap-6 px-4 font-mono text-[10px] tracking-widest text-content-muted uppercase md:flex-row"
       >
         <p>&copy; {currentYear} Symeno LLC.</p>
         <nav class="flex gap-6">
           <a
             href="/policies/privacy"
-            class="transition-colors hover:text-black focus:outline-none"
+            class="transition-colors hover:text-content focus:outline-none"
             >Privacy</a
           >
           <a
             href="/policies/terms"
-            class="transition-colors hover:text-black focus:outline-none"
+            class="transition-colors hover:text-content focus:outline-none"
             >Terms</a
           >
         </nav>

@@ -12,15 +12,15 @@ let activeProducts: any[] = [];
 try {
   const db = env.DB as any;
   if (db) {
-    // 100% CLAUDE SCHEMA: Search the catalog_cache for the specific brand
+    // THE FIX: Killed the SELECT * memory leak. Projected exact columns required.
     const { results } = await db.prepare(
-      "SELECT * FROM catalog_cache WHERE LOWER(brand) = LOWER(?1) OR LOWER(name) LIKE LOWER(?2) LIMIT 50"
+      "SELECT slug, name, category, price, images_json FROM catalog_cache WHERE LOWER(brand) = LOWER(?1) OR LOWER(name) LIKE LOWER(?2) LIMIT 50"
     ).bind(brand, `%${brand}%`).all();
     
     activeProducts = results.map((p: any) => {
-      let mainImage = '';
+      let mainImage = '/assets/placeholders/product-unavailable.webp'; // THE FIX: Correct placeholder routing
       try {
-        if (p.images_json) {
+        if (p.images_json && p.images_json !== '[]') {
           const parsedImages = JSON.parse(p.images_json);
           if (parsedImages.length > 0) mainImage = parsedImages[0];
         }
@@ -32,7 +32,7 @@ try {
         category: p.category || 'Hardware',
         price: p.price || 0,
         retailPrice: p.price ? p.price * 1.15 : 0,
-        image_url: mainImage || '/images/system/fallback.webp'
+        image_url: mainImage
       };
     });
   }
@@ -45,29 +45,27 @@ try {
   title={`${displayName} Hardware | Symeno`}
   description={`Verified wholesale arbitrage for ${displayName} hardware.`}
 >
-  <div class="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 md:py-16 lg:px-8">
+  <div class="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8">
     <div
-      class="pointer-events-none absolute inset-0 opacity-[0.02]"
-      style="background-image: linear-gradient(var(--color-outline) 1px, transparent 1px), linear-gradient(90deg, var(--color-outline) 1px, transparent 1px); background-size: 32px 32px;"
-    >
-    </div>
+      class="pointer-events-none absolute inset-0 opacity-[0.02] bg-[linear-gradient(var(--color-outline)_1px,transparent_1px),linear-gradient(90deg,var(--color-outline)_1px,transparent_1px)] bg-[size:32px_32px]"
+    ></div>
 
     <nav
       class="relative z-10 mb-6 flex font-mono text-[10px] tracking-widest text-content-muted uppercase"
     >
-      <a href="/" class="transition-colors hover:text-content">Base</a>
-      <span class="mx-2">/</span>
-      <a href="/brands" class="transition-colors hover:text-content">Directory</a>
-      <span class="mx-2">/</span>
-      <span class="text-brand">{displayName}</span>
+      <a href="/" class="transition-colors hover:text-content min-h-[44px] flex items-center focus:outline-none">Base</a>
+      <span class="mx-2 flex items-center">/</span>
+      <a href="/brands" class="transition-colors hover:text-content min-h-[44px] flex items-center focus:outline-none">Directory</a>
+      <span class="mx-2 flex items-center">/</span>
+      <span class="text-brand min-h-[44px] flex items-center">{displayName}</span>
     </nav>
 
     <div
-      class="relative z-10 mb-10 flex flex-col justify-between gap-6 border-b border-outline pb-6 md:flex-row md:items-end"
+      class="relative z-10 mb-8 flex flex-col justify-between gap-6 border-b border-outline/50 pb-6 sm:mb-10 md:flex-row md:items-end"
     >
       <div>
         <div class="mb-3 flex items-center gap-2">
-          <span class="h-1.5 w-1.5 bg-brand"></span>
+          <span class="h-1.5 w-1.5 bg-brand animate-pulse"></span>
           <p
             class="font-mono text-[9px] tracking-widest text-content-muted uppercase"
           >
@@ -75,14 +73,14 @@ try {
           </p>
         </div>
         <h1
-          class="text-3xl font-bold tracking-tighter text-content uppercase md:text-5xl"
+          class="text-3xl font-bold tracking-tighter text-content uppercase sm:text-4xl md:text-5xl"
         >
           {displayName}<span class="text-brand">.</span>
         </h1>
       </div>
 
       <div
-        class="flex gap-5 border border-outline bg-surface px-4 py-2.5 font-mono text-[9px] tracking-widest uppercase rounded-md shadow-sm"
+        class="flex gap-5 border border-outline/60 bg-surface px-4 py-3 font-mono text-[9px] tracking-widest uppercase rounded shadow-sm"
       >
         <div>
           <span class="mb-0.5 block text-content-muted">Status</span><span
@@ -96,46 +94,50 @@ try {
     </div>
 
     <div
-      class="relative z-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
+      class="relative z-10 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6"
     >
       {
         activeProducts.length > 0 ? (
           activeProducts.map((product: any) => (
             <a
               href={`/shop/product/${product.slug}`}
-              class="group bg-surface border-outline hover:border-brand/50 relative flex flex-col border p-3.5 transition-colors focus:outline-none rounded-xl shadow-sm"
+              class="group bg-surface border-outline/60 hover:border-brand/40 relative flex flex-col border p-3 transition-colors focus:outline-none rounded-md shadow-sm hover:shadow-[0_8px_25px_-8px_rgba(0,0,0,0.2)]"
             >
               <div class="mb-3 flex items-start justify-between">
-                <span class="text-content-muted font-mono text-[9px] tracking-widest uppercase">
+                <span class="text-content-muted font-mono text-[8px] sm:text-[9px] tracking-widest uppercase truncate max-w-[60%]">
                   {product.category}
                 </span>
                 {product.retailPrice && product.retailPrice > product.price && (
-                  <span class="text-brand border-brand/30 bg-brand/5 border px-1.5 py-0.5 text-[8px] font-bold tracking-widest uppercase rounded-sm">
+                  <span class="text-brand border-brand/30 bg-brand/5 border px-1 sm:px-1.5 py-0.5 text-[7px] sm:text-[8px] font-bold tracking-widest uppercase rounded-sm backdrop-blur-sm">
                     SAVE ${Math.floor(product.retailPrice - product.price)}
                   </span>
                 )}
               </div>
 
-              <div class="bg-base border-outline/50 relative mb-3 flex aspect-[4/5] items-center justify-center overflow-hidden border rounded-lg">
-                <img 
-                  src={product.image_url} 
-                  alt={product.name} 
-                  loading="lazy"
-                  class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+              <div class="bg-base border-outline/30 relative mb-3 flex aspect-[4/5] items-center justify-center overflow-hidden border rounded group-hover:border-brand/20 transition-colors">
+                {product.image_url !== '/assets/placeholders/product-unavailable.webp' ? (
+                  <img 
+                    src={product.image_url} 
+                    alt={product.name} 
+                    loading="lazy"
+                    class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+                  />
+                ) : (
+                  <span class="font-mono text-[9px] sm:text-[10px] text-content-muted">Visual Missing</span>
+                )}
               </div>
 
-              <h2 class="text-content group-hover:text-brand mb-2.5 truncate text-xs font-bold transition-colors">
+              <h2 class="text-content group-hover:text-brand mb-2 truncate text-[10px] sm:text-xs font-bold transition-colors">
                 {product.name}
               </h2>
 
               <div class="mt-auto flex flex-col gap-1 font-mono">
                 <div class="flex items-baseline gap-2">
-                  <span class="text-brand text-base font-bold">
+                  <span class="text-brand text-xs sm:text-sm font-bold">
                     ${Number(product.price).toFixed(2)}
                   </span>
                   {product.retailPrice && product.retailPrice > product.price && (
-                    <span class="text-content-muted text-[9px] line-through">
+                    <span class="text-content-muted text-[8px] sm:text-[9px] line-through">
                       ${Number(product.retailPrice).toFixed(2)}
                     </span>
                   )}
@@ -144,8 +146,8 @@ try {
             </a>
           ))
         ) : (
-          <div class="col-span-full border border-outline bg-surface py-16 rounded-xl text-center">
-            <p class="font-mono text-[10px] tracking-widest text-content-muted uppercase">
+          <div class="col-span-full border border-outline/50 bg-surface py-12 sm:py-16 rounded-lg text-center">
+            <p class="font-mono text-[9px] sm:text-[10px] tracking-widest text-content-muted uppercase">
               No units currently secured from this supplier.
             </p>
           </div>

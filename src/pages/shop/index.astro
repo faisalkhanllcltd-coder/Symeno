@@ -24,12 +24,11 @@ const filterBrand = url.searchParams.get('brand')?.toLowerCase() || '';
 const sort = url.searchParams.get('sort') || 'newest';    
 
 try {
-  // ARMOR: Bulletproof bindings for edge execution
   const db = (env.DB as any) || (Astro.locals as any).runtime?.env?.DB;
   if (!db) throw new Error("DB Offline - Check Edge Bindings");
 
-  // SAFETY: Limit response to prevent memory overflow on the edge
-  const { results } = await db.prepare('SELECT * FROM catalog_cache ORDER BY scraped_at DESC LIMIT 1000').all();  
+  // THE FIX: Eradicated SELECT * to prevent edge memory overflow
+  const { results } = await db.prepare('SELECT id, slug, brand, category, name, price, images_json, scraped_at FROM catalog_cache ORDER BY scraped_at DESC LIMIT 1000').all();  
   
   let filtered = results ? [...results] : [];
 
@@ -84,7 +83,7 @@ try {
   totalProducts = filtered.length;
 
   liveProducts = filtered.map((p: any) => {
-    let mainImage = '/images/system/fallback.webp'; 
+    let mainImage = '/assets/placeholders/product-unavailable.webp'; 
     
     try {
       if (p.images_json && p.images_json !== '[]') {
@@ -100,7 +99,7 @@ try {
       category: p.category || 'Uncategorized',
       name: p.name,
       title: p.name,
-      basePrice: p.price || 0, // Mapped for Svelte components
+      basePrice: p.price || 0,
       price: p.price || 0,
       retail_price: p.price ? p.price * 1.15 : 0, 
       image_url: mainImage
@@ -123,15 +122,15 @@ try {
   title="Complete Wholesale Catalog | Symeno" 
   description="Verified inventory. Shop top brands across our curated lifestyle categories."
 >
-  <div class="bg-base min-h-screen pt-10 pb-20 transition-colors duration-300">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <div class="bg-base min-h-screen py-8 px-4 sm:py-14 sm:px-8 lg:py-20 transition-colors duration-300">
+    <div class="mx-auto max-w-7xl">
       
-      <div class="mb-8 border-b border-outline pb-6">
-        <h1 class="text-content mb-3 text-3xl font-bold tracking-tighter uppercase md:text-4xl">        
+      <div class="mb-6 border-b border-outline/50 pb-6 sm:mb-8">
+        <h1 class="text-content mb-3 text-3xl font-bold tracking-tighter uppercase sm:text-4xl lg:text-5xl">        
           {q ? `Search: "${q}"` : filterCategory ? filterCategory.replace(/-/g, ' ') : 'The Catalog.'}        
         </h1>
         <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <p class="text-content-muted font-mono text-xs">
+          <p class="text-content-muted font-mono text-xs sm:text-sm">
             {q ? `We found assets matching your query.` : 'Browse our complete inventory of premium lifestyle goods.'}
           </p>
           <span class="border border-outline bg-surface px-3 py-1 font-mono text-[10px] tracking-widest text-content-muted uppercase shadow-sm">
@@ -140,8 +139,8 @@ try {
         </div>
       </div>
 
-      <div class="grid grid-cols-1 gap-8 lg:grid-cols-4 mt-6">
-        <aside class="hidden lg:block relative w-full h-full">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-4 lg:gap-8 mt-6">
+        <aside class="relative w-full h-full lg:block">
            <div class="sticky top-24 z-10 self-start">
              <FilterSidebar 
                activeBrand={filterBrand} 
@@ -150,7 +149,7 @@ try {
                currentQuery={q} 
                realCategories={dynamicCategories}
                realBrands={dynamicBrands}
-               client:load 
+               client:visible 
              />
            </div>
         </aside>

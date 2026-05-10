@@ -17,19 +17,16 @@ const { title, description = 'Top Brands. Real Prices. No Games.', image } = Ast
 const isLoggedIn = !!Astro.locals.user;
 ---
 <!doctype html>
-<!-- THE FIX: Stripped ALL overflow classes from html to guarantee position: sticky works -->
 <html lang="en" class="scroll-smooth w-full">
   <head>
     <MetaTags title={`${title} | Symeno`} description={description} image={image} />
     
-    <!-- PWA Manifest & Icons -->
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     
-    <!-- Dynamic Theme Colors for Mobile Browser UI -->
     <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0b1516" media="(prefers-color-scheme: dark)" />
 
@@ -38,12 +35,13 @@ const isLoggedIn = !!Astro.locals.user;
       document.documentElement.classList.toggle('dark', theme === 'dark');
     </script>
   </head>
-  <body class="bg-base text-content flex min-h-screen w-full flex-col font-sans antialiased">
+  <body class="bg-base text-content flex min-h-screen w-full flex-col overflow-x-hidden font-sans antialiased selection:bg-brand/20 selection:text-content">
     <TopNav />
     <GlobalSearch client:load />
     <main class="relative flex w-full flex-grow flex-col"><slot /></main>
     <footer class="bg-surface mt-auto"><Footer /></footer>
     <CartDrawer client:load />
+    
     <script is:inline define:vars={{ isLoggedIn }}>window.SYMENO_IS_LOGGED_IN = isLoggedIn;</script>
     <script>
       import { wishlist } from '../stores/wishlist.svelte.ts'; 

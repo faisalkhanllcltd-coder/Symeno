@@ -6,7 +6,6 @@ import TrustBar from '../components/storefront/TrustBar.astro';
 import CategoryGrid from '../components/storefront/CategoryGrid.astro';
 import Manifesto from '../components/storefront/Manifesto.astro';
 import FeaturedProducts from '../components/storefront/FeaturedProducts.astro';
-import DealTicker from '../components/storefront/DealTicker.astro';
 import Testimonials from '../components/storefront/Testimonials.astro';
 import Newsletter from '../components/storefront/Newsletter.astro';
 import BrandStory from '../components/storefront/BrandStory.astro';
@@ -14,11 +13,8 @@ import BrandStory from '../components/storefront/BrandStory.astro';
 export const prerender = false;
 
 let featured: any[] = [];
-let dynamicDeals: string[] = [];
 let heroDeal: any = null;
 let storeCategories: any[] = [];
-
-const cities = ['London, UK', 'Dubai, UAE', 'Toronto, CA', 'New York, US', 'Sydney, AU'];
 
 try {
   // ARMOR: Fallback to Astro.locals if standard env binding drops
@@ -40,14 +36,14 @@ try {
         id: p.id,
         slug: p.slug || p.id, 
         brand: p.brand || 'Symeno Select',
-        title: p.name, // FIXED: Map name to title for components
+        title: p.name, 
         name: p.name,
         description: p.description || p.name,
-        basePrice: p.price || 0, // FIXED: Map price to basePrice
+        basePrice: p.price || 0, 
         price: p.price || 0,
         retailPrice: p.price ? p.price * 1.15 : 0, 
         in_stock: p.in_stock,
-        images: firstImage ? [firstImage] : ['https://placehold.co/600x400/1a1a1a/36F4A4?text=Image+Unavailable'],
+        images: firstImage ? [firstImage] : ['/assets/placeholders/product-unavailable.webp'],
       };
     });
 
@@ -55,16 +51,6 @@ try {
       heroDeal = mappedProducts[0];
       featured = mappedProducts.slice(1, 5);
     }
-
-    dynamicDeals = mappedProducts
-      .slice(0, 5)
-      .map((p: any, i: number) => {
-        const city = cities[i % cities.length];
-        const savings = p.retailPrice && p.retailPrice > p.basePrice 
-          ? Math.floor(p.retailPrice - p.basePrice) 
-          : Math.floor(p.basePrice * 0.2);
-        return `${city} • A customer just saved $${savings} on ${p.brand} goods`;
-      });
 
     const { results: catResults } = await db.prepare(`
       SELECT 
@@ -98,7 +84,7 @@ try {
         slug: c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
         count: c.count,
         image: catImage,
-        discount: `${discountCalc}%`,
+        discount: `Up to ${discountCalc}% off`,
         lowStock: c.count < 5
       };
     });
@@ -106,15 +92,11 @@ try {
 } catch (e) {
   console.error('[HOMEPAGE_D1_ERROR]', e);
 }
-
-if (dynamicDeals.length === 0) {
-  dynamicDeals.push('Global • Customers are saving up to 40% on premium goods daily');
-}
 ---
 
 <StorefrontLayout
-  title="Premium Goods. Real Prices."
-  description="We buy in volume so you pay less. Aggregate pricing across premium categories."
+  title="Curated Premium Goods | Symeno"
+  description="Skip the retail markup. We secure premium lifestyle, home, and tech goods in volume so you pay strictly wholesale prices."
 >
   <Hero deal={heroDeal} />
   <TrustBar />
@@ -122,7 +104,6 @@ if (dynamicDeals.length === 0) {
   <BrandStory />
   <Manifesto />
   <FeaturedProducts products={featured} />
-  <DealTicker deals={dynamicDeals} />
   <Testimonials />
   <Newsletter />
 </StorefrontLayout>

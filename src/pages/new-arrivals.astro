@@ -4,24 +4,30 @@ import { env } from 'cloudflare:workers';
 
 export const prerender = false;
 
+// PERFORMANCE UPGRADE: Cache the Latest Deployments snapshot to offload D1
+Astro.response.headers.set(
+  'Cache-Control',
+  'public, s-maxage=300, stale-while-revalidate=1200'
+);
+
 let newDeployments: any[] = [];
 let errorMessage = '';
 
 try {
-  const db = env.DB as any;
+  // ARMOR: Bulletproof edge bindings
+  const db = (env.DB as any) || (Astro.locals as any).runtime?.env?.DB;
   if (db) {
-    // 100% CLAUDE SCHEMA: Fetch the most recently added products
     const { results } = await db.prepare(
       `SELECT id, slug, name, brand, category, price, images_json
        FROM catalog_cache
        ORDER BY scraped_at DESC
-       LIMIT 12`
+       LIMIT 16` // Boosted to 16 to fill a 4-column desktop grid perfectly
     ).all();
     
     newDeployments = (results || []).map((p: any) => {
-      let mainImage = '';
+      let mainImage = '/assets/placeholders/product-unavailable.webp';
       try {
-        if (p.images_json) {
+        if (p.images_json && p.images_json !== '[]') {
           const parsed = JSON.parse(p.images_json);
           if (parsed.length > 0) mainImage = parsed[0];
         }
@@ -33,7 +39,7 @@ try {
         name: p.name,
         price: p.price || 0,
         retailPrice: p.price ? p.price * 1.15 : 0,
-        image_url: mainImage || '/images/system/fallback.webp'
+        image_url: mainImage
       };
     });
   } else {
@@ -50,103 +56,102 @@ try {
   description="The newest hardware injections to our logistics pipeline."
 >
   <div
-    class="bg-base relative mx-auto max-w-7xl px-4 py-10 transition-colors duration-300 sm:px-6 md:py-16 lg:px-8"
+    class="bg-base relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8 lg:py-20 transition-colors duration-300"
   >
     <div
-      class="pointer-events-none absolute inset-0 bg-[linear-gradient(var(--color-content)_1px,transparent_1px),linear-gradient(90deg,var(--color-content)_1px,transparent_1px)] bg-[size:32px_32px] opacity-[0.03]"
-    >
-    </div>
+      class="pointer-events-none absolute inset-0 opacity-[0.02] bg-[linear-gradient(var(--color-outline)_1px,transparent_1px),linear-gradient(90deg,var(--color-outline)_1px,transparent_1px)] bg-[size:32px_32px]"
+    ></div>
 
     <nav
       class="text-content-muted relative z-10 mb-6 flex font-mono text-[10px] tracking-widest uppercase"
     >
       <a
         href="/"
-        class="hover:text-content transition-colors focus:outline-none">Base</a
-      >
-      <span class="mx-2">/</span>
-      <span class="text-brand">Pipeline</span>
+        class="hover:text-content transition-colors focus:outline-none min-h-[44px] flex items-center"
+      >Base</a>
+      <span class="mx-2 flex items-center">/</span>
+      <span class="text-brand min-h-[44px] flex items-center">Pipeline</span>
     </nav>
 
     <div
-      class="border-outline relative z-10 mb-10 flex flex-col justify-between gap-6 border-b pb-6 md:flex-row md:items-end"
+      class="border-outline/50 relative z-10 mb-8 sm:mb-10 flex flex-col justify-between gap-6 border-b pb-6 sm:pb-8 md:flex-row md:items-end"
     >
       <div>
-        <div class="mb-3 flex items-center gap-2">
-          <span class="bg-brand h-1.5 w-1.5"></span>
+        <div class="mb-3 sm:mb-4 flex items-center gap-2">
+          <span class="bg-brand h-1.5 w-1.5 animate-pulse rounded-full"></span>
           <p
-            class="text-content-muted font-mono text-[9px] tracking-widest uppercase"
+            class="text-content-muted font-mono text-[9px] sm:text-[10px] tracking-widest uppercase font-bold"
           >
             Fresh Allocations
           </p>
         </div>
         <h1
-          class="text-content mb-2 text-3xl font-bold tracking-tighter uppercase md:text-5xl"
+          class="text-content mb-2 text-3xl font-bold tracking-tighter uppercase sm:text-4xl md:text-5xl"
         >
           Latest Deployments<span class="text-brand">.</span>
         </h1>
-        <p class="text-content-muted font-mono text-xs">
+        <p class="text-content-muted font-mono text-xs sm:text-sm">
           The latest verified hardware injections to our logistics pipeline.
         </p>
       </div>
     </div>
 
     {errorMessage && (
-      <div class="bg-brand-alert/10 border-brand-alert/30 text-brand-alert mb-10 rounded-xl border p-5 text-center font-mono text-xs tracking-widest uppercase">
+      <div class="bg-brand-alert/10 border-brand-alert/30 text-brand-alert relative z-10 mb-8 rounded border p-5 text-center font-mono text-[10px] sm:text-xs tracking-widest uppercase">
         {errorMessage}
       </div>
     )}
 
     {newDeployments.length === 0 && !errorMessage && (
-      <div class="bg-surface border-outline mb-10 rounded-xl border p-10 text-center">
-        <p class="text-content-muted font-mono text-[10px] tracking-widest uppercase">No deployments in the pipeline yet.</p>
+      <div class="bg-surface border-outline/50 relative z-10 mb-8 rounded-lg border p-10 text-center">
+        <p class="text-content-muted font-mono text-[10px] sm:text-xs tracking-widest uppercase">No deployments in the pipeline yet.</p>
       </div>
     )}
 
     <div
-      class="relative z-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
+      class="relative z-10 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6"
     >
       {
         newDeployments.map((product) => (
           <a
             href={`/shop/product/${product.slug}`}
-            class="group bg-surface border-outline hover:border-brand/50 relative flex flex-col border p-3.5 transition-colors focus:outline-none rounded-xl shadow-sm"
+            class="group bg-surface border-outline/60 hover:border-brand/40 relative flex flex-col border p-3 sm:p-4 transition-colors focus:outline-none rounded-md shadow-sm hover:shadow-[0_8px_25px_-8px_rgba(0,0,0,0.2)]"
           >
-            <div class="mb-3 flex items-start justify-between">
-              <span class="text-content-muted font-mono text-[9px] tracking-widest uppercase">
+            <div class="mb-3 sm:mb-4 flex items-start justify-between">
+              <span class="text-content-muted font-mono text-[8px] sm:text-[9px] tracking-widest uppercase truncate max-w-[60%]">
                 {product.brand}
               </span>
-              <span class="text-brand border-brand/30 border px-1.5 py-0.5 text-[8px] font-bold tracking-widest uppercase">
+              <span class="text-brand border-brand/30 bg-brand/5 border px-1.5 py-0.5 text-[7px] sm:text-[8px] font-bold tracking-widest uppercase rounded-sm backdrop-blur-sm">
                 NEW
               </span>
             </div>
 
-            <div class="bg-base border-outline/50 relative mb-3 flex aspect-[4/5] items-center justify-center overflow-hidden border rounded-lg">
-              {product.image_url ? (
+            <div class="bg-surface-hover border-outline/30 relative mb-3 sm:mb-4 flex aspect-[4/5] items-center justify-center overflow-hidden border rounded group-hover:border-brand/20 transition-colors">
+              {product.image_url !== '/assets/placeholders/product-unavailable.webp' ? (
                 <img
                   src={product.image_url}
                   alt={product.name}
                   loading="lazy"
-                  class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+                  class="absolute inset-0 h-full w-full object-contain transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                 />
               ) : (
-                <span class="text-content-muted font-mono text-[9px]">
-                  No Image
+                <span class="text-content-muted font-mono text-[9px] sm:text-[10px]">
+                  Visual Missing
                 </span>
               )}
             </div>
 
-            <h2 class="text-content group-hover:text-brand mb-2.5 truncate text-xs font-bold transition-colors">
+            <h2 class="text-content group-hover:text-brand mb-2 sm:mb-3 line-clamp-2 text-[10px] sm:text-xs font-bold transition-colors leading-snug">
               {product.name}
             </h2>
 
             <div class="mt-auto flex flex-col gap-1 font-mono">
               <div class="flex items-baseline gap-2">
-                <span class="text-brand text-base font-bold">
+                <span class="text-brand text-sm sm:text-base font-bold">
                   ${Number(product.price).toFixed(2)}
                 </span>
                 {product.retailPrice && product.retailPrice > product.price && (
-                  <span class="text-content-muted text-[9px] line-through">
+                  <span class="text-content-muted text-[9px] sm:text-[10px] line-through">
                     ${Number(product.retailPrice).toFixed(2)}
                   </span>
                 )}

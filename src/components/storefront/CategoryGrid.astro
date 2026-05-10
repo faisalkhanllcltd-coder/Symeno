@@ -15,10 +15,10 @@ interface Props {
 const { categories = [] } = Astro.props;
 ---
 
-<section class="relative w-full bg-base py-24">
+<section class="relative w-full bg-base py-12 md:py-16 border-b border-outline/30">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="mb-12 flex items-end justify-between">
-      <h2 class="text-3xl font-bold tracking-tight text-content">    
+    <div class="mb-8 flex items-end justify-between">
+      <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-content">    
         Shop by Category
       </h2>
       <a
@@ -30,21 +30,11 @@ const { categories = [] } = Astro.props;
     </div>
 
     {categories.length > 0 ? (
-      <div class="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">      
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:gap-6">      
         {categories.map((cat) => (
-          <!-- THE FIX: Converted to a div with a stretched link to unify storefront architecture -->
-          <div class="group relative block aspect-[4/3] overflow-hidden rounded-xl border border-outline bg-surface transition-all duration-300 hover:border-brand/50 hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)] focus-within:outline-none focus-within:ring-2 focus-within:ring-brand">
+          <div class="group relative block aspect-[4/3] overflow-hidden rounded-xl border border-outline bg-surface transition-all duration-300 hover:border-brand/40 hover:shadow-[0_8px_25px_-8px_rgba(0,0,0,0.3)] focus-within:outline-none focus-within:ring-2 focus-within:ring-brand">
             
             <a href={`/shop/${cat.slug}`} class="absolute inset-0 z-30" aria-label={`Shop ${cat.name}`}></a>
-
-            <div class="absolute top-2 right-2 md:top-4 md:right-4 z-20 -rotate-2 transform rounded border border-outline bg-base/90 px-2 py-1 md:px-3 md:py-1.5 shadow-xl backdrop-blur-md">
-              <span class="mb-[1px] block font-mono text-[7px] md:text-[10px] leading-none tracking-wider text-content-muted uppercase">
-                Up to
-              </span>
-              <span class="font-mono text-[10px] md:text-sm leading-none font-bold text-brand">
-                {cat.discount} Off
-              </span>
-            </div>
 
             <div class="absolute inset-0 bg-surface">
               {cat.image ? (
@@ -56,25 +46,25 @@ const { categories = [] } = Astro.props;
                 />
               ) : (
                 <div class="flex h-full w-full items-center justify-center bg-surface">
-                  <span class="font-mono text-xs text-content-muted/30 uppercase">No Image</span>
+                  <span class="font-mono text-xs font-bold tracking-widest text-content-muted/30 uppercase">No Image</span>
                 </div>
               )}
             </div>
 
-            <div class="absolute inset-0 z-10 bg-gradient-to-t from-base via-base/70 to-transparent opacity-95 transition-opacity duration-300 group-hover:opacity-85" />
+            <div class="absolute inset-0 z-10 bg-gradient-to-t from-base via-base/60 to-transparent opacity-95 transition-opacity duration-300 group-hover:opacity-85" />
 
-            <div class="absolute bottom-0 left-0 z-20 w-full p-3 md:p-5 pointer-events-none">
-              <h3 class="mb-1 text-base md:text-lg font-bold tracking-wider text-content uppercase transition-colors group-hover:text-brand">        
+            <div class="absolute bottom-0 left-0 z-20 w-full p-4 pointer-events-none">
+              <h3 class="mb-1 text-base font-bold tracking-widest text-content uppercase transition-colors group-hover:text-brand">        
                 {cat.name}
               </h3>
-              <div class="flex items-center gap-2 md:gap-3">
-                <span class="font-mono text-[10px] md:text-xs tracking-wide text-content-muted">
+              <div class="flex items-center gap-2">
+                <span class="font-mono text-[10px] tracking-widest text-content-muted uppercase font-semibold">
                   {cat.count} Products
                 </span>
                 {cat.lowStock && (
-                  <div class="flex items-center gap-1.5 rounded border border-brand-alert/20 bg-base/80 px-1.5 py-0.5 backdrop-blur-md">
+                  <div class="flex items-center gap-1.5 rounded border border-brand-alert/20 bg-base/90 px-1.5 py-0.5 shadow-sm backdrop-blur-md">
                     <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-alert" />
-                    <span class="font-mono text-[8px] md:text-[10px] tracking-widest text-brand-alert uppercase">
+                    <span class="font-mono text-[8px] font-bold tracking-widest text-brand-alert uppercase">
                       Low Stock
                     </span>
                   </div>
@@ -85,8 +75,8 @@ const { categories = [] } = Astro.props;
         ))}
       </div>
     ) : (
-      <div class="flex w-full flex-col items-center justify-center rounded-xl border border-dashed border-outline/50 bg-surface/30 py-24 text-center">
-        <svg class="mb-4 h-8 w-8 text-content-muted/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div class="flex w-full flex-col items-center justify-center rounded-xl border border-dashed border-outline/50 bg-surface/30 py-16 text-center">
+        <svg class="mb-3 h-6 w-6 text-content-muted/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
         <p class="font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase">Synchronizing Inventory...</p>

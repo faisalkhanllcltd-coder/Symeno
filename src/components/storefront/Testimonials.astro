@@ -2,10 +2,10 @@
 const testimonials = [
   {
     name: 'Michael V.',
-    role: 'Logistics Director',
-    text: 'Procured 40 units of Sony WH-1000XM5s for our sales floor. Shipping manifested within 6 hours. Zero retail markup. Exactly what the market needed.',
-    savings: '4,080',
-    product: 'Bulk Audio Order',
+    role: 'Operations Manager',
+    text: 'Procured 4 units of Sony WH-1000XM5s for our team. Shipping manifested within 6 hours. Zero retail markup. Exactly what we needed.',
+    savings: '430',
+    product: 'Sony Audio Order',
   },
   {
     name: 'Sarah J.',
@@ -17,53 +17,53 @@ const testimonials = [
   {
     name: 'David L.',
     role: 'Studio Manager',
-    text: 'Transferred our entire peripheral supply chain to Symeno. The 14-day price lock guarantee eliminates the risk of market volatility.',     
-    savings: '890',
-    product: 'Keychron Keyboards (x12)',
+    text: 'Transferred our team\'s peripheral supply to Symeno. The 14-day price lock guarantee eliminates the risk of market volatility.',     
+    savings: '290',
+    product: 'Keychron Keyboards (x5)',
   },
 ];
 ---
 
-<section class="w-full bg-base py-24 border-y border-outline">
+<section class="w-full bg-base py-12 sm:py-16 lg:py-20 border-y border-outline/30">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="mb-20 flex flex-col items-center text-center">       
-      <div class="mb-6 inline-flex items-center justify-center gap-3 rounded-sm border border-outline bg-surface px-4 py-2">
-        <span class="flex h-2 w-2 relative">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2 w-2 bg-brand"></span>
+    <div class="mb-10 sm:mb-16 flex flex-col items-center text-center">        
+      <div class="mb-4 inline-flex items-center justify-center gap-2 rounded border border-outline/50 bg-surface/50 px-3 py-1.5 backdrop-blur-sm">
+        <span class="flex h-1.5 w-1.5 relative">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-60"></span>
+          <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-brand"></span>
         </span>
-        <span class="font-mono text-[10px] font-bold tracking-widest text-content uppercase">Operations Verified</span>
+        <span class="font-mono text-[9px] font-bold tracking-widest text-content uppercase">Market Data Confirmed</span>
       </div>
-      <h2 class="max-w-2xl text-3xl font-bold tracking-tight text-content md:text-4xl">    
+      <h2 class="max-w-2xl text-2xl font-bold tracking-tight text-content sm:text-3xl lg:text-4xl">    
         Volume pricing without the volume requirements.
       </h2>
     </div>
 
-    <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 lg:gap-8">
       {
         testimonials.map((t) => (
-          <div class="group relative flex flex-col rounded-sm border border-outline bg-surface p-8 transition-colors hover:border-content-muted">
-            <div class="mb-6 flex items-center gap-2 font-mono text-xs font-bold text-brand">
-              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <div class="group relative flex flex-col rounded-lg border border-outline/50 bg-surface p-6 sm:p-8 transition-colors hover:border-brand/40 hover:shadow-[0_4px_20px_-5px_rgba(0,0,0,0.2)]">
+            <div class="mb-4 flex items-center gap-1.5 font-mono text-[10px] sm:text-xs font-bold text-brand">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
               </svg>
               ${t.savings} Saved vs. Retail
             </div>
 
-            <p class="mb-8 flex-grow text-sm leading-relaxed text-content-muted">
+            <p class="mb-6 flex-grow text-xs sm:text-sm leading-relaxed text-content-muted">
               "{t.text}"
             </p>
 
-            <div class="flex items-end justify-between border-t border-outline pt-6">
+            <div class="flex items-end justify-between border-t border-outline/40 pt-5">
               <div>
-                <span class="block text-xs font-bold tracking-wider text-content uppercase">
+                <span class="block text-[11px] sm:text-xs font-bold tracking-wider text-content uppercase">
                   {t.name}
                 </span>
-                <span class="mt-1 block font-mono text-[10px] tracking-widest text-content-muted uppercase">
+                <span class="mt-0.5 block font-mono text-[9px] tracking-widest text-content-muted uppercase">
                   {t.role}
                 </span>
               </div>
-              <span class="max-w-[120px] text-right font-mono text-[10px] leading-tight text-content-muted uppercase">
+              <span class="max-w-[100px] sm:max-w-[120px] text-right font-mono text-[9px] leading-tight text-content-muted uppercase">
                 {t.product}
               </span>
             </div>
