@@ -3,16 +3,16 @@ import NewsletterCapture from '../marketing/NewsletterCapture.svelte';
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="border-t border-outline/30 bg-base py-10 sm:py-16 lg:py-20 transition-colors duration-300">
+<footer class="border-t border-outline/30 bg-base pt-10 sm:pt-16 lg:pt-20 transition-colors duration-300">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">  
-    <div class="mb-12 sm:mb-16 grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-8">
+    <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-10 lg:gap-8">
       
       <div class="lg:col-span-4">
         <a
           href="/"
-          class="mb-4 inline-flex min-h-[44px] items-center text-xl font-bold tracking-tighter text-content uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+          class="mb-4 inline-block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
         >
-          Symeno<span class="text-brand">.</span>
+          <img src="/logo.svg" alt="Symeno" class="h-7 w-auto" loading="lazy" />
         </a>
         <p class="mb-6 max-w-sm font-mono text-[11px] sm:text-xs leading-relaxed text-content-muted">
           Operational efficiency applied to consumer electronics. We leverage
@@ -23,110 +23,80 @@ const currentYear = new Date().getFullYear();
         <div class="mb-8">
           <NewsletterCapture client:load />
         </div>
-
-        <div class="mb-6 space-y-1 font-mono text-[9px] sm:text-[10px] tracking-widest text-content-muted uppercase">
-          <p>SYMENO LLC</p>
-          <p>30 N Gould St, Sheridan, WY 82801, USA</p>
-        </div>
-        
-        <div class="flex gap-2 sm:gap-3">
-          <div class="flex h-6 w-10 sm:h-7 sm:w-11 items-center justify-center rounded border border-outline/50 bg-surface font-mono text-[8px] sm:text-[9px] font-bold text-content-muted shadow-sm">
-            X
-          </div>
-          <div class="flex h-6 w-10 sm:h-7 sm:w-11 items-center justify-center rounded border border-outline/50 bg-surface font-mono text-[8px] sm:text-[9px] font-bold text-content-muted shadow-sm">
-            IN
-          </div>
-          <div class="flex h-6 w-10 sm:h-7 sm:w-11 items-center justify-center rounded border border-outline/50 bg-surface font-mono text-[8px] sm:text-[9px] font-bold text-content-muted shadow-sm">
-            PAY
-          </div>
-          <div class="flex h-6 w-10 sm:h-7 sm:w-11 items-center justify-center rounded border border-outline/50 bg-surface font-mono text-[8px] sm:text-[9px] font-bold text-content-muted shadow-sm">
-            SEC
-          </div>
-        </div>
       </div>
 
       <div class="lg:col-span-2">
-        <h3 class="mb-3 sm:mb-4 font-mono text-[9px] sm:text-[10px] font-bold tracking-widest text-content uppercase">
-          The Catalog
+        <h3 class="mb-3 sm:mb-4 font-mono text-[10px] font-bold tracking-[0.2em] text-content-muted uppercase">
+          Shop
         </h3>
         <ul class="space-y-1 text-[13px] sm:text-sm text-content-muted">
           <li>
-            <a href="/shop" class="block py-1.5 transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Shop All</a>
+            <a href="/shop" class="block py-2 min-h-[44px] transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Shop All</a>
           </li>
           <li>
-            <a href="/brands" class="block py-1.5 transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Top Brands</a>
+            <a href="/deals" class="block py-2 min-h-[44px] font-bold transition-colors text-brand-alert hover:opacity-80 focus-visible:outline-none focus-visible:underline">Deals</a>
           </li>
           <li>
-            <a href="/deals" class="block py-1.5 font-bold transition-colors text-brand-alert hover:opacity-80 focus-visible:outline-none focus-visible:underline">Arbitrage Deals</a>
+            <a href="/brands" class="block py-2 min-h-[44px] transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Brands</a>
           </li>
           <li>
-            <a href="/b2b" class="block py-1.5 transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">B2B / Bulk</a>
-          </li>
-          <li>
-            <a href="/new-arrivals" class="block py-1.5 transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">New Deployments</a>
+            <span class="block py-2 min-h-[44px] text-content-muted/40 cursor-not-allowed" aria-disabled="true">Compare</span>
           </li>
         </ul>
       </div>
 
       <div class="lg:col-span-2">
-        <h3 class="mb-3 sm:mb-4 font-mono text-[9px] sm:text-[10px] font-bold tracking-widest text-content uppercase">
-          Support Ops
+        <h3 class="mb-3 sm:mb-4 font-mono text-[10px] font-bold tracking-[0.2em] text-content-muted uppercase">
+          Help
         </h3>
         <ul class="space-y-1 text-[13px] sm:text-sm text-content-muted">
           <li>
-            <a href="/support/track-order" class="block py-1.5 transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Track Order</a>
+            <a href="/support/track-order" class="block py-2 min-h-[44px] transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Track Order</a>
           </li>
           <li>
-            <a href="/support/start-return" class="block py-1.5 transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Start a Return</a>
+            <a href="/support/start-return" class="block py-2 min-h-[44px] transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Returns</a>
           </li>
           <li>
-            <a href="/faq" class="block py-1.5 transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">FAQ / Knowledge Base</a>
+            <a href="/faq" class="block py-2 min-h-[44px] transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">FAQ</a>
           </li>
           <li>
-            <a href="/contact" class="block py-1.5 transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Contact Operations</a>
+            <a href="/contact" class="block py-2 min-h-[44px] transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Contact</a>
           </li>
         </ul>
       </div>
 
       <div class="lg:col-span-2">
-        <h3 class="mb-3 sm:mb-4 font-mono text-[9px] sm:text-[10px] font-bold tracking-widest text-content uppercase">
-          Intelligence
-        </h3>
-        <ul class="space-y-1 text-[13px] sm:text-sm text-content-muted">
-          <li>
-            <a href="/about" class="block py-1.5 transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">About Symeno</a>
-          </li>
-          <li>
-            <a href="/policies/authenticity" class="block py-1.5 transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Authenticity Protocol</a>
-          </li>
-        </ul>
-      </div>
-
-      <div class="lg:col-span-2">
-        <h3 class="mb-3 sm:mb-4 font-mono text-[9px] sm:text-[10px] font-bold tracking-widest text-content uppercase">
+        <h3 class="mb-3 sm:mb-4 font-mono text-[10px] font-bold tracking-[0.2em] text-content-muted uppercase">
           Legal
         </h3>
-        <ul class="space-y-1 text-[13px] sm:text-sm text-content-muted">   
+        <ul class="space-y-1 text-[13px] sm:text-sm text-content-muted">
           <li>
-            <a href="/policies/privacy" class="block py-1.5 transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Privacy Policy</a>
+            <a href="/policies/terms" class="block py-2 min-h-[44px] transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Terms</a>
           </li>
           <li>
-            <a href="/policies/terms" class="block py-1.5 transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Terms of Service</a>
+            <a href="/policies/privacy" class="block py-2 min-h-[44px] transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Privacy</a>
           </li>
           <li>
-            <a href="/policies/shipping" class="block py-1.5 transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Shipping Policy</a>
+            <a href="/policies/shipping" class="block py-2 min-h-[44px] transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Shipping</a>
           </li>
           <li>
-            <a href="/policies/returns" class="block py-1.5 transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Returns Policy</a>
+            <a href="/policies/authenticity" class="block py-2 min-h-[44px] transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Authenticity</a>
           </li>
         </ul>
       </div>
     </div>
-
-    <div class="flex flex-col items-center justify-center gap-4 border-t border-outline/30 pt-8 text-center">
-      <p class="font-mono text-[9px] sm:text-[10px] leading-relaxed tracking-widest text-content-muted uppercase">
-        &copy; {currentYear} SYMENO LLC &middot; 30 N Gould St, Sheridan, WY 82801, USA &middot; contact@symeno.com &middot; +1 (307) 310-7918
-      </p>
+    
+    <div class="border-t border-outline/30 py-6 mt-10">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <div class="font-mono text-[9px] font-bold tracking-widest text-content-muted uppercase">
+          &copy; {currentYear} SYMENO LLC. All rights reserved.
+        </div>
+        <div class="font-mono text-[9px] tracking-widest text-content-muted uppercase">
+          30 N Gould St, Sheridan, WY 82801 &middot; 
+          <a href="mailto:info@symeno.com" class="hover:text-brand transition-colors">info@symeno.com</a> &middot; 
+          <a href="tel:+13073107918" class="hover:text-brand transition-colors">+1 (307) 310-7918</a>
+        </div>
+      </div>
     </div>
   </div>
 </footer>
