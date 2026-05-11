@@ -3,30 +3,40 @@ import AccountLayout from '../../layouts/Account.astro';
 import OrderListManager from '../../components/account/OrderListManager.svelte';
 import { env } from 'cloudflare:workers';
 
+// --- SECURITY GATE ---
 const user = Astro.locals.user;
-if (!user) return Astro.redirect('/auth/login');
+if (!user) {
+  // THE FIX: Use our new interception architecture
+  return Astro.redirect('/auth/login?returnTo=/account/orders');
+}
 
+// --- DATA FETCHING ---
 let orders: any[] = [];
 if (env.DB) {
   try {
+    // THE FIX: Changed 'customer_id' to 'user_id' to perfectly match our new schema.
+    // Also removed 'tracking_url' as it is not currently in the orders table.
     const { results } = await env.DB.prepare(
-      'SELECT id, created_at, status, total_amount, tracking_url FROM orders WHERE customer_id = ? ORDER BY created_at DESC'
+      'SELECT id, created_at, status, total_amount FROM orders WHERE user_id = ? ORDER BY created_at DESC'
     )
       .bind(user.id)
       .all();
+      
     orders = results || [];
-  } catch (e) {}
+  } catch (e) {
+    console.error('[DASHBOARD_DB_ERROR]', e);
+  }
 }
 ---
 
-<AccountLayout title="Order Ledger" currentPath="/account/orders">
+<AccountLayout title="Order Ledger | Symeno" currentPath="/account/orders">
   <div class="mx-auto max-w-4xl space-y-6">
     <div class="flex items-end justify-between border-b border-white/10 pb-4">
       <div>
         <h1 class="text-xl font-bold tracking-widest text-white uppercase">
           Transaction Ledger
         </h1>
-        <p class="mt-1 font-mono text-xs text-white/50">
+        <p class="mt-1 font-mono text-xs text-white/50 uppercase tracking-widest">
           Review your operational history
         </p>
       </div>

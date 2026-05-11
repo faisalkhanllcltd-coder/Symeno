@@ -21,8 +21,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
     // --------------------------------------------------------
     // 2. AUTHENTICATION & ROUTE GUARDING
     // --------------------------------------------------------
-    const isAdminRoute = url.pathname.startsWith('/admin');
-    const isAccountRoute = url.pathname.startsWith('/account');
+    const isAdminRoute = url.pathname.startsWith('/admin') || url.pathname.startsWith('/api/admin');
+    const isAccountRoute = url.pathname.startsWith('/account') || url.pathname.startsWith('/api/account');
     const isSecureApiRoute = url.pathname.startsWith('/api/auth/change-');
 
     if (isAdminRoute || isAccountRoute || isSecureApiRoute) {

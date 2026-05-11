@@ -12,8 +12,8 @@ export const POST: APIRoute = async (context) => {
   try {
     const body = await context.request.json() as any;
     const { token, newPassword } = schema.parse(body);
-    const db = env?.DB;
-    const kv = env?.SESSION;
+    const db = env?.DB as any;
+    const kv = env?.SESSION as any;
 
     if (!db || !kv) return new Response(JSON.stringify({ error: 'Database Offline' }), { status: 500 });
 
@@ -31,8 +31,44 @@ export const POST: APIRoute = async (context) => {
 
     await kv.delete(`reset:${token}`);
 
+    // THE FIX: Actively seek and destroy all hijacked or stale KV sessions for this user.
+    // Completely type-safe for strict Cloudflare environments.
+    let cursor: string | undefined = undefined;
+    let listComplete = false;
+
+    while (!listComplete) {
+      const listOptions: any = { prefix: 'session:' };
+      if (cursor) listOptions.cursor = cursor;
+
+      const listed = await kv.list(listOptions);
+
+      for (const key of listed.keys) {
+        const sessionData = await kv.get(key.name);
+        if (sessionData) {
+          try {
+            const payload = JSON.parse(sessionData);
+            if (payload.id === userId) {
+              await kv.delete(key.name);
+            }
+          } catch (e) {
+            // Ignore malformed session JSON
+          }
+        }
+      }
+
+      listComplete = listed.list_complete;
+
+      // THE STRICT TYPE GUARD: Satisfies the TS compiler
+      if (!listComplete && 'cursor' in listed) {
+        cursor = listed.cursor as string;
+      } else {
+        cursor = undefined;
+      }
+    }
+
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (err) {
+    console.error('[AUTH_RESET_FATAL]', err);
     return new Response(JSON.stringify({ error: 'Invalid Request' }), { status: 400 });
   }
 };

@@ -36,3 +36,11 @@ CREATE TABLE order_items (
     price_at_purchase REAL NOT NULL,
     FOREIGN KEY(order_id) REFERENCES orders(id)
 );
+
+-- WISHLISTS: Stores saved items
+DROP TABLE IF EXISTS wishlists;
+CREATE TABLE wishlists (
+    customer_id TEXT NOT NULL,
+    product_id TEXT NOT NULL,
+    PRIMARY KEY (customer_id, product_id)
+);

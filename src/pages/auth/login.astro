@@ -121,7 +121,7 @@ if (Astro.cookies.has('auth_error')) {
             (res.status >= 200 && res.status < 300)
           ) {
             // THE FIX: Route the user to returnTo if it exists, otherwise default to orders
-            window.location.href = returnTo || res.url || '/account/orders';
+            window.location.href = returnTo || '/account/orders';
             return;
           }
 
