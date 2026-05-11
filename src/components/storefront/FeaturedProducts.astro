@@ -5,7 +5,7 @@ export interface Props {
 
 const { products = [] } = Astro.props;
 
-// THE FIX: Extracted parsing logic out of the render loop for faster execution
+// Extracted parsing logic out of the render loop for faster execution
 function parseImage(product: any): string {
   if (product.images && product.images.length > 0) return product.images[0];
   if (product.images_json && product.images_json !== '[]') {
@@ -61,16 +61,18 @@ function parseImage(product: any): string {
               
               <div class="relative aspect-square overflow-hidden bg-surface-hover/50">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_80%,rgba(54,244,164,0.06)_0%,transparent_70%)] pointer-events-none" />
+                
+                <div class="from-surface/80 absolute inset-x-0 top-0 h-1/3 z-10 bg-gradient-to-b to-transparent pointer-events-none" />
 
                 {parsedImage !== '/assets/placeholders/product-unavailable.webp' ? (
                   <img 
                     src={parsedImage} 
                     alt={displayName} 
                     loading="lazy" 
-                    class="relative z-10 h-full w-full object-contain p-6 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] drop-shadow-sm"
+                    class="relative z-0 h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05]"
                   />
                 ) : (
-                  <div class="absolute inset-0 flex flex-col items-center justify-center gap-1">
+                  <div class="absolute inset-0 flex flex-col items-center justify-center gap-1 z-10">
                     <svg class="h-5 w-5 text-content-muted/20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
@@ -92,14 +94,6 @@ function parseImage(product: any): string {
                     </svg>
                   </a>
                 </div>
-
-                {hasDiscount && (
-                  <div class="absolute left-3 top-3 z-20">
-                    <span class="font-mono text-[8px] font-bold tracking-widest uppercase px-1.5 py-0.5 rounded-sm border border-brand/25 bg-brand/10 text-brand backdrop-blur-sm">
-                      Save ${Math.floor(displayMsrp - displayPrice)}
-                    </span>
-                  </div>
-                )}
               </div>
 
               <div class="flex flex-grow flex-col p-4 sm:p-5">        
@@ -126,13 +120,20 @@ function parseImage(product: any): string {
                     </div>
                   )}
 
-                  <div class="mb-4 flex items-end gap-2"> 
-                    <span class="font-mono text-[18px] sm:text-[20px] font-bold tracking-tight text-brand leading-none">
-                      ${displayPrice.toFixed(2)}
-                    </span>
+                  <div class="mb-4 flex flex-wrap items-center justify-between gap-2"> 
+                    <div class="flex items-end gap-2">
+                      <span class="font-mono text-[18px] sm:text-[20px] font-bold tracking-tight text-brand leading-none">
+                        ${displayPrice.toFixed(2)}
+                      </span>
+                      {hasDiscount && (
+                        <span class="font-mono text-[10px] sm:text-[11px] text-content-muted line-through opacity-70">
+                          ${displayMsrp.toFixed(2)}
+                        </span>
+                      )}
+                    </div>
                     {hasDiscount && (
-                      <span class="font-mono text-[10px] sm:text-[11px] text-content-muted line-through opacity-70">
-                        ${displayMsrp.toFixed(2)}
+                      <span class="font-mono text-[9px] font-bold tracking-widest uppercase px-1.5 py-0.5 rounded-sm border border-brand/25 bg-brand/10 text-brand">
+                        Save ${Math.floor(displayMsrp - displayPrice)}
                       </span>
                     )}
                   </div>

@@ -5,9 +5,9 @@ const currentYear = new Date().getFullYear();
 
 <footer class="border-t border-outline/30 bg-base pt-10 sm:pt-16 lg:pt-20 transition-colors duration-300">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">  
-    <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-10 lg:gap-8">
+    <div class="grid grid-cols-2 gap-x-6 gap-y-12 lg:grid-cols-12 lg:gap-8">
       
-      <div class="lg:col-span-4">
+      <div class="col-span-2 lg:col-span-4">
         <a
           href="/"
           class="mb-4 inline-block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
@@ -25,7 +25,7 @@ const currentYear = new Date().getFullYear();
         </div>
       </div>
 
-      <div class="lg:col-span-2">
+      <div class="col-span-1 lg:col-span-2">
         <h3 class="mb-3 sm:mb-4 font-mono text-[10px] font-bold tracking-[0.2em] text-content-muted uppercase">
           Shop
         </h3>
@@ -40,12 +40,12 @@ const currentYear = new Date().getFullYear();
             <a href="/brands" class="block py-2 min-h-[44px] transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Brands</a>
           </li>
           <li>
-            <span class="block py-2 min-h-[44px] text-content-muted/40 cursor-not-allowed" aria-disabled="true">Compare</span>
+            <a href="/new-arrivals" class="block py-2 min-h-[44px] transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">New Arrivals</a>
           </li>
         </ul>
       </div>
 
-      <div class="lg:col-span-2">
+      <div class="col-span-1 lg:col-span-2">
         <h3 class="mb-3 sm:mb-4 font-mono text-[10px] font-bold tracking-[0.2em] text-content-muted uppercase">
           Help
         </h3>
@@ -65,7 +65,27 @@ const currentYear = new Date().getFullYear();
         </ul>
       </div>
 
-      <div class="lg:col-span-2">
+      <div class="col-span-1 lg:col-span-2">
+        <h3 class="mb-3 sm:mb-4 font-mono text-[10px] font-bold tracking-[0.2em] text-content-muted uppercase">
+          Account
+        </h3>
+        <ul class="space-y-1 text-[13px] sm:text-sm text-content-muted">
+          <li>
+            <a href="/auth/login" class="block py-2 min-h-[44px] transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Client Login</a>
+          </li>
+          <li>
+            <a href="/account/orders" class="block py-2 min-h-[44px] transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Order History</a>
+          </li>
+          <li>
+            <a href="/account/wishlist" class="block py-2 min-h-[44px] transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Saved Items</a>
+          </li>
+          <li>
+            <a href="/account/rewards" class="block py-2 min-h-[44px] transition-colors hover:text-brand focus-visible:outline-none focus-visible:text-brand">Rewards</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="col-span-1 lg:col-span-2">
         <h3 class="mb-3 sm:mb-4 font-mono text-[10px] font-bold tracking-[0.2em] text-content-muted uppercase">
           Legal
         </h3>
@@ -84,6 +104,7 @@ const currentYear = new Date().getFullYear();
           </li>
         </ul>
       </div>
+
     </div>
     
     <div class="border-t border-outline/30 py-6 mt-10">
@@ -91,9 +112,11 @@ const currentYear = new Date().getFullYear();
         <div class="font-mono text-[9px] font-bold tracking-widest text-content-muted uppercase">
           &copy; {currentYear} SYMENO LLC. All rights reserved.
         </div>
-        <div class="font-mono text-[9px] tracking-widest text-content-muted uppercase">
-          30 N Gould St, Sheridan, WY 82801 &middot; 
-          <a href="mailto:info@symeno.com" class="hover:text-brand transition-colors">info@symeno.com</a> &middot; 
+        <div class="font-mono text-[9px] tracking-widest text-content-muted uppercase flex flex-wrap justify-center sm:justify-end gap-x-2 gap-y-1">
+          <span>30 N Gould St, Sheridan, WY 82801</span>
+          <span class="hidden sm:inline">&middot;</span>
+          <a href="mailto:info@symeno.com" class="hover:text-brand transition-colors">info@symeno.com</a>
+          <span class="hidden sm:inline">&middot;</span>
           <a href="tel:+13073107918" class="hover:text-brand transition-colors">+1 (307) 310-7918</a>
         </div>
       </div>

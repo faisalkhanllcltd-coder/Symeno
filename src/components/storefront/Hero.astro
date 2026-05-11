@@ -81,12 +81,13 @@ const discount = displayDeal.retailPrice && displayDeal.retailPrice > displayDea
         </div>
       </div>
 
-      <div class="relative w-full md:col-span-5 flex justify-center md:justify-end" id="deal-of-the-day">
-        <a href={displayDeal.slug !== 'shop' ? `/shop/product/${displayDeal.slug}` : '/shop'} class="w-64 sm:w-72 bg-surface shadow-ambient flex flex-col overflow-hidden rounded-xl transition-all duration-500 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-base block group border border-outline/50 hover:border-brand/30">
-          <div class="bg-surface-hover relative flex h-32 sm:h-40 w-full items-center justify-center overflow-hidden transition-colors duration-300">
-            <div class="from-surface absolute inset-0 z-10 bg-gradient-to-t to-transparent opacity-90"></div>
+      <div class="relative w-full md:col-span-5 flex justify-center lg:justify-end" id="deal-of-the-day">
+        <a href={displayDeal.slug !== 'shop' ? `/shop/product/${displayDeal.slug}` : '/shop'} class="w-full max-w-[360px] lg:max-w-[400px] bg-surface shadow-ambient flex flex-col overflow-hidden rounded-2xl transition-all duration-500 hover:-translate-y-2 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-base block group border border-outline/50 hover:border-brand/40">
+          
+          <div class="bg-surface-hover relative flex h-56 sm:h-64 lg:h-[300px] w-full items-center justify-center overflow-hidden transition-colors duration-300">
+            <div class="from-surface absolute inset-x-0 bottom-0 h-1/2 z-10 bg-gradient-to-t to-transparent opacity-100 pointer-events-none"></div>
             
-            <span class="bg-base/90 text-brand absolute top-3 left-3 z-20 rounded px-2 py-1 font-mono text-[9px] font-bold tracking-widest uppercase shadow-sm backdrop-blur-md">
+            <span class="bg-base/90 text-brand absolute top-4 left-4 z-20 rounded px-2.5 py-1.5 font-mono text-[10px] font-bold tracking-widest uppercase shadow-sm backdrop-blur-md">
               Live Deal
             </span>
 
@@ -98,34 +99,34 @@ const discount = displayDeal.retailPrice && displayDeal.retailPrice > displayDea
               loading="eager"
               fetchpriority="high"
               decoding="sync"
-              class="z-0 h-full w-full object-contain object-center transition-transform duration-700 group-hover:scale-105"
+              class="z-0 h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
             />
           </div>
 
-          <div class="relative z-20 -mt-2 p-4 sm:p-5">
-            <div class="mb-2 flex items-start justify-between">
-              <span class="text-content-muted font-mono text-[9px] font-bold tracking-widest uppercase transition-colors duration-300">{displayDeal.brand}</span>
+          <div class="relative z-20 p-6 lg:p-8 bg-surface">
+            <div class="mb-3 flex items-start justify-between">
+              <span class="text-content-muted font-mono text-[10px] sm:text-[11px] font-bold tracking-widest uppercase transition-colors duration-300">{displayDeal.brand}</span>
               
               {discount > 0 && (
-                <div class="text-brand bg-base/90 border-outline/50 flex items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-[10px] font-bold transition-colors duration-300 shadow-sm">
+                <div class="text-brand bg-base/90 border-outline/50 flex items-center gap-1 rounded border px-2 py-1 font-mono text-[10px] font-bold transition-colors duration-300 shadow-sm">
                   <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path></svg>
                   Save ${discount}
                 </div>
               )}
             </div>
 
-            <h3 class="text-content mb-3 text-[14px] sm:text-[15px] leading-tight font-bold transition-colors duration-300 truncate" title={displayDeal.title}>
+            <h3 class="text-content mb-4 text-lg sm:text-xl leading-snug font-bold transition-colors duration-300 truncate" title={displayDeal.title}>
               {displayDeal.title}
             </h3>
 
-            <div class="mb-4 flex items-end gap-2">        
-              <span class="text-brand font-mono text-lg sm:text-xl font-bold tracking-tight">${Number(displayDeal.basePrice).toFixed(2)}</span>
+            <div class="mb-6 flex items-end gap-3">        
+              <span class="text-brand font-mono text-2xl sm:text-3xl font-bold tracking-tight">${Number(displayDeal.basePrice).toFixed(2)}</span>
               {displayDeal.retailPrice && displayDeal.retailPrice > displayDeal.basePrice && (
-                <span class="text-content-muted mb-0.5 font-mono text-[10px] sm:text-xs line-through opacity-70 transition-colors duration-300">RRP ${Number(displayDeal.retailPrice).toFixed(2)}</span>
+                <span class="text-content-muted mb-1 font-mono text-xs sm:text-sm line-through opacity-70 transition-colors duration-300">RRP ${Number(displayDeal.retailPrice).toFixed(2)}</span>
               )}
             </div>
 
-            <div class="bg-surface-hover border-outline text-content group-hover:bg-brand/10 group-hover:border-brand/40 group-hover:text-brand w-full rounded border py-2.5 text-center text-xs font-bold uppercase tracking-wide transition-all duration-300">
+            <div class="bg-surface-hover border-outline text-content group-hover:bg-brand/10 group-hover:border-brand/40 group-hover:text-brand w-full rounded-lg border py-3.5 text-center text-sm font-bold uppercase tracking-widest transition-all duration-300">
               Claim Offer
             </div>
           </div>
