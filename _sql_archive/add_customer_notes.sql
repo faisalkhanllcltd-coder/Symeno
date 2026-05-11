@@ -1,8 +1,0 @@
-
-CREATE TABLE IF NOT EXISTS customer_notes (
-  id TEXT PRIMARY KEY,
-  customer_id TEXT NOT NULL,
-  author_id TEXT NOT NULL,
-  note TEXT NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
