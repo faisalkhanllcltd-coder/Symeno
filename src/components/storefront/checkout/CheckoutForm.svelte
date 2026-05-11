@@ -6,13 +6,12 @@
   let isProcessing = $state(false);
   let errorMessage = $state('');
 
-  // Native Form State replacing Stripe Elements
   let formData = $state({
     fullName: '',
     email: '',
     country: 'AE',
     city: '',
-    paymentMethod: 'pre_order', // Defaults to Pre-Order  
+    paymentMethod: 'pre_order',
   });
 
   let cartItems: any[] = [];
@@ -37,15 +36,14 @@
     errorMessage = '';
 
     try {
-      // 1. Map to strict Zod Backend Schema
-      // FIX: Restored the backticks for template literal
       const shippingAddress = `${formData.city}, ${formData.country}`;
+      
+      // THE FIX: Accurately map Svelte 5 cart store properties to the API payload
       const payloadItems = cartItems.map(item => ({       
-        slug: item.id || item.slug, // Support both ID or Slug bindings from the cart
-        quantity: item.quantity || 1
+        productId: item.id || item.slug, 
+        qty: item.qty || 1
       }));
 
-      // 2. Transmit to secure dropship processor
       const res = await fetch('/api/checkout/process', {  
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },  
@@ -64,14 +62,8 @@
       }
 
       if (data.success && data.orderId) {
-        // 3. Clear the cart securely to prevent double-billing
-        if (cartStore) {
-            cartStore.items = [];
-            if (typeof localStorage !== 'undefined') localStorage.removeItem('symeno_cart');
-        }
-        // 4. Redirect with confirmation parameters       
-        // FIX: Restored the backticks for template literal
-        window.location.href = `/?order_confirmed=${data.orderId}`;
+        // THE FIX: Route perfectly to the dedicated Success Terminal
+        window.location.href = `/checkout/success?order=${data.orderId}`;
       }
     } catch (e: any) {
       errorMessage = e.message || 'Transmission failed. Retrying required.';
@@ -80,13 +72,13 @@
   }
 </script>
 
-<div class="relative min-h-[400px] border border-outline bg-surface p-6 sm:p-8 transition-colors duration-300">     
+<div class="relative min-h-[400px] border border-outline bg-surface p-6 sm:p-8 transition-colors duration-300 rounded-xl shadow-ambient">     
   <h2 class="mb-8 border-b border-outline pb-4 font-mono text-sm font-bold tracking-widest text-content uppercase"> 
     Secure Checkout Gateway
   </h2>
 
   {#if isLoading}
-    <div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-base/80 backdrop-blur-sm">       
+    <div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-base/80 backdrop-blur-sm rounded-xl">       
       <div class="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-brand/20 border-t-brand"></div>
       <p class="animate-pulse font-mono text-[10px] tracking-widest text-brand uppercase">
         Initializing native gateway...
@@ -95,13 +87,12 @@
   {/if}
 
   {#if errorMessage}
-    <div class="mb-6 border border-brand-alert/30 bg-brand-alert/10 p-4 font-mono text-xs tracking-widest text-brand-alert uppercase">
+    <div class="mb-6 border border-brand-alert/30 bg-brand-alert/10 p-4 font-mono text-xs tracking-widest text-brand-alert uppercase rounded">
       {errorMessage}
     </div>
   {/if}
 
   <form onsubmit={handleSubmit} id="payment-form" class="space-y-8 {isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-500'}">
-
 
     <div>
       <h3 class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase">
@@ -113,19 +104,19 @@
           bind:value={formData.fullName}
           required
           placeholder="FULL NAME"
-          class="w-full border border-outline bg-base p-3 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+          class="w-full rounded border border-outline bg-base p-3 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand transition-colors"
         />
         <input
           type="email"
           bind:value={formData.email}
           required
           placeholder="EMAIL TRANSMISSION ADDRESS"        
-          class="w-full border border-outline bg-base p-3 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+          class="w-full rounded border border-outline bg-base p-3 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand transition-colors"
         />
         <div class="grid grid-cols-2 gap-4">
           <select
             bind:value={formData.country}
-            class="w-full border border-outline bg-base p-3 uppercase focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+            class="w-full rounded border border-outline bg-base p-3 uppercase focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand transition-colors"
           >
             <option value="AE">United Arab Emirates</option>
             <option value="SA">Saudi Arabia</option>      
@@ -137,21 +128,18 @@
             bind:value={formData.city}
             required
             placeholder="CITY"
-            class="w-full border border-outline bg-base p-3 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+            class="w-full rounded border border-outline bg-base p-3 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand transition-colors"
           />
         </div>
       </div>
     </div>
-
 
     <div>
       <h3 class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase">
         2. Financial Authorization Method
       </h3>
       <div class="space-y-3 font-mono text-xs">
-
-
-        <label class="flex cursor-pointer items-center gap-3 border border-outline bg-base p-4 transition-colors hover:border-brand has-[:checked]:border-brand has-[:checked]:bg-brand/5">
+        <label class="flex cursor-pointer items-center gap-3 rounded border border-outline bg-base p-4 transition-colors hover:border-brand has-[:checked]:border-brand has-[:checked]:bg-brand/5">
           <input
             type="radio"
             bind:group={formData.paymentMethod}
@@ -164,8 +152,7 @@
           </div>
         </label>
 
-
-        <label class="flex cursor-pointer items-center gap-3 border border-outline bg-base p-4 transition-colors hover:border-brand has-[:checked]:border-brand has-[:checked]:bg-brand/5">
+        <label class="flex cursor-pointer items-center gap-3 rounded border border-outline bg-base p-4 transition-colors hover:border-brand has-[:checked]:border-brand has-[:checked]:bg-brand/5">
           <input
             type="radio"
             bind:group={formData.paymentMethod}
@@ -177,14 +164,13 @@
             <span class="mt-1 text-[10px] text-content-muted">Reserve your allocation. Payment will be collected when infrastructure is live.</span>
           </div>
         </label>
-
       </div>
     </div>
 
     <button
       type="submit"
       disabled={isProcessing || isLoading}
-      class="w-full bg-brand px-4 py-4 font-mono text-xs font-bold tracking-widest text-brand-dark uppercase shadow-[0_0_15px_var(--color-brand)] transition-colors hover:opacity-80 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark"
+      class="w-full rounded bg-brand px-4 py-4 font-mono text-xs font-bold tracking-widest text-brand-dark uppercase shadow-[0_0_15px_var(--color-brand)] transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark"
     >
       {isProcessing ? 'Processing Transaction...' : 'Authorize Payload'}
     </button>

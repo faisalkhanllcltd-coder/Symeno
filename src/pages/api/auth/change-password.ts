@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(1),
-  newPassword: z.string().min(8),
+  newPassword: z.string().min(6), // THE FIX: Down from 8 to 6
 });
 
 export const POST: APIRoute = async ({ request, locals }) => {
@@ -29,7 +29,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return new Response(JSON.stringify({ error: 'User not found or password not set.' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
     }
 
-    // Verify Old Password
     const [saltHex] = (user.password_hash as string).split(':');
     const saltBytes = new Uint8Array(saltHex.match(/.{1,2}/g)!.map((byte: any) => parseInt(byte, 16)));
     const oldHashCheck = await hashPassword(parsed.data.currentPassword, saltBytes);
@@ -38,10 +37,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return new Response(JSON.stringify({ error: 'Incorrect current password.' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
     }
 
-    // Hash and Save New Password
     const newSalt = crypto.getRandomValues(new Uint8Array(16));
     const newHash = await hashPassword(parsed.data.newPassword, newSalt);
-    
+
     await db.prepare('UPDATE customers SET password_hash = ?1, updated_at = CURRENT_TIMESTAMP WHERE id = ?2')
       .bind(newHash, locals.user.id)
       .run();

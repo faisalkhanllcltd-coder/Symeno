@@ -7,12 +7,10 @@ if (Astro.cookies.has('auth_error')) {
 }
 ---
 
-<Storefront title="Authenticate">
+<Storefront title="Authenticate | Symeno">
   <div class="mx-auto max-w-md px-4 py-24">
     <div class="mb-8 text-center">
-      <h1
-        class="text-content mb-2 text-3xl font-bold tracking-tighter uppercase"
-      >
+      <h1 class="text-content mb-2 text-3xl font-bold tracking-tighter uppercase">
         Account Access
       </h1>
       <p class="text-content-muted font-mono text-sm">
@@ -22,20 +20,11 @@ if (Astro.cookies.has('auth_error')) {
 
     <div
       id="auth-error-container"
-      class="bg-brand-alert/10 border-brand-alert/30 text-brand-alert mb-6 flex hidden items-center justify-center gap-2 border p-4 text-center font-mono text-xs tracking-widest uppercase shadow-[0_0_15px_rgba(239,68,68,0.15)]"
+      class="bg-brand-alert/10 border-brand-alert/30 text-brand-alert mb-6 hidden items-center justify-center gap-2 rounded-lg border p-4 text-center font-mono text-xs tracking-widest uppercase shadow-[0_0_15px_rgba(239,68,68,0.15)]"
     >
-      <svg
-        class="h-4 w-4 shrink-0"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="2"
-        stroke="currentColor"
-        ><path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-        ></path></svg
-      >
+      <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+      </svg>
       <div id="auth-error" class="font-bold"></div>
     </div>
 
@@ -48,46 +37,73 @@ if (Astro.cookies.has('auth_error')) {
             name="email"
             required
             placeholder="Email address"
-            class="bg-base border-outline text-content w-full rounded-lg border px-4 py-3 font-mono text-sm outline-none"
+            class="bg-base border-outline text-content focus:border-brand focus:ring-1 focus:ring-brand w-full rounded-lg border px-4 py-3 font-mono text-sm transition-all outline-none"
           />
         </div>
         <div>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            required
-            placeholder="Password"
-            class="bg-base border-outline text-content w-full rounded-lg border px-4 py-3 font-mono text-sm outline-none"
-          />
+          <div class="relative">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              placeholder="Password"
+              class="bg-base border-outline text-content focus:border-brand focus:ring-1 focus:ring-brand w-full rounded-lg border px-4 py-3 font-mono text-sm transition-all outline-none"
+            />
+          </div>
+          <div class="mt-2 flex justify-end">
+            <a href="/auth/forgot-password" class="text-content-muted hover:text-brand font-mono text-[9px] tracking-widest uppercase transition-colors focus-visible:outline-none focus-visible:text-brand">
+              Recover Password
+            </a>
+          </div>
         </div>
+        
         <Turnstile client:load />
+        
         <button
           type="submit"
           id="auth-submit-btn"
-          class="bg-brand text-brand-dark w-full rounded-lg py-4 font-bold tracking-widest uppercase transition-opacity hover:opacity-90"
-          >Authenticate</button
+          class="bg-brand text-brand-dark w-full rounded-lg py-4 font-bold tracking-widest uppercase transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_20px_rgba(54,244,164,0.25)] disabled:opacity-50 disabled:cursor-not-allowed"
         >
+          Authenticate
+        </button>
       </form>
     </div>
+    
     <div class="mt-8 text-center">
       <a
         href="/auth/register"
-        class="text-content-muted hover:text-brand font-mono text-xs tracking-widest uppercase"
-        >No credentials? Register.</a>
+        id="register-link"
+        class="text-content-muted hover:text-brand font-mono text-[10px] tracking-widest uppercase transition-colors focus-visible:outline-none focus-visible:text-brand"
+      >
+        No credentials? Register.
+      </a>
     </div>
   </div>
 
   <script is:inline>
     window.addEventListener('load', () => {
+      // THE FIX: Parse the URL to see if we were intercepted from checkout
+      const urlParams = new URLSearchParams(window.location.search);
+      const returnTo = urlParams.get('returnTo');
+
+      if (returnTo) {
+        const registerLink = document.getElementById('register-link');
+        if (registerLink) registerLink.href = `/auth/register?returnTo=${encodeURIComponent(returnTo)}`;
+      }
+
       const form = document.getElementById('login-form');
       const errorContainer = document.getElementById('auth-error-container');
       const errorText = document.getElementById('auth-error');
+      const submitBtn = document.getElementById('auth-submit-btn');
 
       if (!form || !errorContainer || !errorText) return;
 
       async function processLogin() {
         errorContainer.classList.add('hidden');
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'AUTHENTICATING...';
+        
         const formData = new FormData(form);
 
         try {
@@ -104,7 +120,8 @@ if (Astro.cookies.has('auth_error')) {
             res.redirected ||
             (res.status >= 200 && res.status < 300)
           ) {
-            window.location.href = res.url || '/account/orders';
+            // THE FIX: Route the user to returnTo if it exists, otherwise default to orders
+            window.location.href = returnTo || res.url || '/account/orders';
             return;
           }
 
@@ -116,9 +133,14 @@ if (Astro.cookies.has('auth_error')) {
             errorText.textContent = 'A system error occurred. Please try again.';
           }
           errorContainer.classList.remove('hidden');
+          errorContainer.classList.add('flex');
         } catch (err) {
           errorText.textContent = 'Network error. Check connection.';
           errorContainer.classList.remove('hidden');
+          errorContainer.classList.add('flex');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerText = 'AUTHENTICATE';
         }
       }
 

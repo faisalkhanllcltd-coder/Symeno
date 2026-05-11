@@ -3,11 +3,11 @@ import StorefrontLayout from '../../layouts/Storefront.astro';
 ---
 
 <StorefrontLayout title="Transaction Aborted | Symeno Secure">
-  <main class="flex min-h-[70vh] items-center justify-center px-6">
-    <div class="w-full max-w-2xl border border-outline bg-surface p-8 md:p-12">
-      <!-- Terminal Header -->
-      <div class="mb-8 flex items-center gap-4 border-b border-outline pb-6">
-        <div class="h-3 w-3 animate-pulse bg-brand-alert"></div>
+  <main class="flex min-h-[75vh] items-center justify-center px-6">
+    <div class="w-full max-w-2xl border border-outline bg-surface p-8 md:p-12 shadow-ambient rounded-xl">
+      
+      <div class="mb-8 flex items-center gap-4 border-b border-outline/50 pb-6">
+        <div class="h-3 w-3 animate-pulse bg-brand-alert rounded-full"></div>
         <h1 class="font-mono text-sm font-bold tracking-[0.2em] text-content uppercase">
           Signal Interrupted: Transaction Terminated
         </h1>
@@ -18,36 +18,35 @@ import StorefrontLayout from '../../layouts/Storefront.astro';
           The settlement process was not finalized. No funds have been requested, and your allocation has been released back to the general pool. 
         </p>
 
-        <div class="border-l-2 border-brand-alert bg-brand-alert/5 p-4">
-          <p class="font-mono text-[10px] tracking-widest text-brand-alert uppercase">
+        <div class="border-l-2 border-brand-alert bg-brand-alert/5 p-4 rounded-r">
+          <p class="font-mono text-[10px] tracking-widest text-brand-alert uppercase font-bold">
             Status: SESSION_CANCELLED_BY_USER
           </p>
         </div>
 
-        <div class="pt-6">
-          <p class="mb-6 font-mono text-[10px] text-content-muted uppercase">
-            Your cart data remains cached in your local session. You may resume the authorization or modify your logistics parameters below.
+        <div class="pt-6 border-t border-outline/30 mt-8">
+          <p class="mb-6 font-mono text-[10px] text-content-muted uppercase leading-relaxed">
+            Your cart data remains cached in your local browser session. You may resume the authorization or modify your logistics parameters from the catalog.
           </p>
           
           <div class="flex flex-col gap-4 sm:flex-row">
             <a 
-              href="/cart" 
-              class="flex-1 border border-outline bg-base px-6 py-4 text-center font-mono text-[10px] font-bold tracking-widest text-content uppercase transition-colors hover:bg-surface"
-            >
-              Return to Cart
-            </a>
-            <a 
               href="/shop" 
-              class="flex-1 bg-brand px-6 py-4 text-center font-mono text-[10px] font-bold tracking-widest text-brand-dark uppercase transition-opacity hover:opacity-90"
+              class="flex-1 bg-brand px-6 py-4 rounded text-center font-mono text-[10px] font-bold tracking-widest text-brand-dark uppercase transition-all hover:opacity-90 hover:shadow-[0_0_15px_rgba(54,244,164,0.15)] focus:outline-none"
             >
               Resume Shopping
+            </a>
+            <a 
+              href="/account/orders" 
+              class="flex-1 border border-outline bg-base px-6 py-4 rounded text-center font-mono text-[10px] font-bold tracking-widest text-content uppercase transition-colors hover:bg-surface focus:outline-none"
+            >
+              View Dashoard
             </a>
           </div>
         </div>
       </div>
       
-      <!-- Footer Decoration -->
-      <div class="mt-12 flex justify-between border-t border-outline pt-6 font-mono text-[8px] text-content-muted uppercase tracking-[0.3em]">
+      <div class="mt-12 flex justify-between border-t border-outline/30 pt-6 font-mono text-[8px] text-content-muted uppercase tracking-[0.3em]">
         <span>Symeno_Recovery_Protocol_v1.0</span>
         <span>Secure Terminal</span>
       </div>

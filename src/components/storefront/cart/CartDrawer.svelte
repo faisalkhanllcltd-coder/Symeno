@@ -1,10 +1,27 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { cart } from '../../../stores/cart.svelte.ts';
+  import { auth } from '../../../stores/auth.svelte.ts';
 
   let isProcessing = $state(false);
 
+  // Ensure we know the user's auth status before they try to checkout
+  onMount(() => {
+    if (auth.isLoading && !auth.isAuthenticated) {
+      auth.checkSession();
+    }
+  });
+
   async function initializeCheckout() {
     if (cart.items.length === 0) return;
+
+    // THE GATEKEEPER: Intercept unauthenticated users securely
+    if (!auth.isAuthenticated) {
+      cart.closeCart();
+      window.location.href = '/auth/register?returnTo=/checkout';
+      return;
+    }
+
     isProcessing = true;
 
     try {
@@ -14,8 +31,8 @@
         body: JSON.stringify({ 
           items: cart.items,
           // Fallback mocked data for checkout init requirements
-          customer_email: 'pending@checkout.com',
-          shipping_name: 'Pending',
+          customer_email: auth.user?.email || 'pending@checkout.com',
+          shipping_name: auth.user?.firstName ? `${auth.user.firstName} ${auth.user.lastName}` : 'Pending',
           shipping_address: 'Pending'
         }),
       });

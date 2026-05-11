@@ -5,7 +5,7 @@ import { env } from 'cloudflare:workers';
 
 const schema = z.object({
   token: z.string().min(10),
-  newPassword: z.string().min(8)
+  newPassword: z.string().min(6) // THE FIX: Down from 8 to 6
 });
 
 export const POST: APIRoute = async (context) => {
@@ -29,7 +29,6 @@ export const POST: APIRoute = async (context) => {
       .bind(newHash, userId)
       .run();
 
-    // Invalidate the token immediately so it cannot be reused
     await kv.delete(`reset:${token}`);
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });

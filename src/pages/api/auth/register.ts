@@ -4,17 +4,20 @@ import { hashPassword } from '../../../lib/crypto';
 import { createSession } from '../../../lib/auth';
 import { z } from 'zod';
 
+// THE FIX: Relaxed the password validation to 6 characters, no special requirements
 const registerSchema = z.object({
   email: z.string().email('Invalid email format').transform(val => val.toLowerCase().trim()),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
   firstName: z.string().trim().optional().default(''),
   lastName: z.string().trim().optional().default(''),
+  cartItems: z.array(z.any()).optional().default([]), // Catch the active cart state
 });
 
-export const POST: APIRoute = async ({ request, cookies, redirect }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   try {
-    const formData = await request.formData();
-    const parsedData = registerSchema.safeParse(Object.fromEntries(formData));
+    // THE FIX: Parse JSON instead of FormData
+    const body = await request.json();
+    const parsedData = registerSchema.safeParse(body);
 
     if (!parsedData.success) {
       return new Response(
@@ -23,14 +26,26 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
       );
     }
 
-    const { email, password, firstName, lastName } = parsedData.data;
+    const { email, password, firstName, lastName, cartItems } = parsedData.data;
     const db = env.DB;
 
-    if (!db) return new Response('Database missing. Check wrangler.toml bindings.', { status: 500 });
+    if (!db) {
+      return new Response(
+        JSON.stringify({ error: 'Database connection offline.' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
 
+    // 1. Verify email availability
     const existing = await db.prepare('SELECT id FROM customers WHERE email = ?1').bind(email).first();
-    if (existing) return new Response('Email already exists.', { status: 400 });
+    if (existing) {
+      return new Response(
+        JSON.stringify({ error: 'Identity already provisioned. Please login.' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
 
+    // 2. Provision new identity
     const userId = `cus_${crypto.randomUUID()}`;
     const passwordHash = await hashPassword(password);
 
@@ -39,12 +54,34 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
       .bind(userId, email, firstName, lastName, passwordHash)
       .run();
 
-    // Delegate KV storage and cookie creation to the central library
-    await createSession(env, cookies, { id: userId, email, role: 'customer' });
+    // 3. Delegate KV storage and secure HttpOnly cookie creation
+    await createSession(env, cookies, {
+      id: userId,
+      email,
+      firstName,
+      lastName,
+      role: 'customer'
+    });
 
-    return redirect('/account/orders');
+    // Note: Because the frontend CartStore (`cart.svelte.ts`) relies on localStorage, 
+    // the cart survives the auth process perfectly. We simply acknowledge the cart payload 
+    // here and let the frontend initiate the checkout sequence immediately upon success.
+
+    // 4. Return success to trigger the frontend dynamic routing
+    return new Response(
+      JSON.stringify({
+        success: true,
+        userId,
+        message: 'Identity provisioned. Rerouting to checkout.'
+      }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
+    );
+
   } catch (err: unknown) {
     console.error('[AUTH_FATAL_REGISTER]', err);
-    return new Response('Server Error', { status: 500 });
+    return new Response(
+      JSON.stringify({ error: 'Secure gateway error. Please try again.' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
   }
 };

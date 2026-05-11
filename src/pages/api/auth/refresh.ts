@@ -5,7 +5,7 @@ export const POST: APIRoute = async ({ cookies }) => {
   const sessionId = cookies.get('auth_session')?.value;
   if (!sessionId) return new Response(JSON.stringify({ error: 'No session found.' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
 
-  const kv = (env as any).KV || (env as any).SESSION;
+  const kv = env.SESSION;
   if (!kv) return new Response(JSON.stringify({ error: 'KV store missing.' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
 
   const sessionKey = `session:${sessionId}`;

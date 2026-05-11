@@ -3,76 +3,121 @@ import Storefront from '../../layouts/Storefront.astro';
 import Turnstile from '../../components/security/Turnstile.svelte';
 ---
 
-<Storefront title="Register Access">
+<Storefront title="Secure Registration | Symeno">
   <div class="mx-auto max-w-md px-4 py-24">
-    <div class="mb-8 text-center">
-      <h1
-        class="text-content mb-2 text-3xl font-bold tracking-tighter uppercase"
-      >
-        Request Access
-      </h1>
-      <p class="text-content-muted font-mono text-sm">
-        Provision a new cryptographic identity.
+    
+    <div id="checkout-context" class="hidden mb-8 bg-brand/5 border border-brand/20 rounded-xl p-6 text-center shadow-sm">
+      <div class="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand/10">
+        <svg class="h-5 w-5 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+      </div>
+      <h2 class="text-content mb-2 font-mono text-[12px] font-bold tracking-widest uppercase">Secure Your Order</h2>
+      <p class="text-content-muted font-mono text-[11px] leading-relaxed">
+        Create an account to track your shipment in real-time, store hardware warranties, and access priority support. It takes 30 seconds.
       </p>
     </div>
+
+    <div class="mb-8 text-center" id="default-context">
+      <h1 class="text-content mb-2 text-3xl font-bold tracking-tighter uppercase">
+        Initialize Account
+      </h1>
+      <p class="text-content-muted font-mono text-xs">
+        Join the procurement network.
+      </p>
+    </div>
+
     <div class="bg-surface border-outline shadow-ambient rounded-xl border p-8">
-      <form action="/api/auth/register" method="POST" class="space-y-6">
+      <form id="register-form" class="space-y-6">
+        
+        <div id="error-alert" class="hidden bg-brand-alert/10 border border-brand-alert/30 text-brand-alert rounded-lg p-3 font-mono text-[10px] uppercase tracking-widest text-center"></div>
+
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <input
-              type="text"
-              name="firstName"
-              placeholder="First Name"
-              class="bg-base border-outline text-content w-full rounded-lg border px-4 py-3 font-mono text-sm transition-all outline-none"
-            />
+            <input type="text" id="firstName" required placeholder="First Name" class="bg-base border-outline text-content focus:border-brand focus:ring-1 focus:ring-brand w-full rounded-lg border px-4 py-3 font-mono text-xs transition-all outline-none" />
           </div>
           <div>
-            <input
-              type="text"
-              name="lastName"
-              placeholder="Last Name"
-              class="bg-base border-outline text-content w-full rounded-lg border px-4 py-3 font-mono text-sm transition-all outline-none"
-            />
+            <input type="text" id="lastName" required placeholder="Last Name" class="bg-base border-outline text-content focus:border-brand focus:ring-1 focus:ring-brand w-full rounded-lg border px-4 py-3 font-mono text-xs transition-all outline-none" />
           </div>
         </div>
         <div>
-          <input
-            type="email"
-            name="email"
-            required
-            placeholder="Email Address"
-            class="bg-base border-outline text-content w-full rounded-lg border px-4 py-3 font-mono text-sm transition-all outline-none"
-          />
+          <input type="email" id="email" required placeholder="Email Address" class="bg-base border-outline text-content focus:border-brand focus:ring-1 focus:ring-brand w-full rounded-lg border px-4 py-3 font-mono text-xs transition-all outline-none" />
         </div>
         <div>
-          <input
-            type="password"
-            name="password"
-            required
-            placeholder="Password"
-            class="bg-base border-outline text-content w-full rounded-lg border px-4 py-3 font-mono text-sm transition-all outline-none"
-          />
-          <p
-            class="text-content-muted mt-2 font-mono text-[10px] tracking-widest uppercase"
-          >
-            Min 8 chars, 1 uppercase, 1 number.
-          </p>
+          <input type="password" id="password" required placeholder="Password" class="bg-base border-outline text-content focus:border-brand focus:ring-1 focus:ring-brand w-full rounded-lg border px-4 py-3 font-mono text-xs transition-all outline-none" />
         </div>
+        
         <Turnstile client:load />
-        <button
-          type="submit"
-          class="bg-brand text-brand-dark shadow-brand/10 w-full rounded-lg py-4 font-bold tracking-widest uppercase shadow-lg hover:opacity-90"
-        >
-          Initialize Identity
+        
+        <button type="submit" id="submit-btn" class="bg-brand text-brand-dark w-full rounded-lg py-4 text-[11px] font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(54,244,164,0.15)] transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_20px_rgba(54,244,164,0.25)] disabled:opacity-50 disabled:cursor-not-allowed">
+          Create Account
         </button>
       </form>
     </div>
+    
     <div class="mt-8 text-center">
-      <a
-        href="/auth/login"
-        class="text-content-muted hover:text-brand font-mono text-xs tracking-widest uppercase transition-colors"
-        >Already provisioned? Login.</a
-      >
+      <a href="/auth/login" id="login-link" class="text-content-muted hover:text-brand font-mono text-[10px] tracking-widest uppercase transition-colors focus-visible:outline-none focus-visible:text-brand">
+        Already provisioned? Login.
+      </a>
     </div>
   </div>
 </Storefront>
+
+<script>
+  import { cart } from '../../stores/cart.svelte.ts';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const returnTo = urlParams.get('returnTo');
+
+    if (returnTo && returnTo.includes('checkout')) {
+      document.getElementById('checkout-context')?.classList.remove('hidden');
+      document.getElementById('default-context')?.classList.add('hidden');
+      
+      const loginLink = document.getElementById('login-link') as HTMLAnchorElement;
+      if (loginLink) loginLink.href = `/auth/login?returnTo=${encodeURIComponent(returnTo)}`;
+    }
+
+    const form = document.getElementById('register-form') as HTMLFormElement;
+    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+    const errorAlert = document.getElementById('error-alert') as HTMLDivElement;
+
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorAlert.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'SECURING IDENTITY...';
+
+      const firstName = (document.getElementById('firstName') as HTMLInputElement).value;
+      const lastName = (document.getElementById('lastName') as HTMLInputElement).value;
+      const email = (document.getElementById('email') as HTMLInputElement).value;
+      const password = (document.getElementById('password') as HTMLInputElement).value;
+
+      try {
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            firstName, 
+            lastName, 
+            email, 
+            password,
+            cartItems: cart.items 
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Identity initialization failed.');
+        }
+
+        window.location.href = returnTo || '/account';
+
+      } catch (error: any) {
+        errorAlert.innerText = error.message;
+        errorAlert.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'CREATE ACCOUNT';
+      }
+    });
+  });
+</script>

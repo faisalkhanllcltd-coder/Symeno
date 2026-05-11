@@ -1,12 +1,12 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 
-export const GET: APIRoute = async ({ url }) => {
+export const GET: APIRoute = async ({ url, redirect }) => {
   const token = url.searchParams.get('token');
   if (!token) return new Response('Missing token.', { status: 400 });
 
   try {
-    const db = (env as any).DB;
+    const db = env.DB;
     if (!db) return new Response('Database missing.', { status: 500 });
 
     const user = await db.prepare('SELECT id, pending_email FROM customers WHERE verification_token = ?1').bind(token).first();
@@ -18,10 +18,8 @@ export const GET: APIRoute = async ({ url }) => {
       .bind(user.pending_email, user.id)
       .run();
 
-    return new Response('Email verified successfully. You may now close this window or return to the site.', { 
-      status: 200,
-      headers: { 'Content-Type': 'text/plain; charset=utf-8' }
-    });
+    // THE FIX: Redirect back to the auth terminal rather than showing a dead plain-text page
+    return redirect('/auth/login?verified=true');
   } catch (err) {
     console.error('[AUTH_VERIFY_EMAIL_ERROR]', err);
     return new Response('Failed to verify email.', { status: 500 });

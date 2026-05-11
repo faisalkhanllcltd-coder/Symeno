@@ -5,10 +5,10 @@ export const GET: APIRoute = async (context) => {
   const sessionId = context.cookies.get('auth_session')?.value;
 
   if (!sessionId) {
-    return new Response(JSON.stringify({ user: null }), { status: 401 });
+    return new Response(null, { status: 401 });
   }
 
-  const kvStore = env?.SESSION;
+  const kvStore = env.SESSION;
 
   if (!kvStore) {
     console.error('[AUTH_FATAL] KV binding missing in session hydration.');
@@ -19,16 +19,13 @@ export const GET: APIRoute = async (context) => {
 
   if (!sessionData) {
     // Session exists in cookie but was deleted from KV (e.g., remote logout)
-    return new Response(JSON.stringify({ user: null }), { status: 401 });
+    return new Response(null, { status: 401 });
   }
 
-  try {
-    const user = JSON.parse(sessionData);
-    return new Response(JSON.stringify({ user }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (err) {
-    return new Response(JSON.stringify({ user: null }), { status: 401 });
-  }
+  // THE FIX: Return the raw sessionData string directly. 
+  // It is already JSON, so `this.user = await res.json()` in the frontend will parse it perfectly without double-nesting.
+  return new Response(sessionData, {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  });
 };

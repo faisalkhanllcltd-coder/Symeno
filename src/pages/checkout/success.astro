@@ -1,7 +1,7 @@
 ---
 import StorefrontLayout from '../../layouts/Storefront.astro';
 
-// In a real application, this would verify the secure session/order ID
+// In a real application, this would verify the secure session/order ID from the URL params via Stripe
 const orderNumber = 'SYM-' + Math.floor(100000 + Math.random() * 900000);
 ---
 
@@ -10,7 +10,7 @@ const orderNumber = 'SYM-' + Math.floor(100000 + Math.random() * 900000);
   description="Your hardware order has been secured."
 >
   <div
-    class="relative flex min-h-[70vh] flex-col items-center justify-center overflow-hidden bg-base px-4"
+    class="relative flex min-h-[75vh] flex-col items-center justify-center overflow-hidden bg-base px-4"
   >
     <div
       class="pointer-events-none absolute inset-0 opacity-[0.02]"
@@ -19,10 +19,10 @@ const orderNumber = 'SYM-' + Math.floor(100000 + Math.random() * 900000);
     </div>
 
     <div
-      class="relative z-10 mx-auto max-w-2xl border border-outline bg-surface p-8 text-center shadow-lg md:p-12"
+      class="relative z-10 mx-auto w-full max-w-2xl border border-outline bg-surface p-8 text-center shadow-ambient rounded-xl md:p-12"
     >
       <div
-        class="mb-8 inline-flex h-16 w-16 items-center justify-center rounded-full border border-brand/30 bg-brand/10 text-brand shadow-[0_0_15px_var(--color-brand)]"
+        class="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-full border border-brand/30 bg-brand/10 text-brand shadow-[0_0_15px_var(--color-brand)]"
       >
         <svg
           class="h-8 w-8"
@@ -43,12 +43,14 @@ const orderNumber = 'SYM-' + Math.floor(100000 + Math.random() * 900000);
         Deployment <span class="text-brand">Secured.</span>
       </h1>
 
-      <p class="mb-2 font-mono text-sm text-content-muted">
-        Order Reference: <span class="text-content">{orderNumber}</span>
-      </p>
+      <div class="inline-block bg-base border border-outline/50 rounded px-4 py-2 mb-8">
+        <p class="font-mono text-[11px] font-bold tracking-widest uppercase text-content-muted">
+          Order Reference: <span class="text-brand ml-2">{orderNumber}</span>
+        </p>
+      </div>
 
       <p
-        class="mx-auto mb-10 max-w-md font-mono text-sm leading-relaxed text-content-muted"
+        class="mx-auto mb-10 max-w-md font-mono text-xs leading-relaxed text-content-muted"
       >
         Your acquisition has been logged in the master ledger. Logistics will
         dispatch within 24 hours. A secure receipt has been transmitted to your
@@ -58,13 +60,13 @@ const orderNumber = 'SYM-' + Math.floor(100000 + Math.random() * 900000);
       <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
         <a
           href="/account/orders"
-          class="w-full bg-brand px-8 py-4 text-xs font-bold tracking-widest text-black uppercase shadow-[0_0_15px_var(--color-brand)] transition-all duration-300 hover:opacity-80 hover:shadow-none focus:outline-none sm:w-auto"
+          class="w-full sm:w-auto bg-brand px-8 py-4 rounded text-[11px] font-bold tracking-widest text-brand-dark uppercase shadow-[0_0_15px_rgba(54,244,164,0.15)] transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_25px_rgba(54,244,164,0.3)] focus:outline-none"
         >
           Track Shipment &rarr;
         </a>
         <a
-          href="/deals"
-          class="w-full border border-outline bg-transparent px-8 py-4 text-xs font-bold tracking-widest text-content uppercase transition-all duration-300 hover:border-brand hover:text-brand focus:outline-none sm:w-auto"
+          href="/shop"
+          class="w-full sm:w-auto border border-outline bg-transparent px-8 py-4 rounded text-[11px] font-bold tracking-widest text-content uppercase transition-all duration-300 hover:border-brand hover:text-brand focus:outline-none"
         >
           Return to Catalog
         </a>
@@ -72,3 +74,16 @@ const orderNumber = 'SYM-' + Math.floor(100000 + Math.random() * 900000);
     </div>
   </div>
 </StorefrontLayout>
+
+<script>
+  import { cart } from '../../stores/cart.svelte.ts';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    try {
+      cart.clearCart();
+      console.log('[LOGISTICS] Local payload purged post-deployment.');
+    } catch (e) {
+      console.error('[LOGISTICS_ERROR] Failed to purge local payload.', e);
+    }
+  });
+</script>
