@@ -3,7 +3,7 @@ import type { AstroCookies } from 'astro';
 const SESSION_COOKIE = 'auth_session';
 const SESSION_TTL = 604800; // 7 days in seconds
 
-export async function createSession(env: any, cookies: AstroCookies, payload: { id: string, email: string, role: string }) {
+export async function createSession(env: any, cookies: AstroCookies, payload: { id: string, email: string, role: string, firstName?: string, lastName?: string }) {
     const sessionId = crypto.randomUUID();
 
     // Safely fallback between configurations
