@@ -6,6 +6,7 @@ CREATE TABLE customers (
     password_hash TEXT NOT NULL,
     first_name TEXT,
     last_name TEXT,
+    role TEXT DEFAULT 'customer',
     pending_email TEXT,
     verification_token TEXT,
     is_verified INTEGER DEFAULT 0,
@@ -43,4 +44,14 @@ CREATE TABLE wishlists (
     customer_id TEXT NOT NULL,
     product_id TEXT NOT NULL,
     PRIMARY KEY (customer_id, product_id)
+);
+
+-- CATALOG CACHE: Required for Secure Checkout (Prevents client-side price manipulation)
+DROP TABLE IF EXISTS catalog_cache;
+CREATE TABLE catalog_cache (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    price REAL NOT NULL,
+    stock INTEGER DEFAULT 0,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

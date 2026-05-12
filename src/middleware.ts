@@ -1,8 +1,12 @@
 import { defineMiddleware } from 'astro:middleware';
 import { env } from 'cloudflare:workers';
+import { verifyJWT } from './lib/auth';
 
 export const onRequest = defineMiddleware(async (context, next) => {
     const { request, url, cookies, redirect, locals } = context;
+
+    // THE FIX: Bypass strict TypeScript checking for dynamic Cloudflare environment variables
+    const safeEnv = env as any;
 
     // --------------------------------------------------------
     // 1. CSRF PROTECTION (Origin checking for state mutations)
@@ -25,43 +29,42 @@ export const onRequest = defineMiddleware(async (context, next) => {
     const isAccountRoute = url.pathname.startsWith('/account') || url.pathname.startsWith('/api/account');
     const isSecureApiRoute = url.pathname.startsWith('/api/auth/change-');
 
-    if (isAdminRoute || isAccountRoute || isSecureApiRoute) {
-        const sessionId = cookies.get('auth_session')?.value;
+    // THE FIX: Protect and hydrate the checkout route to stop the redirect loop
+    const isCheckoutRoute = url.pathname.startsWith('/checkout');
 
-        if (!sessionId) {
+    if (isAdminRoute || isAccountRoute || isSecureApiRoute || isCheckoutRoute) {
+        const sessionToken = cookies.get('auth_session')?.value;
+
+        if (!sessionToken) {
             if (isSecureApiRoute) {
-                return new Response(JSON.stringify({ error: 'Unauthorized.' }), { 
+                return new Response(JSON.stringify({ error: 'Unauthorized.' }), {
                     status: 401,
                     headers: { 'Content-Type': 'application/json' }
                 });
             }
-            return redirect('/auth/login');
-        }
-
-        const kvStore = env?.SESSION;
-
-        if (!kvStore) {
-            console.error('[AUTH_FATAL] KV namespace binding missing in middleware.');
-            return new Response('Internal Server Error', { status: 500 });
-        }
-
-        // Fetch session from Cloudflare KV
-        const sessionData = await kvStore.get(`session:${sessionId}`);
-
-        if (!sessionData) {
-            // Session expired or deleted remotely. Nuke the stale cookie.
-            cookies.delete('auth_session', { path: '/' });
-            if (isSecureApiRoute) {
-                return new Response(JSON.stringify({ error: 'Unauthorized.' }), { 
-                    status: 401,
-                    headers: { 'Content-Type': 'application/json' }
-                });
+            // THE FIX: Ensure we preserve the returnTo baton if unauthenticated on checkout
+            if (isCheckoutRoute) {
+                return redirect('/auth/login?returnTo=/checkout');
             }
             return redirect('/auth/login');
         }
 
         try {
-            const user = JSON.parse(sessionData);
+            if (!safeEnv?.JWT_SECRET) {
+                throw new Error('[AUTH_FATAL] JWT_SECRET missing in environment.');
+            }
+
+            // Cryptographically verify token at the Edge natively
+            const user = await verifyJWT(sessionToken, safeEnv.JWT_SECRET as string);
+
+            // Asynchronously check KV for blacklist revocation (e.g. forced logout)
+            const kvStore = safeEnv?.SESSION || safeEnv?.KV;
+            if (kvStore && user.jti) {
+                const isRevoked = await kvStore.get(`revoked:${user.jti}`);
+                if (isRevoked) {
+                    throw new Error('Session revoked by security policy.');
+                }
+            }
 
             // Attach user to context so standard Astro pages can access `Astro.locals.user`
             locals.user = user;
@@ -72,13 +75,16 @@ export const onRequest = defineMiddleware(async (context, next) => {
                 return redirect('/account');
             }
         } catch (err) {
-            console.error('[AUTH_FATAL] Corrupted session JSON.', err);
+            console.error('[AUTH_FATAL] Session verification failed:', err);
             cookies.delete('auth_session', { path: '/' });
             if (isSecureApiRoute) {
-                return new Response(JSON.stringify({ error: 'Unauthorized.' }), { 
+                return new Response(JSON.stringify({ error: 'Unauthorized.' }), {
                     status: 401,
                     headers: { 'Content-Type': 'application/json' }
                 });
+            }
+            if (isCheckoutRoute) {
+                return redirect('/auth/login?returnTo=/checkout');
             }
             return redirect('/auth/login');
         }
