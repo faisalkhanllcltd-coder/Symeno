@@ -1,4 +1,4 @@
-﻿---
+---
 import StorefrontLayout from '../layouts/Storefront.astro';
 
 // Astro automatically passes the thrown error as a prop to 500.astro
@@ -6,7 +6,7 @@ interface Props {
   error: unknown;
 }
 
-const { error } = Astro.props;
+const { error: _error } = Astro.props;
 ---
 
 <StorefrontLayout title="System Error | Symeno" description="An unexpected error occurred.">

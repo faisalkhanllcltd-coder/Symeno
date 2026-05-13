@@ -5,7 +5,7 @@ import { createSession } from '../../../lib/auth';
 import { z } from 'zod';
 
 const loginSchema = z.object({
-  email: z.string().email().transform(val => val.toLowerCase().trim()),
+  email: z.string().email().trim().toLowerCase(),
   password: z.string().min(1),
   'cf-turnstile-response': z.string().optional()
 }).passthrough();

@@ -4,7 +4,6 @@ import { env } from "cloudflare:workers";
 const { deal } = Astro.props;
 
 let displayDeal = null;
-let dbError = false;
 
 if (!deal) {
   try {
@@ -35,7 +34,6 @@ if (!deal) {
     }
   } catch (e) {
     console.error('[HERO_EDGE_ERROR]', e);
-    dbError = true;
   }
 } else {
   displayDeal = deal;

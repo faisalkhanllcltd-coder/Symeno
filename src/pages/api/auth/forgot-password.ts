@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { z } from 'zod';
 import { env } from 'cloudflare:workers';
 
-const schema = z.object({ email: z.string().email().transform(val => val.toLowerCase().trim()) });
+const schema = z.object({ email: z.string().email().trim().toLowerCase() });
 
 export const POST: APIRoute = async (context) => {
   try {

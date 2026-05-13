@@ -59,7 +59,7 @@ if (totalCount > 0) {
   <div class="space-y-6">
     <FulfillmentTracker
       client:load
-      status={trackerStatus}
+      status={trackerStatus as "pending" | "processing" | "delivered" | "shipped"}
     />
 
     <div

@@ -50,7 +50,7 @@ try {
     const today: any[] = [];
     const recent: any[] = [];
 
-    deployments.forEach((item) => {
+    deployments.forEach((item: any) => {
       const diffHours = (now - item.timestamp.getTime()) / (1000 * 60 * 60);
       if (diffHours <= 48) { // 48h buffer for "Today" to ensure content exists
         today.push(item);

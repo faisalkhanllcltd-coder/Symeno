@@ -1,4 +1,4 @@
-﻿---
+---
 // src/pages/admin/categories/[id].astro
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import CategoryForm from '../../../components/admin/categories/CategoryForm.svelte';
@@ -31,7 +31,7 @@ const breadcrumbs = [
 
 <AdminLayout 
   title="Modify Taxonomy" 
-  subtitle={Editing Node ID: \}
+  subtitle={`Editing Node ID: ${id}`}
   breadcrumbs={breadcrumbs}
   currentPath="/admin/categories"
 >

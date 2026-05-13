@@ -3,7 +3,7 @@ import { env } from 'cloudflare:workers';
 import { z } from 'zod';
 
 const emailSchema = z.object({
-  newEmail: z.string().email().transform(val => val.toLowerCase().trim()),
+  newEmail: z.string().email().trim().toLowerCase(),
 });
 
 export const POST: APIRoute = async ({ request, locals }) => {

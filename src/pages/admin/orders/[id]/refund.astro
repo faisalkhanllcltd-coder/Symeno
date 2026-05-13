@@ -1,4 +1,4 @@
-﻿---
+---
 // src/pages/admin/orders/[id]/refund.astro
 import AdminLayout from '../../../../layouts/AdminLayout.astro';
 import RefundForm from '../../../../components/admin/orders/RefundForm.svelte';
@@ -25,14 +25,14 @@ try {
 
 const breadcrumbs = [
   { label: 'Orders', url: '/admin/orders' },
-  { label: id || 'Order', url: /admin/orders/\ },
+  { label: id || 'Order', url: `/admin/orders/${id}` },
   { label: 'Reverse Payment' },
 ];
 ---
 
 <AdminLayout 
   title="Initialize Refund" 
-  subtitle={Reversing capital for transaction: \}
+  subtitle={`Reversing capital for transaction: ${id}`}
   breadcrumbs={breadcrumbs}
   currentPath="/admin/orders"
 >
@@ -42,7 +42,7 @@ const breadcrumbs = [
          <p class="font-mono text-[10px] text-content-muted uppercase">Authorized Amount</p>
          <p class="text-2xl font-black text-content">$\</p>
        </div>
-      <RefundForm client:load orderId={id} maxAmount={order?.total_amount} />
+      <RefundForm client:load orderId={id as string} maxAmount={order?.total_amount?.toString() || "0"} />
     </div>
   </div>
 </AdminLayout>

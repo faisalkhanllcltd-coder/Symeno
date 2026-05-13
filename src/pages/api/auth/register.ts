@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 // THE FIX: Added cartItems to perfectly align with frontend payloads and prevent validation drops
 const registerSchema = z.object({
-  email: z.string().email('Invalid email format').transform(val => val.toLowerCase().trim()),
+  email: z.string().email('Invalid email format').trim().toLowerCase(),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   firstName: z.string().trim().optional().default(''),
   lastName: z.string().trim().optional().default(''),

@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 
-export const GET: APIRoute = ({ site }) => {
+export const GET: APIRoute = ({ site: _site }) => {
   const robotsTxt = `User-agent: *
 Allow: /
 Disallow: /admin/
