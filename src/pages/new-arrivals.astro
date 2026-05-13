@@ -4,27 +4,26 @@ import { env } from 'cloudflare:workers';
 
 export const prerender = false;
 
-// PERFORMANCE UPGRADE: Cache the Latest Deployments snapshot to offload D1
 Astro.response.headers.set(
   'Cache-Control',
   'public, s-maxage=300, stale-while-revalidate=1200'
 );
 
-let newDeployments: any[] = [];
+let timelineGroups: { label: string; items: any[] }[] = [];
 let errorMessage = '';
 
 try {
-  // ARMOR: Bulletproof edge bindings
   const db = (env.DB as any) || (Astro.locals as any).runtime?.env?.DB;
   if (db) {
+    // Fetch the 16 most recent deployments
     const { results } = await db.prepare(
-      `SELECT id, slug, name, brand, category, price, images_json
+      `SELECT id, slug, name, brand, category, price, images_json, scraped_at
        FROM catalog_cache
        ORDER BY scraped_at DESC
-       LIMIT 16` // Boosted to 16 to fill a 4-column desktop grid perfectly
+       LIMIT 16` 
     ).all();
     
-    newDeployments = (results || []).map((p: any) => {
+    const deployments = (results || []).map((p: any) => {
       let mainImage = '/assets/placeholders/product-unavailable.webp';
       try {
         if (p.images_json && p.images_json !== '[]') {
@@ -33,15 +32,36 @@ try {
         }
       } catch(e) {}
 
+      // Safe JS date parsing to avoid D1 SQLite dialect crashes
+      const scrapedDate = p.scraped_at ? new Date(p.scraped_at) : new Date();
+
       return {
         slug: p.slug,
         brand: p.brand || 'Symeno Select',
         name: p.name,
         price: p.price || 0,
-        retailPrice: p.price ? p.price * 1.15 : 0,
-        image_url: mainImage
+        image_url: mainImage,
+        timestamp: scrapedDate
       };
     });
+
+    // THE FIX: Timeline Grouping Logic
+    const now = new Date().getTime();
+    const today: any[] = [];
+    const recent: any[] = [];
+
+    deployments.forEach((item) => {
+      const diffHours = (now - item.timestamp.getTime()) / (1000 * 60 * 60);
+      if (diffHours <= 48) { // 48h buffer for "Today" to ensure content exists
+        today.push(item);
+      } else {
+        recent.push(item);
+      }
+    });
+
+    if (today.length > 0) timelineGroups.push({ label: 'Deployed Last 48H', items: today });
+    if (recent.length > 0) timelineGroups.push({ label: 'Recent Pipeline', items: recent });
+
   } else {
     errorMessage = 'Database connection offline.';
   }
@@ -55,43 +75,28 @@ try {
   title="Latest Deployments | Symeno"
   description="The newest hardware injections to our logistics pipeline."
 >
-  <div
-    class="bg-base relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8 lg:py-20 transition-colors duration-300"
-  >
-    <div
-      class="pointer-events-none absolute inset-0 opacity-[0.02] bg-[linear-gradient(var(--color-outline)_1px,transparent_1px),linear-gradient(90deg,var(--color-outline)_1px,transparent_1px)] bg-[size:32px_32px]"
-    ></div>
+  <div class="bg-base relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8 lg:py-20 transition-colors duration-300">
+    <div class="pointer-events-none absolute inset-0 opacity-[0.02] bg-[linear-gradient(var(--color-outline)_1px,transparent_1px),linear-gradient(90deg,var(--color-outline)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
 
-    <nav
-      class="text-content-muted relative z-10 mb-6 flex font-mono text-[10px] tracking-widest uppercase"
-    >
-      <a
-        href="/"
-        class="hover:text-content transition-colors focus:outline-none min-h-[44px] flex items-center"
-      >Base</a>
+    <nav class="text-content-muted relative z-10 mb-6 flex font-mono text-[10px] tracking-widest uppercase">
+      <a href="/" class="hover:text-content transition-colors focus:outline-none min-h-[44px] flex items-center">Base</a>
       <span class="mx-2 flex items-center">/</span>
       <span class="text-brand min-h-[44px] flex items-center">Pipeline</span>
     </nav>
 
-    <div
-      class="border-outline/50 relative z-10 mb-8 sm:mb-10 flex flex-col justify-between gap-6 border-b pb-6 sm:pb-8 md:flex-row md:items-end"
-    >
+    <div class="border-outline/50 relative z-10 mb-12 flex flex-col justify-between gap-6 border-b pb-6 sm:pb-8 md:flex-row md:items-end">
       <div>
         <div class="mb-3 sm:mb-4 flex items-center gap-2">
           <span class="bg-brand h-1.5 w-1.5 animate-pulse rounded-full"></span>
-          <p
-            class="text-content-muted font-mono text-[9px] sm:text-[10px] tracking-widest uppercase font-bold"
-          >
-            Fresh Allocations
+          <p class="text-content-muted font-mono text-[9px] sm:text-[10px] tracking-widest uppercase font-bold">
+            Live Feed
           </p>
         </div>
-        <h1
-          class="text-content mb-2 text-3xl font-bold tracking-tighter uppercase sm:text-4xl md:text-5xl"
-        >
+        <h1 class="text-content mb-2 text-3xl font-bold tracking-tighter uppercase sm:text-4xl md:text-5xl">
           Latest Deployments<span class="text-brand">.</span>
         </h1>
         <p class="text-content-muted font-mono text-xs sm:text-sm">
-          The latest verified hardware injections to our logistics pipeline.
+          Chronological feed of verified hardware injections.
         </p>
       </div>
     </div>
@@ -102,64 +107,74 @@ try {
       </div>
     )}
 
-    {newDeployments.length === 0 && !errorMessage && (
+    {timelineGroups.length === 0 && !errorMessage && (
       <div class="bg-surface border-outline/50 relative z-10 mb-8 rounded-lg border p-10 text-center">
         <p class="text-content-muted font-mono text-[10px] sm:text-xs tracking-widest uppercase">No deployments in the pipeline yet.</p>
       </div>
     )}
 
-    <div
-      class="relative z-10 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6"
-    >
-      {
-        newDeployments.map((product) => (
-          <a
-            href={`/shop/product/${product.slug}`}
-            class="group bg-surface border-outline/60 hover:border-brand/40 relative flex flex-col border p-3 sm:p-4 transition-colors focus:outline-none rounded-md shadow-sm hover:shadow-[0_8px_25px_-8px_rgba(0,0,0,0.2)]"
-          >
-            <div class="mb-3 sm:mb-4 flex items-start justify-between">
-              <span class="text-content-muted font-mono text-[8px] sm:text-[9px] tracking-widest uppercase truncate max-w-[60%]">
-                {product.brand}
-              </span>
-              <span class="text-brand border-brand/30 bg-brand/5 border px-1.5 py-0.5 text-[7px] sm:text-[8px] font-bold tracking-widest uppercase rounded-sm backdrop-blur-sm">
-                NEW
-              </span>
-            </div>
-
-            <div class="bg-surface-hover border-outline/30 relative mb-3 sm:mb-4 flex aspect-[4/5] items-center justify-center overflow-hidden border rounded group-hover:border-brand/20 transition-colors">
-              {product.image_url !== '/assets/placeholders/product-unavailable.webp' ? (
-                <img
-                  src={product.image_url}
-                  alt={product.name}
-                  loading="lazy"
-                  class="absolute inset-0 h-full w-full object-contain transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
-                />
-              ) : (
-                <span class="text-content-muted font-mono text-[9px] sm:text-[10px]">
-                  Visual Missing
-                </span>
-              )}
-            </div>
-
-            <h2 class="text-content group-hover:text-brand mb-2 sm:mb-3 line-clamp-2 text-[10px] sm:text-xs font-bold transition-colors leading-snug">
-              {product.name}
+    <div class="relative z-10 space-y-16">
+      {timelineGroups.map((group, groupIdx) => (
+        <section>
+          <div class="mb-6 flex items-center gap-4">
+            <h2 class="font-mono text-sm tracking-widest text-content uppercase font-bold bg-surface border border-outline/60 px-3 py-1.5 rounded-sm">
+              {group.label}
             </h2>
+            <div class="h-[1px] flex-1 bg-outline/40"></div>
+          </div>
 
-            <div class="mt-auto flex flex-col gap-1 font-mono">
-              <div class="flex items-baseline gap-2">
-                <span class="text-brand text-sm sm:text-base font-bold">
-                  ${Number(product.price).toFixed(2)}
-                </span>
-                {product.retailPrice && product.retailPrice > product.price && (
-                  <span class="text-content-muted text-[9px] sm:text-[10px] line-through">
-                    ${Number(product.retailPrice).toFixed(2)}
-                  </span>
-                )}
-              </div>
-            </div>
-          </a>
-        ))
-      }
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-4 lg:gap-6 auto-rows-[minmax(280px,auto)] grid-flow-dense">
+            {group.items.map((product, i) => {
+              // The newest item in the first group gets the Hero treatment
+              const isHero = groupIdx === 0 && i === 0;
+              const spanClass = isHero 
+                ? "sm:col-span-2 sm:row-span-2 lg:col-span-2 lg:row-span-2" 
+                : "col-span-1";
+
+              return (
+                <a
+                  href={`/shop/product/${product.slug}`}
+                  class={`group bg-surface border-outline/60 hover:border-brand/40 relative flex flex-col border p-4 transition-colors focus:outline-none rounded-md shadow-sm hover:shadow-[0_8px_25px_-8px_rgba(0,0,0,0.2)] ${spanClass}`}
+                >
+                  <div class="mb-4 flex items-start justify-between">
+                    <span class="text-content-muted font-mono text-[9px] tracking-widest uppercase truncate pr-4">
+                      {product.brand}
+                    </span>
+                    {isHero && (
+                      <span class="text-brand border-brand/30 bg-brand/5 border px-1.5 py-0.5 text-[8px] font-bold tracking-widest uppercase rounded-sm backdrop-blur-sm animate-pulse">
+                        JUST DROPPED
+                      </span>
+                    )}
+                  </div>
+
+                  <div class={`bg-surface-hover border-outline/30 relative flex flex-1 items-center justify-center overflow-hidden border rounded group-hover:border-brand/20 transition-colors ${isHero ? 'mb-6 aspect-auto min-h-[200px]' : 'mb-4 aspect-[4/5]'}`}>
+                    {product.image_url !== '/assets/placeholders/product-unavailable.webp' ? (
+                      <img
+                        src={product.image_url}
+                        alt={product.name}
+                        loading="lazy"
+                        class="absolute inset-0 h-full w-full object-contain p-4 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110"
+                      />
+                    ) : (
+                      <span class="text-content-muted font-mono text-[10px]">Visual Missing</span>
+                    )}
+                  </div>
+
+                  <h2 class={`text-content group-hover:text-brand font-bold transition-colors leading-snug mb-3 ${isHero ? 'text-lg sm:text-xl line-clamp-3' : 'text-xs line-clamp-2'}`}>
+                    {product.name}
+                  </h2>
+
+                  <div class="mt-auto font-mono">
+                    <span class={`text-brand font-bold ${isHero ? 'text-xl' : 'text-sm'}`}>
+                      ${Number(product.price).toFixed(2)}
+                    </span>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      ))}
     </div>
   </div>
 </StorefrontLayout>

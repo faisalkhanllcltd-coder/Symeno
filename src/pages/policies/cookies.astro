@@ -2,28 +2,90 @@
 import StorefrontLayout from '../../layouts/Storefront.astro';
 ---
 
-<StorefrontLayout title="Cookie Protocol">
-  <div class="prose prose-sm prose-gray mx-auto max-w-3xl px-4 py-20">
-    <h1 class="mb-8 text-3xl font-bold tracking-tight text-gray-900 uppercase">
-      Cookie Protocol.
-    </h1>
-    <p class="mb-8 font-mono text-xs tracking-widest text-gray-500 uppercase">
-      Last Updated: January 6, 2026
-    </p>
-    <p>
-      To ensure operational efficiency and secure your session state, SYMENO LLC
-      utilizes browser cookies.
-    </p>
-    <h3>1. Essential Operations</h3>
-    <p>
-      We use encrypted tokens to maintain your authentication status (JWT) and
-      CSRF tokens to prevent cross-site request forgery. These are
-      non-negotiable for system security.
-    </p>
-    <h3>2. Analytics Telemetry</h3>
-    <p>
-      We log aggregate traffic patterns to optimize server loads and adjust our
-      arbitrage algorithms. You may opt out via browser DNT settings. Contact: info@symeno.com
-    </p>
+<StorefrontLayout 
+  title="Cookie Protocol | Symeno"
+  description="How we utilize browser data to secure your session and optimize edge routing."
+>
+  <div class="min-h-screen bg-base py-16 md:py-24">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <div class="mb-12">
+        <h1 class="mb-4 text-4xl font-bold tracking-tighter text-content md:text-5xl uppercase">
+          Cookie Protocol.
+        </h1>
+        <p class="font-mono text-xs tracking-widest text-brand uppercase">
+          Last Updated: May 13, 2026
+        </p>
+      </div>
+
+      <div class="space-y-12 leading-relaxed font-light text-content-muted">
+        <section>
+          <p class="mb-4">
+            To ensure operational efficiency, maintain edge authentication, and secure your session state, SYMENO LLC ("we," "our," or "us") utilizes browser cookies and similar tracking technologies. This protocol outlines exactly what data is stored locally on your device and how it is utilized.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            1. Consent Mechanism
+          </h2>
+          <p class="mb-4">
+            In compliance with the CCPA, PIPEDA, and international privacy standards, we operate on a strict consent model for non-essential telemetry. You have the explicit right to accept or reject non-essential cookies via our Edge Consent Banner upon your first visit. You may revoke this consent at any time by clearing your browser cookies and reloading the platform.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            2. Cookie Classification Table
+          </h2>
+          <div class="overflow-x-auto mt-6">
+            <table class="w-full text-left text-sm border-collapse border border-outline/50">
+              <thead>
+                <tr class="bg-surface font-mono text-[10px] tracking-widest uppercase text-content">
+                  <th class="border border-outline/50 p-3">Classification</th>
+                  <th class="border border-outline/50 p-3">Data Key</th>
+                  <th class="border border-outline/50 p-3">Duration</th>
+                  <th class="border border-outline/50 p-3">Operational Purpose</th>
+                </tr>
+              </thead>
+              <tbody class="text-content-muted">
+                <tr>
+                  <td class="border border-outline/50 p-3 font-bold text-content">Strictly Essential</td>
+                  <td class="border border-outline/50 p-3 font-mono text-[10px]">symeno_session</td>
+                  <td class="border border-outline/50 p-3">Session</td>
+                  <td class="border border-outline/50 p-3">Maintains JSON Web Token (JWT) state for secure authentication. Cannot be disabled.</td>
+                </tr>
+                <tr>
+                  <td class="border border-outline/50 p-3 font-bold text-content">Strictly Essential</td>
+                  <td class="border border-outline/50 p-3 font-mono text-[10px]">csrf_token</td>
+                  <td class="border border-outline/50 p-3">1 Hour</td>
+                  <td class="border border-outline/50 p-3">Cryptographic token preventing Cross-Site Request Forgery attacks during checkout.</td>
+                </tr>
+                <tr>
+                  <td class="border border-outline/50 p-3 font-bold text-content">Essential / Preference</td>
+                  <td class="border border-outline/50 p-3 font-mono text-[10px]">cookie_consent</td>
+                  <td class="border border-outline/50 p-3">1 Year</td>
+                  <td class="border border-outline/50 p-3">Immutably logs your preference to accept or reject non-essential telemetry.</td>
+                </tr>
+                <tr>
+                  <td class="border border-outline/50 p-3 font-bold text-content">Telemetry (Optional)</td>
+                  <td class="border border-outline/50 p-3 font-mono text-[10px]">_cfuvid</td>
+                  <td class="border border-outline/50 p-3">Session</td>
+                  <td class="border border-outline/50 p-3">Cloudflare rate-limiting and bot mitigation analytics. Active only with consent.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            3. Disabling Operations
+          </h2>
+          <p class="mb-4">
+            You may configure your browser to reject all cookies. However, because our authentication and checkout pipelines rely on encrypted session tokens, blocking strictly essential cookies will render the Symeno platform functionally inoperable. You will not be able to log in, add items to your cart, or finalize transactions.
+          </p>
+        </section>
+      </div>
+    </div>
   </div>
 </StorefrontLayout>

@@ -2,6 +2,30 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import NotificationSettings from '../../../components/admin/settings/NotificationSettings.svelte';
 import { env } from 'cloudflare:workers';
+
+// --- STRICT RBAC GATEKEEPER ---
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect('/auth/login');
+}
+const role = (user.role || '').toLowerCase();
+if (!['admin', 'manager', 'staff'].includes(role)) {
+  return Astro.redirect('/account');
+}
+
+// --- D1 EDGE HYDRATION ---
+let notificationSettings = {};
+try {
+  const db = env?.DB as any;
+  if (db) {
+    const { results } = await db.prepare('SELECT * FROM notification_settings LIMIT 1').all();
+    if (results && results.length > 0) {
+      notificationSettings = results[0];
+    }
+  }
+} catch (err) {
+  console.warn('[D1_NOTIFICATION_SETTINGS_WARN] Table may not exist yet or is empty.');
+}
 ---
 
 <AdminLayout
@@ -9,5 +33,7 @@ import { env } from 'cloudflare:workers';
   subtitle="Automated Email Triggers"
   currentPath="/admin/settings/notifications"
 >
-  <div class="max-w-4xl"><NotificationSettings client:load /></div>
+  <div class="max-w-4xl">
+    <NotificationSettings client:load initialSettings={notificationSettings} />
+  </div>
 </AdminLayout>

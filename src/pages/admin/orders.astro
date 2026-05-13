@@ -2,54 +2,68 @@
 // src/pages/admin/orders.astro
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import OrderDataTable from '../../components/admin/orders/OrderDataTable.svelte';
-// ASSEMBLY: Wiring FulfillmentTracker for order pipeline visualization
 import FulfillmentTracker from '../../components/admin/orders/FulfillmentTracker.svelte';
 import { env } from 'cloudflare:workers';
 
-if (!Astro.locals.user) {
+// --- STRICT RBAC GATEKEEPER ---
+const user = Astro.locals.user;
+if (!user) {
   return Astro.redirect('/auth/login');
 }
+const role = (user.role || '').toLowerCase();
+if (!['admin', 'manager', 'staff'].includes(role)) {
+  return Astro.redirect('/account');
+}
 
-// Live D1 query — orders table columns: id, user_id, customer_email, shipping_name, shipping_address, total_amount, status, created_at, updated_at
+// Live D1 query
 let orders: any[] = [];
 
 try {
-  const db = env.DB as any;
+  const db = env?.DB as any;
   if (db) {
     const { results } = await db.prepare(
-      `SELECT id, customer_email, total_amount, status, created_at
+      `SELECT id, customer_email, user_id, total_amount, status, created_at
        FROM orders
        ORDER BY created_at DESC
        LIMIT 50`
     ).all();
 
+    // STRICT TYPING: Leave 'total' as a raw number to prevent Svelte NaN crashes.
     orders = (results || []).map((row: any) => ({
       id: row.id,
-      customer: row.customer_email || 'N/A',
-      total: `$${Number(row.total_amount || 0).toFixed(2)}`,
-      status: row.status || 'pending',
-      date: row.created_at ? new Date(row.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A',
+      customer: row.customer_email || row.user_id || 'Guest Checkout',
+      total: Number(row.total_amount || 0), 
+      status: (row.status || 'PENDING').toUpperCase(),
+      date: row.created_at || new Date().toISOString(),
     }));
   }
 } catch (e) {
   console.error('[ORDERS_DB_ERROR]', e);
+  // Fallback to empty array to prevent UI crash
+  orders = []; 
 }
 
-// Derive fulfillment summary from orders for the tracker
-const pendingCount = orders.filter(o => o.status === 'PENDING_DISPATCH' || o.status === 'pending').length;
-const fulfilledCount = orders.filter(o => o.status === 'FULFILLED' || o.status === 'fulfilled').length;
+// Derive fulfillment summary safely
+const pendingCount = orders.filter(o => o.status === 'PENDING_DISPATCH' || o.status === 'PENDING').length;
+const fulfilledCount = orders.filter(o => o.status === 'FULFILLED').length;
 const totalCount = orders.length;
+
+let trackerStatus = 'pending';
+if (totalCount > 0) {
+  if (pendingCount > 0) trackerStatus = 'processing';
+  else if (fulfilledCount === totalCount) trackerStatus = 'delivered';
+}
 ---
 
 <AdminLayout title="Order Matrix">
   <div class="space-y-6">
     <FulfillmentTracker
       client:load
-      status={pendingCount > 0 ? 'processing' : fulfilledCount === totalCount && totalCount > 0 ? 'delivered' : 'pending'}
+      status={trackerStatus}
     />
 
     <div
-      class="flex h-full flex-col overflow-hidden border border-outline bg-base"
+      class="flex h-full flex-col overflow-hidden border border-outline bg-base shadow-sm"
     >
       <div
         class="flex items-center justify-between border-b border-outline bg-surface p-4"
@@ -61,7 +75,7 @@ const totalCount = orders.length;
         />
         <div class="flex gap-2">
           <button
-            class="border border-outline px-3 py-1.5 font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors hover:text-content focus:outline-none"
+            class="border border-outline px-3 py-1.5 font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors hover:bg-white/5 focus:outline-none"
             >Export CSV</button
           >
         </div>

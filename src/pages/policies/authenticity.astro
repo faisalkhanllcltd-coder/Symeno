@@ -1,28 +1,69 @@
 ---
-import Storefront from '../../layouts/Storefront.astro';
+import StorefrontLayout from '../../layouts/Storefront.astro';
 ---
 
-<Storefront title="Authenticity Guarantee">
-  <div class="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
-    <h1 class="mb-8 text-4xl font-bold tracking-tighter uppercase">
-      The Authenticity Directive
-    </h1>
-    <div
-      class="prose dark:prose-invert text-content-muted max-w-none font-mono text-sm"
-    >
-      <p>
-        SYMENO LLC operates on a zero-tolerance policy for counterfeit hardware.
-        Contact us for authenticity disputes: contact@symeno.com
-      </p>
-      <p>
-        Every unit that passes through our arbitrage network is verified against
-        OEM cryptographic supply chain signatures. Serial numbers are logged
-        immutably prior to dispatch.
-      </p>
-      <p>
-        If hardware is compromised, the transaction is reversed immediately at
-        our expense.
-      </p>
+<StorefrontLayout 
+  title="Authenticity Guarantee | Symeno"
+  description="Our zero-tolerance policy and verification protocols for counterfeit hardware."
+>
+  <div class="min-h-screen bg-base py-16 md:py-24">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <div class="mb-12">
+        <h1 class="mb-4 text-4xl font-bold tracking-tighter text-content md:text-5xl uppercase">
+          The Authenticity Directive.
+        </h1>
+        <p class="font-mono text-xs tracking-widest text-brand uppercase">
+          Last Updated: May 13, 2026
+        </p>
+      </div>
+
+      <div class="space-y-12 leading-relaxed font-light text-content-muted">
+        <section>
+          <p class="mb-4 text-lg">
+            SYMENO LLC operates on a strict, zero-tolerance policy for counterfeit, gray-market, or refurbished hardware masquerading as new. Trust in our logistics pipeline is our primary asset, and we defend it aggressively.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            1. The Verification Protocol
+          </h2>
+          <p class="mb-4">
+            Every unit that passes through our arbitrage network is subjected to rigorous cryptographic and physical supply chain verification. Before an allocation is cleared for dispatch, it must pass our multi-point inspection:
+          </p>
+          <ul class="mb-4 list-disc space-y-2 pl-5">
+            <li><strong class="font-medium text-content">OEM Origin Tracing:</strong> We require direct-from-manufacturer bills of lading or verifiable Tier-1 distributor manifests for all inbound freight.</li>
+            <li><strong class="font-medium text-content">Immutable Logging:</strong> Serial numbers, MAC addresses, and manufacturer cryptographic signatures are logged immutably against your order ID prior to dispatch.</li>
+            <li><strong class="font-medium text-content">Seal Integrity:</strong> Factory seals, holographic identifiers, and tamper-evident packaging are visually and digitally verified.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            2. The Symeno Warranty of Authenticity
+          </h2>
+          <p class="mb-4">
+            We unconditionally guarantee the authenticity of every product sold through the Symeno platform. If any hardware is proven to be counterfeit or compromised:
+          </p>
+          <ul class="mb-4 list-disc space-y-2 pl-5">
+            <li>The transaction will be reversed immediately, resulting in a 100% refund of the purchase price and all associated shipping costs.</li>
+            <li>Symeno will cover the cost of secure return shipping to our forensics lab.</li>
+            <li>The supplier responsible for the breach will be permanently blacklisted from our logistics network and reported to federal trade authorities.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            3. Formal Dispute Resolution
+          </h2>
+          <p class="mb-4">
+            If you suspect a compromised unit has bypassed our protocols, you must initiate a formal authenticity dispute within 14 days of delivery. Provide your Order ID, high-resolution images of the product and serial numbers, and a detailed description of the discrepancy.
+          </p>
+          <p class="mb-4">
+            Initiate a dispute directly with our operations team at: <a href="mailto:contact@symeno.com" class="text-brand hover:underline">contact@symeno.com</a>.
+          </p>
+        </section>
+      </div>
     </div>
   </div>
-</Storefront>
+</StorefrontLayout>

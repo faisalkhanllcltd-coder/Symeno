@@ -3,21 +3,32 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 import ProductDataTable from '../../../components/admin/products/ProductDataTable.svelte';
 import { env } from 'cloudflare:workers';
 
-if (!Astro.locals.user || (Astro.locals.user.role !== 'admin' && Astro.locals.user.role !== 'staff')) {
+// --- STRICT RBAC GATEKEEPER ---
+const user = Astro.locals.user;
+if (!user) {
   return Astro.redirect('/auth/login');
+}
+const role = (user.role || '').toLowerCase();
+if (!['admin', 'manager', 'staff'].includes(role)) {
+  return Astro.redirect('/account');
 }
 
 let products: any[] = [];
 let error = '';
 
 try {
-  const db = env.DB as any;
+  const db = env?.DB as any;
   if (db) {
-    // 100% CLAUDE SCHEMA
     const { results } = await db.prepare(
       'SELECT id, name, slug, price, in_stock, category FROM catalog_cache ORDER BY scraped_at DESC LIMIT 500'
     ).all();
-    products = results || [];
+    
+    // STRICT TYPING
+    products = (results || []).map((row: any) => ({
+      ...row,
+      price: Number(row.price || 0),
+      in_stock: Number(row.in_stock || 0)
+    }));
   }
 } catch (e) {
   console.error('[ADMIN_PRODUCTS_ERROR]', e);

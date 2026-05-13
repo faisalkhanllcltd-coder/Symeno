@@ -3,40 +3,42 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 import ProductForm from '../../../components/admin/products/ProductForm.svelte';
 import { env } from 'cloudflare:workers';
 
-if (!Astro.locals.user || (Astro.locals.user.role !== 'admin' && Astro.locals.user.role !== 'staff')) {
+// --- STRICT RBAC GATEKEEPER ---
+const user = Astro.locals.user;
+if (!user) {
   return Astro.redirect('/auth/login');
+}
+const role = (user.role || '').toLowerCase();
+if (!['admin', 'manager', 'staff'].includes(role)) {
+  return Astro.redirect('/account');
 }
 
 const { id } = Astro.params;
 let productData: any = null;
 let error = '';
 
-// If id is "new", we are creating a product. Otherwise, fetch existing.
-if (id !== 'new') {
-  try {
-    const db = env.DB as any;
-    if (db) {
-      // 100% CLAUDE SCHEMA
-      const { results } = await db.prepare(
-        'SELECT * FROM catalog_cache WHERE id = ?1'
-      ).bind(id).all();
-      
-      if (results.length > 0) {
-        productData = results[0];
-      } else {
-        return Astro.redirect('/404');
-      }
+try {
+  const db = env?.DB as any;
+  if (db && id) {
+    const { results } = await db.prepare(
+      'SELECT * FROM catalog_cache WHERE id = ?1'
+    ).bind(id).all();
+    
+    if (results.length > 0) {
+      productData = results[0];
+    } else {
+      return Astro.redirect('/404');
     }
-  } catch (e) {
-    console.error('[ADMIN_EDIT_ERROR]', e);
-    error = 'Failed to load asset telemetry from Edge Database.';
   }
+} catch (e) {
+  console.error('[ADMIN_EDIT_ERROR]', e);
+  error = 'Failed to load asset telemetry from Edge Database.';
 }
 ---
 
 <AdminLayout
-  title={id === 'new' ? 'Inject New Asset' : 'Edit Asset Configuration'}
-  subtitle={id === 'new' ? 'Initialize telemetry for new hardware' : `Modifying node: ${id}`}
+  title="Edit Asset Configuration"
+  subtitle={`Modifying node: ${id}`}
   currentPath="/admin/products"
 >
   <div class="mb-6 flex items-center justify-between">

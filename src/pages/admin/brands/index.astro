@@ -2,7 +2,15 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import { env } from 'cloudflare:workers';
 
-if (!Astro.locals.user) return Astro.redirect('/auth/login');
+// --- STRICT RBAC GATEKEEPER ---
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect('/auth/login');
+}
+const role = (user.role || '').toLowerCase();
+if (!['admin', 'manager', 'staff'].includes(role)) {
+  return Astro.redirect('/account');
+}
 
 const breadcrumbs = [{ label: 'Brands' }];
 
@@ -10,7 +18,7 @@ const breadcrumbs = [{ label: 'Brands' }];
 let brands: any[] = [];
 
 try {
-  const db = env.DB as any;
+  const db = env?.DB as any;
   if (db) {
     const { results } = await db.prepare(
       `SELECT brand AS name, COUNT(*) AS skuCount
@@ -19,11 +27,12 @@ try {
        ORDER BY brand ASC`
     ).all();
 
+    // STRICT TYPING: Cast skuCount to Number to prevent UI crashes
     brands = (results || []).map((row: any, idx: number) => ({
       id: `BRD-${String(idx + 1).padStart(2, '0')}`,
-      name: row.name,
+      name: row.name || 'Unknown',
       status: 'Active',
-      skuCount: row.skuCount,
+      skuCount: Number(row.skuCount || 0),
     }));
   }
 } catch (e) {

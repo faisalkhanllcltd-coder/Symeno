@@ -2,90 +2,92 @@
 import StorefrontLayout from '../../layouts/Storefront.astro';
 ---
 
-<StorefrontLayout title="Privacy Policy">
+<StorefrontLayout 
+  title="Privacy Policy | Symeno"
+  description="Our uncompromising data minimization protocols and compliance frameworks."
+>
   <div class="min-h-screen bg-base py-16 md:py-24">
     <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
       <div class="mb-12">
-        <h1
-          class="mb-4 text-4xl font-bold tracking-tighter text-content md:text-5xl"
-        >
+        <h1 class="mb-4 text-4xl font-bold tracking-tighter text-content md:text-5xl uppercase">
           Privacy Policy.
         </h1>
         <p class="font-mono text-xs tracking-widest text-brand uppercase">
-          Last Updated: January 6, 2026
+          Last Updated: May 13, 2026
         </p>
       </div>
 
       <div class="space-y-12 leading-relaxed font-light text-content-muted">
         <section>
-          <h2
-            class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content"
-          >
-            Data Minimization Doctrine
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            1. Data Minimization Doctrine
           </h2>
           <p class="mb-4">
-            SYMENO LLC operates on a strict data minimization protocol. We
-            collect only the exact data points mathematically necessary to
-            process your transaction, ship your physical goods, and prevent
-            fraud. We do not sell your data. We do not rent your data. Trust is
-            our only currency.
+            SYMENO LLC operates on a strict data minimization protocol. We collect only the exact data points mathematically necessary to process your transaction, fulfill physical logistics, and prevent fraud. We do not sell your data. We do not rent your data. Trust is our primary operational currency.
           </p>
         </section>
 
         <section>
-          <h2
-            class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content"
-          >
-            What We Collect
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            2. Operational Data Collection
           </h2>
           <ul class="mb-4 list-disc space-y-2 pl-5">
             <li>
-              <strong class="font-medium text-content">Transactional Data:</strong
-              > Name, shipping address, and email (for order receipts and tracking).
+              <strong class="font-medium text-content">Transactional Data:</strong> Name, secure shipping address, and email (strictly for order receipts, network updates, and tracking injections).
             </li>
             <li>
-              <strong class="font-medium text-content">Payment Data:</strong> Handled
-              securely at the edge via Stripe. <span class="text-brand"
-                >Symeno servers never see, touch, or store your raw credit card
-                numbers.</span>
+              <strong class="font-medium text-content">Payment Data:</strong> Processed securely at the edge via Stripe. <span class="text-brand font-bold">Symeno servers never see, touch, or store your raw credit card numbers.</span>
             </li>
             <li>
-              <strong class="font-medium text-content">Telemetry:</strong> Anonymized
-              session data to track site performance and detect bot attacks.
+              <strong class="font-medium text-content">Edge Telemetry:</strong> If consent is granted, we collect anonymized session metrics (excluding raw IP addresses) via Cloudflare to optimize routing, mitigate DDoS attacks, and adjust our arbitrage algorithms.
             </li>
           </ul>
         </section>
 
         <section>
-          <h2
-            class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content"
-          >
-            Third-Party Subprocessors
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            3. Third-Party Subprocessors
           </h2>
           <p class="mb-4">
-            We utilize enterprise-grade infrastructure to securely route your
-            data. These entities are contractually bound to strict privacy
-            standards:
+            We utilize enterprise-grade infrastructure to securely route your data. These entities are contractually bound to strict privacy standards and act solely as subprocessors:
           </p>
           <ul class="mb-4 list-disc space-y-2 pl-5">
-            <li>
-              <strong>Cloudflare:</strong> DNS routing, edge caching, and bot mitigation.
-            </li>
-            <li>
-              <strong>Stripe:</strong> Payment intent authorization and PCI-compliant
-              processing.
-            </li>
-            <li><strong>Resend:</strong> Transactional email delivery.</li>
+            <li><strong>Cloudflare:</strong> Edge routing, DNS, database hosting (D1), and bot mitigation.</li>
+            <li><strong>Stripe:</strong> Payment intent authorization and PCI-compliant processing.</li>
+            <li><strong>Resend:</strong> Transactional email and manifest delivery.</li>
           </ul>
         </section>
+
         <section>
-          <h2
-            class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content"
-          >
-            Data Controller & Governing Law
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            4. California Consumer Privacy Act (CCPA) Rights
           </h2>
           <p class="mb-4">
-            The data controller is SYMENO LLC, located at 30 N Gould St 59458, Sheridan, WY 82801, USA. For any privacy inquiries, please contact info@symeno.com. These policies are governed by the laws of Wyoming, USA.
+            If you are a resident of California, you are granted specific rights regarding your personal information under the CCPA:
+          </p>
+          <ul class="mb-4 list-disc space-y-2 pl-5">
+            <li><strong class="font-medium text-content">Right to Know:</strong> You may request a disclosure of the specific pieces of personal data we have collected about you over the past 12 months.</li>
+            <li><strong class="font-medium text-content">Right to Delete:</strong> You may request the absolute deletion of your personal data from our active databases, subject to legal exceptions (e.g., fulfilling an active order or legal compliance).</li>
+            <li><strong class="font-medium text-content">Do Not Sell My Personal Information:</strong> SYMENO LLC does not sell personal information to third parties for monetary or other valuable consideration. Therefore, no explicit opt-out mechanism for the sale of data is required.</li>
+            <li><strong class="font-medium text-content">Non-Discrimination:</strong> We will not discriminate against you (e.g., via pricing changes or service denial) for exercising your CCPA rights.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            5. Canadian PIPEDA Compliance
+          </h2>
+          <p class="mb-4">
+            In compliance with the Personal Information Protection and Electronic Documents Act (PIPEDA), we assure Canadian residents that all data collection operates on explicit consent. Our designated Privacy Officer is responsible for ensuring compliance with these principles. Consent may be withdrawn at any time by contacting our Privacy Officer, subject to contractual or legal restrictions.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            6. Data Controller & Governing Law
+          </h2>
+          <p class="mb-4">
+            The data controller responsible for your information is SYMENO LLC, headquartered at 30 N Gould St, Sheridan, WY 82801, USA. To exercise your Right to Delete, Right to Know, or to contact our Privacy Officer, transmit an email to <a href="mailto:info@symeno.com" class="text-brand hover:underline">info@symeno.com</a>. These policies are governed by the laws of the State of Wyoming, USA.
           </p>
         </section>
       </div>

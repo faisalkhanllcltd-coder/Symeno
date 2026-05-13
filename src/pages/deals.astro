@@ -14,18 +14,32 @@ let dealProducts: any[] = [];
 let dbError = false;
 let totalMargin = 0;
 
+const url = new URL(Astro.request.url);
+const q = url.searchParams.get('q')?.toLowerCase() || '';
+const sort = url.searchParams.get('sort') || 'margin_desc';
+
 try {
   // ARMOR: Bulletproof edge bindings
   const db = (env.DB as any) || (Astro.locals as any).runtime?.env?.DB;
   
   if (db) {
-    // THE FIX: Eradicated hardcoded array. Pulling 24 live, in-stock products.
-    // Projected strictly to prevent edge memory bloat.
+    // Fetch a larger pool of active deals to allow in-memory searching
     const { results } = await db.prepare(
-      "SELECT id, slug, brand, category, name, price, images_json FROM catalog_cache WHERE in_stock = 1 ORDER BY scraped_at DESC LIMIT 24"
+      "SELECT id, slug, brand, category, name, price, images_json, scraped_at FROM catalog_cache WHERE in_stock = 1 ORDER BY scraped_at DESC LIMIT 100"
     ).all();
 
-    dealProducts = results.map((p: any) => {
+    let filtered = results ? [...results] : [];
+
+    // In-memory search filter
+    if (q) {
+      filtered = filtered.filter(p => 
+        (p.name && String(p.name).toLowerCase().includes(q)) ||
+        (p.brand && String(p.brand).toLowerCase().includes(q))
+      );
+    }
+
+    // Process and calculate margins
+    let processedDeals = filtered.map((p: any) => {
       let mainImage = '/assets/placeholders/product-unavailable.webp';
       try {
         if (p.images_json && p.images_json !== '[]') {
@@ -35,24 +49,41 @@ try {
       } catch(e) {}
 
       const price = Number(p.price) || 0;
-      // Simulate deeper "Flash Drop" MSRP scaling (20% markup) for the Deals UI
+      // Real arbitrage logic requires a retail column. For now, we simulate a strict 20% MSRP drop.
       const retailPrice = price > 0 ? price * 1.20 : 0; 
+      const margin = retailPrice - price;
       
-      totalMargin += (retailPrice - price);
-
       return {
         id: p.id,
         slug: p.slug || p.id,
         name: p.name,
         price: price,
         retail: retailPrice,
+        margin: margin,
         category: p.category || 'Hardware',
         brand: p.brand || 'Symeno Select',
         image_url: mainImage,
-        // Deterministic stock simulation based on price to maintain UI urgency
-        unitsLeft: (Math.floor(price) % 12) + 2 
+        // THE FIX: Removed fake deterministic urgency math. Using verified stock boolean.
+        inStock: true 
       };
     });
+
+    // In-memory sorting
+    if (sort === 'price_asc') {
+      processedDeals.sort((a, b) => a.price - b.price);
+    } else if (sort === 'price_desc') {
+      processedDeals.sort((a, b) => b.price - a.price);
+    } else {
+      // Default: Highest Margin
+      processedDeals.sort((a, b) => b.margin - a.margin);
+    }
+
+    // Cap at 24 for UI performance after filtering
+    dealProducts = processedDeals.slice(0, 24);
+
+    // Calculate total margin of displayed deals
+    dealProducts.forEach(p => { totalMargin += p.margin; });
+
   } else {
     throw new Error("DB Offline");
   }
@@ -66,44 +97,27 @@ try {
   title="Live Arbitrage Deals | Symeno"
   description="Secure premium hardware at global wholesale rates. Limited allocations."
 >
-  <div
-    class="bg-base relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8 lg:py-20 transition-colors duration-300"
-  >
-    <div
-      class="pointer-events-none absolute inset-0 opacity-[0.02] bg-[linear-gradient(var(--color-outline)_1px,transparent_1px),linear-gradient(90deg,var(--color-outline)_1px,transparent_1px)] bg-[size:32px_32px]"
-    ></div>
+  <div class="bg-base relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8 lg:py-20 transition-colors duration-300">
+    <div class="pointer-events-none absolute inset-0 opacity-[0.02] bg-[linear-gradient(var(--color-outline)_1px,transparent_1px),linear-gradient(90deg,var(--color-outline)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
 
-    <nav
-      class="text-content-muted relative z-10 mb-6 flex font-mono text-[10px] tracking-widest uppercase"
-    >
-      <a
-        href="/"
-        class="hover:text-content transition-colors focus:outline-none min-h-[44px] flex items-center"
-      >Base</a>
+    <nav class="text-content-muted relative z-10 mb-6 flex font-mono text-[10px] tracking-widest uppercase">
+      <a href="/" class="hover:text-content transition-colors focus:outline-none min-h-[44px] flex items-center">Base</a>
       <span class="mx-2 flex items-center">/</span>
       <span class="text-brand min-h-[44px] flex items-center">Active Operations</span>
     </nav>
 
-    <div
-      class="border-outline/50 relative z-10 mb-8 sm:mb-12 flex flex-col justify-between gap-6 border-b pb-6 sm:pb-8 lg:flex-row lg:items-end"
-    >
+    <div class="border-outline/50 relative z-10 mb-8 sm:mb-10 flex flex-col justify-between gap-6 border-b pb-6 sm:pb-8 lg:flex-row lg:items-end">
       <div>
         <div class="mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3">
           <span class="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
-            <span
-              class="bg-brand absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"
-            ></span>
-            <span
-              class="bg-brand relative inline-flex h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full"
-            ></span>
+            <span class="bg-brand absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"></span>
+            <span class="bg-brand relative inline-flex h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full"></span>
           </span>
           <p class="text-brand font-mono text-[9px] sm:text-[10px] tracking-widest uppercase font-bold">
             Flash Drop Active
           </p>
         </div>
-        <h1
-          class="text-content mb-2 text-3xl font-bold tracking-tighter uppercase sm:text-4xl md:text-5xl lg:text-6xl"
-        >
+        <h1 class="text-content mb-2 text-3xl font-bold tracking-tighter uppercase sm:text-4xl md:text-5xl lg:text-6xl">
           Arbitrage<span class="text-brand">.</span>
         </h1>
         <p class="text-content-muted font-mono text-xs sm:text-sm">
@@ -111,18 +125,36 @@ try {
         </p>
       </div>
 
-      <div
-        class="bg-surface border-outline/60 flex shrink-0 flex-col items-start lg:items-end border p-4 sm:px-6 sm:py-4 transition-colors duration-300 rounded-md shadow-sm"
-      >
-        <span
-          class="text-content-muted mb-1 font-mono text-[9px] sm:text-[10px] tracking-widest uppercase"
-        >Total Margin Available</span>
-        <span
-          class="text-brand font-mono text-xl sm:text-2xl font-bold tracking-tighter drop-shadow-[0_0_8px_rgba(var(--color-brand-rgb),0.3)]"
-        >
+      <div class="bg-surface border-outline/60 flex shrink-0 flex-col items-start lg:items-end border p-4 sm:px-6 sm:py-4 transition-colors duration-300 rounded-md shadow-sm">
+        <span class="text-content-muted mb-1 font-mono text-[9px] sm:text-[10px] tracking-widest uppercase">Total Margin Available</span>
+        <span class="text-brand font-mono text-xl sm:text-2xl font-bold tracking-tighter drop-shadow-[0_0_8px_rgba(var(--color-brand-rgb),0.3)]">
           ${totalMargin.toFixed(2)}
         </span>
       </div>
+    </div>
+
+    <div class="relative z-10 mb-8">
+      <form method="GET" action="/deals" class="flex flex-col gap-3 sm:flex-row">
+        <div class="relative flex-1">
+          <input
+            type="search"
+            name="q"
+            value={q}
+            placeholder="Search deals..."
+            class="w-full rounded-sm border border-outline bg-surface px-3 py-2.5 font-mono text-xs text-content placeholder:text-content-muted focus:border-brand/50 focus:outline-none focus:ring-1 focus:ring-brand"
+          />
+        </div>
+        <select 
+          name="sort" 
+          class="sm:w-64 cursor-pointer rounded-sm border border-outline bg-surface px-3 py-2.5 font-mono text-[10px] uppercase text-content focus:border-brand/50 focus:outline-none" 
+          onchange="this.form.submit()"
+        >
+          <option value="margin_desc" selected={sort === 'margin_desc'}>Highest Discount</option>
+          <option value="price_asc" selected={sort === 'price_asc'}>Price: Low to High</option>
+          <option value="price_desc" selected={sort === 'price_desc'}>Price: High to Low</option>
+        </select>
+        <button type="submit" class="hidden">Filter</button>
+      </form>
     </div>
 
     {dbError ? (
@@ -132,71 +164,63 @@ try {
     ) : dealProducts.length === 0 ? (
       <div class="bg-surface border-outline/50 relative z-10 mb-8 rounded-lg border p-10 text-center">
         <h2 class="text-content mb-2 font-mono text-sm sm:text-base tracking-widest uppercase font-bold">Allocations Depleted</h2>
-        <p class="text-content-muted font-mono text-[10px] sm:text-xs">All active arbitrage nodes have been cleared. Awaiting next supply chain sync.</p>
+        <p class="text-content-muted font-mono text-[10px] sm:text-xs">No active arbitrage nodes match your criteria.</p>
+        {q && <a href="/deals" class="text-brand mt-4 inline-block text-xs font-bold hover:underline">Clear Search</a>}
       </div>
     ) : (
-      <div
-        class="relative z-10 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6"
-      >
-        {
-          dealProducts.map((product) => {
-            const savings = Math.floor(product.retail - product.price);
-            const discountPercent = Math.floor((savings / product.retail) * 100);
+      <div class="relative z-10 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">
+        {dealProducts.map((product) => {
+          const discountPercent = Math.floor((product.margin / product.retail) * 100);
 
-            return (
-              <a
-                href={`/shop/product/${product.slug}`}
-                class="group bg-surface border-outline/60 hover:border-brand/50 relative flex flex-col border p-3 sm:p-4 transition-colors focus:outline-none rounded-md shadow-sm hover:shadow-[0_8px_25px_-8px_rgba(0,0,0,0.2)]"
-              >
-                <div class="mb-3 sm:mb-4 flex items-start justify-between">
-                  <span class="text-content-muted font-mono text-[8px] sm:text-[9px] tracking-widest uppercase truncate max-w-[50%]">
-                    {product.brand}
+          return (
+            <a
+              href={`/shop/product/${product.slug}`}
+              class="group bg-surface border-outline/60 hover:border-brand/50 relative flex flex-col border p-3 sm:p-4 transition-colors focus:outline-none rounded-md shadow-sm hover:shadow-[0_8px_25px_-8px_rgba(0,0,0,0.2)]"
+            >
+              <div class="mb-3 sm:mb-4 flex items-start justify-between">
+                <span class="text-content-muted font-mono text-[8px] sm:text-[9px] tracking-widest uppercase truncate max-w-[50%]">
+                  {product.brand}
+                </span>
+                <span class="bg-brand/10 border border-brand/20 text-brand px-1.5 py-0.5 text-[7px] sm:text-[8px] font-bold tracking-widest uppercase rounded-sm">
+                  -{discountPercent}% MSRP
+                </span>
+              </div>
+
+              <div class="bg-surface-hover border-outline/30 relative mb-3 sm:mb-4 flex aspect-[4/5] items-center justify-center overflow-hidden border rounded transition-colors group-hover:border-brand/20">
+                {product.image_url !== '/assets/placeholders/product-unavailable.webp' ? (
+                  <img 
+                    src={product.image_url} 
+                    alt={product.name} 
+                    loading="lazy"
+                    class="absolute inset-0 h-full w-full object-contain transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+                  />
+                ) : (
+                  <span class="text-content-muted font-mono text-[9px] sm:text-[10px]">Visual Missing</span>
+                )}
+              </div>
+
+              <h2 class="text-content group-hover:text-brand mb-2 sm:mb-3 line-clamp-2 text-[10px] sm:text-xs font-bold transition-colors leading-snug">
+                {product.name}
+              </h2>
+
+              <div class="mt-auto flex flex-col gap-1 sm:gap-1.5 font-mono">
+                <div class="flex items-baseline gap-2">
+                  <span class="text-brand text-sm sm:text-base font-bold">
+                    ${product.price.toFixed(2)}
                   </span>
-                  <span class="bg-brand/10 border border-brand/20 text-brand px-1.5 py-0.5 text-[7px] sm:text-[8px] font-bold tracking-widest uppercase rounded-sm">
-                    -{discountPercent}% MSRP
-                  </span>
-                </div>
-
-                <div class="bg-surface-hover border-outline/30 relative mb-3 sm:mb-4 flex aspect-[4/5] items-center justify-center overflow-hidden border rounded transition-colors group-hover:border-brand/20">
-                  {product.image_url !== '/assets/placeholders/product-unavailable.webp' ? (
-                    <img 
-                      src={product.image_url} 
-                      alt={product.name} 
-                      loading="lazy"
-                      class="absolute inset-0 h-full w-full object-contain transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
-                    />
-                  ) : (
-                    <span class="text-content-muted font-mono text-[9px] sm:text-[10px]">
-                      Visual Missing
-                    </span>
-                  )}
-                </div>
-
-                <h2 class="text-content group-hover:text-brand mb-2 sm:mb-3 line-clamp-2 text-[10px] sm:text-xs font-bold transition-colors leading-snug">
-                  {product.name}
-                </h2>
-
-                <div class="mt-auto flex flex-col gap-1 sm:gap-1.5 font-mono">
-                  <div class="flex items-baseline gap-2">
-                    <span class="text-brand text-sm sm:text-base font-bold">
-                      ${product.price.toFixed(2)}
-                    </span>
-                    <span class="text-content-muted text-[9px] sm:text-[10px] line-through">
-                      ${product.retail.toFixed(2)}
-                    </span>
-                  </div>
-                  
-                  <span class="text-content-muted mt-1 flex items-center gap-1.5 text-[8px] sm:text-[9px] tracking-widest uppercase pt-2 border-t border-outline/30">
-                    <span
-                      class={`h-1.5 w-1.5 rounded-full ${product.unitsLeft < 5 ? 'bg-brand-alert animate-pulse' : 'bg-brand'}`}
-                    />
-                    {product.unitsLeft} Units Remaining
+                  <span class="text-content-muted text-[9px] sm:text-[10px] line-through">
+                    ${product.retail.toFixed(2)}
                   </span>
                 </div>
-              </a>
-            );
-          })
-        }
+                
+                <span class="text-content-muted mt-1 flex items-center gap-1.5 text-[8px] sm:text-[9px] tracking-widest uppercase pt-2 border-t border-outline/30">
+                  <span class="h-1.5 w-1.5 rounded-full bg-brand" />
+                  Verified Allocation
+                </span>
+              </div>
+            </a>
+          );
+        })}
       </div>
     )}
   </div>

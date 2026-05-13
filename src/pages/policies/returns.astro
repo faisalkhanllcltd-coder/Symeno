@@ -2,80 +2,76 @@
 import StorefrontLayout from '../../layouts/Storefront.astro';
 ---
 
-<StorefrontLayout title="Returns & Refunds">
+<StorefrontLayout 
+  title="Returns & Refunds | Symeno"
+  description="Our 30-day return window, condition requirements, and refund processing."
+>
   <div class="min-h-screen bg-base py-16 md:py-24">
     <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
       <div class="mb-12">
-        <h1
-          class="mb-4 text-4xl font-bold tracking-tighter text-content md:text-5xl"
-        >
-          Returns & Refunds (SYMENO LLC).
+        <h1 class="mb-4 text-4xl font-bold tracking-tighter text-content md:text-5xl uppercase">
+          Returns & Refunds.
         </h1>
         <p class="font-mono text-xs tracking-widest text-brand uppercase">
-          Last Updated: January 6, 2026
+          Last Updated: May 13, 2026
         </p>
       </div>
 
       <div class="space-y-12 leading-relaxed font-light text-content-muted">
         <section>
-          <h2
-            class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content"
-          >
-            The 30-Day Window
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            1. The 30-Day Window
           </h2>
           <p class="mb-4">
-            We accept returns on eligible products within exactly 30 days of the
-            delivery date. To initiate a return, contact us at returns@symeno.com to
-            acquire a Return Merchandise Authorization (RMA) number.
-            Unauthorized returns sent to our warehouse will be rejected and
-            returned to sender.
+            We accept returns on eligible products within exactly 30 days of the delivery date. To initiate a return, you must contact our operations team at <a href="mailto:returns@symeno.com" class="text-brand hover:underline">returns@symeno.com</a> to acquire a Return Merchandise Authorization (RMA) number.
+          </p>
+          <p class="mb-4 text-brand-alert font-bold">
+            Unauthorized returns sent to our warehouse without an active RMA number will be rejected and returned to the sender at their expense.
           </p>
         </section>
 
         <section>
-          <h2
-            class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content"
-          >
-            Condition Requirements & Margins
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            2. Shipping Liability & Costs
           </h2>
           <p class="mb-4">
-            Because we operate on compressed margins to offer you wholesale
-            pricing, we must strictly enforce condition requirements:
+            Unless the hardware received was mathematically defective out-of-the-box or we shipped the incorrect SKU, <strong class="text-content">the buyer is 100% responsible for all return shipping costs.</strong>
+          </p>
+          <ul class="mb-4 list-disc space-y-2 pl-5">
+            <li>We highly recommend using a trackable shipping service and purchasing shipping insurance. We do not guarantee that we will receive your returned item.</li>
+            <li>Original shipping costs paid at checkout are strictly non-refundable. If you receive a refund, the cost of original shipping will be deducted from your payout.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            3. Condition Requirements & Margins
+          </h2>
+          <p class="mb-4">
+            Because we operate on compressed margins to offer you wholesale pricing, we must strictly enforce condition requirements upon inspection at our logistics center:
           </p>
           <ul class="mb-4 list-disc space-y-2 pl-5">
             <li>
-              <strong class="font-medium text-content"
-                >Unopened / Factory Sealed:</strong
-              > Eligible for a 100% full refund to the original payment method.
+              <strong class="font-medium text-content">Unopened / Factory Sealed:</strong> Eligible for a 100% full refund to the original payment method (minus original shipping).
             </li>
             <li>
-              <strong class="font-medium text-content"
-                >Opened / Used (Undamaged):</strong
-              > Subject to a strict <span
-                class="font-mono font-bold text-brand"
-                >15% Restocking Fee</span
-              >. We cannot sell opened electronics as new.
+              <strong class="font-medium text-content">Opened / Used (Undamaged):</strong> Subject to a strict <span class="font-mono font-bold text-brand">15% Restocking Fee</span>. We cannot legally or ethically sell opened electronics as new.
             </li>
             <li>
-              <strong class="font-medium text-content"
-                >Damaged / Missing Parts:</strong
-              > Rejected. Not eligible for a refund.
+              <strong class="font-medium text-content">Damaged / Missing Parts:</strong> Rejected entirely. Not eligible for a refund. The item will be shipped back to you at your expense.
             </li>
           </ul>
         </section>
 
         <section>
-          <h2
-            class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content"
-          >
-            Refund Processing
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            4. Refund Processing Pipeline
           </h2>
           <p class="mb-4">
-            Once your return is received at our logistics center, it undergoes a
-            48-hour hardware inspection. Once cleared, the refund (minus any
-            applicable restocking fees) is immediately transmitted to Stripe.
-            Depending on your bank's clearing cycles, funds will appear in your
-            account within 5-10 business days.
+            Once your return is received at our logistics center, it undergoes a mandatory 48-hour hardware inspection. Once cleared, the refund (minus any applicable restocking fees or shipping deductions) is immediately transmitted to our payment processor (Stripe).
+          </p>
+          <p class="mb-4">
+            Depending on your financial institution's clearing cycles, funds will physically appear in your account within 5 to 10 business days.
           </p>
         </section>
       </div>

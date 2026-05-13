@@ -23,9 +23,9 @@
   class="fixed inset-y-0 left-0 z-[70] flex w-full max-w-[320px] transform flex-col border-r border-outline/40 bg-base/95 backdrop-blur-xl shadow-2xl transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] md:hidden {ui.isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}"
 >
   <div class="flex h-16 shrink-0 items-center justify-between border-b border-outline/40 px-6">
-    <span class="text-[20px] font-bold tracking-tight text-content uppercase">
-      Menu<span class="text-brand">.</span>
-    </span>
+    <a href="/" onclick={closeMenu} aria-label="Symeno Home" class="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm flex items-center">
+      <img src="/logo.svg" alt="Symeno" class="h-6 w-auto" />
+    </a>
     <button
       onclick={closeMenu}
       aria-label="Close menu"

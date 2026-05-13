@@ -21,7 +21,12 @@ const currentPath = Astro.url.pathname;
     />
   </head>
   <body class="flex min-h-screen bg-base text-content">
-    <AdminSidebar currentPath={currentPath} client:load />
+    
+    <div id="mobile-backdrop" class="fixed inset-0 z-40 hidden bg-black/50 md:hidden"></div>
+
+    <div id="admin-sidebar-wrapper" class="z-50 flex">
+      <AdminSidebar currentPath={currentPath} client:load />
+    </div>
 
     <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
       <AdminHeader title={title} client:load />
@@ -30,5 +35,30 @@ const currentPath = Astro.url.pathname;
         <slot />
       </main>
     </div>
+
+    <script>
+      function setupMobileMenu() {
+        const menuBtn = document.querySelector('header button[aria-label="Open Menu"]');
+        const sidebar = document.querySelector('#admin-sidebar-wrapper aside');
+        const backdrop = document.getElementById('mobile-backdrop');
+
+        if (menuBtn && sidebar && backdrop) {
+          const toggleMenu = () => {
+            // Force Svelte's hardcoded 'hidden' class off, and inject mobile overlay classes
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('flex');
+            sidebar.classList.toggle('absolute');
+            
+            backdrop.classList.toggle('hidden');
+          };
+
+          menuBtn.addEventListener('click', toggleMenu);
+          backdrop.addEventListener('click', toggleMenu); // Close when clicking outside
+        }
+      }
+
+      // Initialize on load
+      document.addEventListener('DOMContentLoaded', setupMobileMenu);
+    </script>
   </body>
 </html>

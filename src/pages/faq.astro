@@ -2,52 +2,170 @@
 import StorefrontLayout from '../layouts/Storefront.astro';
 import FaqAccordion from '../components/storefront/support/FaqAccordion.svelte';
 
-const faqItems = [
+// 1. Shipping & Fulfillment
+const shippingFaqs = [
   {
-    question: 'How are your prices so much lower than standard retail?',
-    answer:
-      'We utilize a data-driven arbitrage model to source inventory from regions and authorized distributors with lower wholesale costs. Unlike traditional retailers, we have zero physical storefronts and minimal overhead. We take a flat, small margin and pass the remaining savings directly to you.',
+    question: 'When will my order ship?',
+    answer: 'Orders placed and verified before 14:00 MT (Monday-Friday) are dispatched from our Wyoming facility on the same day. Orders placed after the cutoff or on weekends will ship the next business day.',
   },
   {
-    question: 'Are these products authentic and brand new?',
-    answer:
-      'Yes. 100% of our inventory is factory-sealed, brand new, and serial-verified. We procure directly from Tier-1 authorized distributors and never engage with third-party marketplaces, grey-market sellers, or refurbished units.',
+    question: 'Do you ship internationally?',
+    answer: 'At this time, we only ship to addresses within the United States and Canada. We do not ship to forwarding addresses or PO Boxes for high-value electronics.',
   },
   {
-    question: 'Do the products come with a manufacturer warranty?',
-    answer:
-      'Absolutely. Because our hardware is sourced through official distributor channels, every product carries the full, standard manufacturer warranty (e.g., Apple Care eligible, Sony 1-year standard).',
+    question: 'Is a signature required for delivery?',
+    answer: 'Yes. Due to the high value of our inventory, any order exceeding $1,000 USD automatically requires a direct adult signature upon delivery. We will not instruct carriers to leave high-value packages unattended.',
   },
   {
     question: 'Do you actually hold stock, or is this dropshipping?',
-    answer:
-      'We are strictly anti-dropshipping. We purchase, own, and physically hold 100% of the inventory listed on our site in our secure logistics hubs. If you can add it to your cart, it is sitting on a shelf ready to ship to you immediately.',
+    answer: 'We never dropship. We purchase, own, and physically hold 100% of the inventory listed on our site in our secure logistics hub. If a product is listed as "In Stock" on our site, it is sitting on a shelf ready to ship to you immediately.',
+  }
+];
+
+// 2. Authenticity & Warranty
+const authenticityFaqs = [
+  {
+    question: 'Are these products authentic and brand new?',
+    answer: 'Yes. 100% of our inventory is factory-sealed, brand new, and serial-verified. We procure directly from Tier-1 authorized distributors. We never engage with third-party marketplaces, grey-market sellers, or refurbished units.',
   },
   {
+    question: 'Do the products come with a manufacturer warranty?',
+    answer: 'Absolutely. Because our hardware is sourced through official distributor channels, every product carries the full, standard manufacturer warranty (e.g., Apple Care eligible, Sony standard 1-year warranty).',
+  },
+  {
+    question: 'How are your prices so much lower than standard retail?',
+    answer: 'We utilize a volume-based purchasing model to source inventory at wholesale costs. Unlike traditional retailers, we have zero physical storefronts and heavily automated logistics. We take a small, flat margin to run our operations and pass the remaining savings directly to you.',
+  }
+];
+
+// 3. Returns & Refunds
+const returnsFaqs = [
+  {
     question: 'What is your return policy?',
-    answer:
-      'We offer a hassle-free 30-day return window. Unopened, factory-sealed hardware can be returned for a full refund. Because we sell hardware at such tight margins, opened items without a technical defect are subject to a 15% restocking fee to cover the loss of "brand new" value.',
+    answer: 'We offer a strict 30-day return window from the date of delivery. Unopened, factory-sealed hardware can be returned for a full refund (minus original shipping costs).',
+  },
+  {
+    question: 'Can I return an opened item?',
+    answer: 'Because we sell hardware at such tight margins, we cannot sell opened electronics as new. Opened items that are undamaged are subject to a mandatory 15% restocking fee. Damaged items or items missing original accessories will be rejected.',
+  },
+  {
+    question: 'What happens if my item arrives defective?',
+    answer: 'If a product is defective out-of-the-box, contact our support team within 48 hours of delivery. We will verify the defect and issue a free return label for a full refund or an immediate replacement.',
+  }
+];
+
+// 4. Payments & Security
+const paymentFaqs = [
+  {
+    question: 'What payment methods do you accept?',
+    answer: 'We accept all major credit cards. All transactions are securely processed through Stripe, which maintains strict PCI DSS Level 1 compliance. We do not store your raw credit card data on our servers.',
+  },
+  {
+    question: 'Why was my order flagged for verification?',
+    answer: 'To protect against fraud, our payment gateway uses the Address Verification System (AVS) and 3D Secure 2.0. If your billing address does not perfectly match your bank\'s records, or if the order triggers a high-risk score, it may be automatically canceled or held for manual review.',
   },
   {
     question: 'I need to procure hardware for my company. Do you do B2B bulk orders?',
-    answer:
-      'Yes. Our B2B operations team frequently handles volume procurement for startups, studios, and corporate offices. We can often negotiate even deeper discounts on large volume orders. Please email wholesale@symeno.com to open a dialogue.',
-  },
+    answer: 'Yes. Our B2B operations team handles volume procurement for startups, studios, and corporate offices. We can often negotiate even deeper discounts on large volume orders. Please email wholesale@symeno.com with your requirements.',
+  }
 ];
+
+// Generate JSON-LD Schema for SEO
+const allFaqs = [...shippingFaqs, ...authenticityFaqs, ...returnsFaqs, ...paymentFaqs];
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": allFaqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer
+    }
+  }))
+};
 ---
 
-<StorefrontLayout title="FAQ">
-  <div class="mx-auto max-w-4xl px-4 py-20">
-    <div class="mb-12">
-      <h1
-        class="mb-4 text-4xl font-bold tracking-tighter text-content uppercase"
-      >
-        Operational Intelligence.
+<StorefrontLayout 
+  title="FAQ & Knowledge Base | Symeno"
+  description="Answers to common questions regarding Symeno shipping, returns, authenticity, and payments."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  <div class="mx-auto max-w-4xl px-4 py-16 md:py-24">
+    <div class="mb-16 border-b border-outline pb-8">
+      <h1 class="mb-4 text-4xl font-bold tracking-tighter text-content uppercase md:text-5xl">
+        Knowledge Base.
       </h1>
       <p class="font-mono text-sm tracking-widest text-content-muted uppercase">
-        Frequently Asked Questions & Protocols
+        Operational Protocols & Frequently Asked Questions
       </p>
     </div>
-    <FaqAccordion client:load items={faqItems} />
+
+    <div class="space-y-16">
+      
+      <section>
+        <div class="mb-6 flex items-center gap-4">
+          <h2 class="font-mono text-sm tracking-widest text-content uppercase font-bold bg-surface border border-outline/60 px-3 py-1.5 rounded-sm">
+            Shipping & Fulfillment
+          </h2>
+          <div class="h-[1px] flex-1 bg-outline/40"></div>
+        </div>
+        <FaqAccordion client:load items={shippingFaqs} />
+      </section>
+
+      <section>
+        <div class="mb-6 flex items-center gap-4">
+          <h2 class="font-mono text-sm tracking-widest text-content uppercase font-bold bg-surface border border-outline/60 px-3 py-1.5 rounded-sm">
+            Authenticity & Warranty
+          </h2>
+          <div class="h-[1px] flex-1 bg-outline/40"></div>
+        </div>
+        <FaqAccordion client:load items={authenticityFaqs} />
+      </section>
+
+      <section>
+        <div class="mb-6 flex items-center gap-4">
+          <h2 class="font-mono text-sm tracking-widest text-content uppercase font-bold bg-surface border border-outline/60 px-3 py-1.5 rounded-sm">
+            Returns & Refunds
+          </h2>
+          <div class="h-[1px] flex-1 bg-outline/40"></div>
+        </div>
+        <FaqAccordion client:load items={returnsFaqs} />
+      </section>
+
+      <section>
+        <div class="mb-6 flex items-center gap-4">
+          <h2 class="font-mono text-sm tracking-widest text-content uppercase font-bold bg-surface border border-outline/60 px-3 py-1.5 rounded-sm">
+            Payments & Security
+          </h2>
+          <div class="h-[1px] flex-1 bg-outline/40"></div>
+        </div>
+        <FaqAccordion client:load items={paymentFaqs} />
+      </section>
+
+    </div>
+
+    <div class="mt-20 rounded-md border border-outline bg-surface p-8 text-center sm:p-12">
+      <h3 class="mb-4 text-xl font-bold tracking-tight text-content">Still need assistance?</h3>
+      <p class="mb-8 text-sm text-content-muted">
+        Our operations team is available Monday through Friday to handle specific inquiries.
+      </p>
+      <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <a 
+          href="/contact" 
+          class="w-full sm:w-auto inline-block bg-brand px-8 py-3.5 font-mono text-xs font-bold tracking-widest text-brand-dark uppercase transition-opacity hover:opacity-90 rounded-sm"
+        >
+          Contact Support
+        </a>
+        <a 
+          href="mailto:contact@symeno.com" 
+          class="w-full sm:w-auto inline-block border border-outline bg-transparent px-8 py-3.5 font-mono text-xs font-bold tracking-widest text-content uppercase transition-colors hover:bg-surface-hover hover:border-brand/50 rounded-sm"
+        >
+          Email Us
+        </a>
+      </div>
+    </div>
+
   </div>
 </StorefrontLayout>

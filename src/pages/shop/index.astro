@@ -27,7 +27,7 @@ try {
   const db = (env.DB as any) || (Astro.locals as any).runtime?.env?.DB;
   if (!db) throw new Error("DB Offline - Check Edge Bindings");
 
-  // THE FIX: Eradicated SELECT * to prevent edge memory overflow
+  // Eradicated SELECT * to prevent edge memory overflow
   const { results } = await db.prepare('SELECT id, slug, brand, category, name, price, images_json, scraped_at FROM catalog_cache ORDER BY scraped_at DESC LIMIT 1000').all();  
   
   let filtered = results ? [...results] : [];
@@ -133,14 +133,52 @@ try {
           <p class="text-content-muted font-mono text-xs sm:text-sm">
             {q ? `We found assets matching your query.` : 'Browse our complete inventory of premium lifestyle goods.'}
           </p>
-          <span class="border border-outline bg-surface px-3 py-1 font-mono text-[10px] tracking-widest text-content-muted uppercase shadow-sm">
+          <span class="border border-outline bg-surface px-3 py-1 font-mono text-[10px] tracking-widest text-content-muted uppercase shadow-sm w-max">
             {totalProducts} Units Available
           </span>
         </div>
       </div>
 
+      <div class="mb-6 block lg:hidden sticky top-[60px] z-20 bg-base/95 backdrop-blur py-3 border-b border-outline/50">
+        <form method="GET" action="/shop" class="flex flex-col gap-3 sm:flex-row">
+          {filterBrand && <input type="hidden" name="brand" value={filterBrand} />}
+          
+          <div class="relative flex-1">
+            <input
+              type="search"
+              name="q"
+              value={q}
+              placeholder="Search inventory..."
+              class="w-full rounded-sm border border-outline bg-surface px-3 py-2.5 font-mono text-xs text-content placeholder:text-content-muted focus:border-brand/50 focus:outline-none focus:ring-1 focus:ring-brand"
+            />
+          </div>
+          <div class="flex gap-2">
+            <select 
+              name="category" 
+              class="flex-1 cursor-pointer rounded-sm border border-outline bg-surface px-3 py-2.5 font-mono text-[10px] uppercase text-content focus:border-brand/50 focus:outline-none" 
+              onchange="this.form.submit()"
+            >
+              <option value="">All Categories</option>
+              {dynamicCategories.map(c => (
+                <option value={c.slug} selected={filterCategory === c.slug}>{c.name}</option>
+              ))}
+            </select>
+            <select 
+              name="sort" 
+              class="flex-1 cursor-pointer rounded-sm border border-outline bg-surface px-3 py-2.5 font-mono text-[10px] uppercase text-content focus:border-brand/50 focus:outline-none" 
+              onchange="this.form.submit()"
+            >
+              <option value="newest" selected={sort === 'newest'}>Newest</option>
+              <option value="price_asc" selected={sort === 'price_asc'}>Price: Low to High</option>
+              <option value="price_desc" selected={sort === 'price_desc'}>Price: High to Low</option>
+            </select>
+          </div>
+          <button type="submit" class="hidden">Search</button>
+        </form>
+      </div>
+
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-4 lg:gap-8 mt-6">
-        <aside class="relative w-full h-full lg:block">
+        <aside class="hidden relative w-full h-full lg:block">
            <div class="sticky top-24 z-10 self-start">
              <FilterSidebar 
                activeBrand={filterBrand} 
@@ -149,7 +187,7 @@ try {
                currentQuery={q} 
                realCategories={dynamicCategories}
                realBrands={dynamicBrands}
-               client:visible 
+               client:load 
              />
            </div>
         </aside>

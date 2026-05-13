@@ -2,6 +2,30 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import PaymentSettings from '../../../components/admin/settings/PaymentSettings.svelte';
 import { env } from 'cloudflare:workers';
+
+// --- STRICT RBAC GATEKEEPER ---
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect('/auth/login');
+}
+const role = (user.role || '').toLowerCase();
+if (!['admin', 'manager', 'staff'].includes(role)) {
+  return Astro.redirect('/account');
+}
+
+// --- D1 EDGE HYDRATION ---
+let paymentSettings = {};
+try {
+  const db = env?.DB as any;
+  if (db) {
+    const { results } = await db.prepare('SELECT * FROM payment_settings LIMIT 1').all();
+    if (results && results.length > 0) {
+      paymentSettings = results[0];
+    }
+  }
+} catch (err) {
+  console.warn('[D1_PAYMENT_SETTINGS_WARN] Table may not exist yet or is empty.');
+}
 ---
 
 <AdminLayout
@@ -9,5 +33,7 @@ import { env } from 'cloudflare:workers';
   subtitle="Checkout & Payment Processing"
   currentPath="/admin/settings/payments"
 >
-  <div class="max-w-4xl"><PaymentSettings client:load /></div>
+  <div class="max-w-4xl">
+    <PaymentSettings client:load initialSettings={paymentSettings} />
+  </div>
 </AdminLayout>

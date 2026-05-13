@@ -2,15 +2,25 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import CategoryManager from '../../../components/admin/categories/CategoryManager.svelte';
 import '../../../styles/global.css';
+
+// --- STRICT RBAC GATEKEEPER ---
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect('/auth/login');
+}
+const role = (user.role || '').toLowerCase();
+if (!['admin', 'manager', 'staff'].includes(role)) {
+  return Astro.redirect('/account');
+}
 ---
 
 <AdminLayout title="Manage Categories">
   <div class="mx-auto max-w-5xl">
     <div class="mb-8">
-      <h1 class="text-3xl font-black tracking-tight text-gray-900">
+      <h1 class="text-3xl font-black tracking-tight text-gray-900 dark:text-white">
         Taxonomy Manager
       </h1>
-      <p class="mt-2 text-gray-500">
+      <p class="mt-2 text-gray-500 dark:text-gray-400">
         Manage the top-level categories for your product catalog.
       </p>
     </div>

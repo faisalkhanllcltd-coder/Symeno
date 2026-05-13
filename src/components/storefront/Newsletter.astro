@@ -12,26 +12,29 @@
     </p>
 
     <form 
-      action="/api/marketing/newsletter" 
-      method="POST"
+      id="home-newsletter-form"
       class="mx-auto max-w-md relative flex items-center mb-6"
     >
       <div class="relative w-full flex items-center rounded-sm border border-outline bg-base p-1 transition-colors focus-within:border-brand focus-within:ring-1 focus-within:ring-brand">
         <input
           type="email"
           name="email"
+          id="home-newsletter-input"
           required
           placeholder="Enter email address"
-          class="w-full bg-transparent py-3 pl-3 pr-[140px] text-sm text-content placeholder:text-content-muted focus:outline-none"
+          class="w-full bg-transparent py-3 pl-3 pr-[140px] text-sm text-content placeholder:text-content-muted focus:outline-none disabled:opacity-50"
         />
         <button
           type="submit"
-          class="btn-premium absolute right-1 top-1 bottom-1 flex items-center justify-center bg-brand px-6 font-mono text-[10px] font-bold tracking-widest text-brand-dark uppercase rounded-sm"
+          id="home-newsletter-btn"
+          class="btn-premium absolute right-1 top-1 bottom-1 flex items-center justify-center bg-brand px-6 font-mono text-[10px] font-bold tracking-widest text-brand-dark uppercase rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Send Me Deals
         </button>
       </div>
     </form>
+    
+    <div id="home-newsletter-feedback" class="h-6 mb-2 hidden text-xs font-mono tracking-widest uppercase"></div>
 
     <div class="flex items-center justify-center gap-2 font-mono text-[9px] tracking-widest text-content-muted uppercase sm:gap-3">
       <span>Zero Spam</span>
@@ -42,3 +45,50 @@
     </div>
   </div>
 </section>
+
+<script>
+  // THE FIX: Client-side interception to prevent page refresh
+  const form = document.getElementById('home-newsletter-form') as HTMLFormElement;
+  const input = document.getElementById('home-newsletter-input') as HTMLInputElement;
+  const btn = document.getElementById('home-newsletter-btn') as HTMLButtonElement;
+  const feedback = document.getElementById('home-newsletter-feedback');
+
+  if (form && input && btn && feedback) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault(); // Stop the page refresh
+      
+      const email = input.value;
+      if (!email) return;
+
+      // Lock UI
+      input.disabled = true;
+      btn.disabled = true;
+      btn.textContent = 'TRANSMITTING...';
+      feedback.className = 'h-6 mb-2 text-xs font-mono tracking-widest uppercase text-content-muted block';
+      feedback.textContent = 'Establishing connection...';
+
+      try {
+        const res = await fetch('/api/marketing/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+
+        if (res.ok) {
+          form.style.display = 'none'; // Hide form on success
+          feedback.className = 'h-6 mb-2 text-xs font-mono tracking-widest uppercase text-brand block';
+          feedback.textContent = '> Signal acquired. You are on the grid.';
+        } else {
+          throw new Error('Transmission failed');
+        }
+      } catch (err) {
+        // Unlock UI on failure
+        input.disabled = false;
+        btn.disabled = false;
+        btn.textContent = 'Send Me Deals';
+        feedback.className = 'h-6 mb-2 text-xs font-mono tracking-widest uppercase text-brand-alert block';
+        feedback.textContent = 'Connection failed. Try again.';
+      }
+    });
+  }
+</script>

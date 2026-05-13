@@ -2,10 +2,11 @@
 import '../styles/global.css';
 import CartDrawer from '../components/storefront/cart/CartDrawer.svelte';
 import MetaTags from '../components/seo/MetaTags.astro';  
-
 import TopNav from '../components/storefront/layout/TopNav.astro';
 import Footer from '../components/storefront/layout/Footer.astro';
 import GlobalSearch from '../components/storefront/search/GlobalSearch.svelte';
+// THE FIX: Imported the Edge Cookie Interceptor
+import CookieBanner from '../components/storefront/CookieBanner.svelte';
 
 interface Props {
   title: string;
@@ -41,6 +42,8 @@ const isLoggedIn = !!Astro.locals.user;
     <main class="relative flex w-full flex-grow flex-col"><slot /></main>
     <footer class="bg-surface mt-auto"><Footer /></footer>
     <CartDrawer client:load />
+    
+    <CookieBanner client:load />
     
     <script is:inline define:vars={{ isLoggedIn }}>window.SYMENO_IS_LOGGED_IN = isLoggedIn;</script>
     <script>

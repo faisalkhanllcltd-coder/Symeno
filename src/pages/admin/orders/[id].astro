@@ -1,15 +1,58 @@
 ---
+// src/pages/admin/orders/[id].astro
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import FulfillmentTracker from '../../../components/admin/orders/FulfillmentTracker.svelte';
+import { env } from 'cloudflare:workers';
 
-if (!Astro.locals.user) return Astro.redirect('/auth/login');
+// --- STRICT RBAC GATEKEEPER ---
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect('/auth/login');
+}
+const role = (user.role || '').toLowerCase();
+if (!['admin', 'manager', 'staff'].includes(role)) {
+  return Astro.redirect('/account');
+}
 
 const { id } = Astro.params;
+
+let order: any = null;
+let orderItems: any[] = [];
+let error = '';
+
+// --- D1 EDGE HYDRATION ---
+try {
+  const db = env?.DB as any;
+  if (db && id) {
+    // Fetch the primary order record
+    const orderQuery = await db.prepare('SELECT * FROM orders WHERE id = ?1').bind(id).all();
+    
+    if (orderQuery.results && orderQuery.results.length > 0) {
+      order = orderQuery.results[0];
+      
+      // Fetch the manifest (order items)
+      try {
+        const itemsQuery = await db.prepare('SELECT * FROM order_items WHERE order_id = ?1').bind(id).all();
+        orderItems = itemsQuery.results || [];
+      } catch (itemErr) {
+        console.warn('[ORDER_ITEMS_DB_WARN] order_items table may be missing or empty.', itemErr);
+      }
+    } else {
+      return Astro.redirect('/404');
+    }
+  }
+} catch (e) {
+  console.error('[ORDER_FETCH_ERROR]', e);
+  error = 'Failed to load order telemetry from Edge Database.';
+}
 
 const breadcrumbs = [
   { label: 'Orders', url: '/admin/orders' },
   { label: id || 'Order Details' },
 ];
+
+// Normalize status for the tracker
+const currentStatus = (order?.status || 'pending').toLowerCase();
 ---
 
 <AdminLayout
@@ -18,58 +61,88 @@ const breadcrumbs = [
   breadcrumbs={breadcrumbs}
   currentPath="/admin/orders"
 >
+  {error && (
+    <div class="mb-6 rounded-sm border border-brand-alert/30 bg-brand-alert/10 p-4 font-mono text-[10px] tracking-widest text-brand-alert uppercase shadow-sm">
+      {error}
+    </div>
+  )}
+
   <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
     <div class="space-y-6 lg:col-span-2">
-      <div class="border border-outline bg-base p-6">
-        <FulfillmentTracker status="processing" client:load />
+      <div class="border border-outline bg-base p-6 shadow-sm">
+        <FulfillmentTracker status={currentStatus} client:load />
       </div>
 
-      <div class="border border-outline bg-base p-6">
-        <h3
-          class="mb-4 border-b border-outline pb-3 font-mono text-xs font-bold tracking-widest text-content uppercase"
-        >
-          Manifest
-        </h3>
-        <div
-          class="flex items-center justify-between border-b border-outline py-3"
-        >
-          <div class="flex items-center gap-4">
-            <div class="h-12 w-12 shrink-0 border border-outline bg-surface">
-            </div>
-            <div>
-              <p class="text-sm font-bold text-content">Sony WH-1000XM5</p>
-              <p class="font-mono text-[10px] text-content-muted">
-                SKU: SNY-XM5-BLK
-              </p>
-            </div>
-          </div>
-          <div class="text-right">
-            <p class="font-mono text-sm font-bold text-content">$299.00</p>
-            <p class="font-mono text-[10px] text-content-muted">Qty: 1</p>
-          </div>
+      <div class="border border-outline bg-base p-6 shadow-sm">
+        <div class="mb-4 flex items-center justify-between border-b border-outline pb-3">
+          <h3 class="font-mono text-xs font-bold tracking-widest text-content uppercase">
+            Manifest
+          </h3>
+          <span class="font-mono text-[10px] text-content-muted uppercase">
+            {orderItems.length} Items
+          </span>
+        </div>
+        
+        <div class="space-y-0 divide-y divide-outline">
+          {orderItems.length > 0 ? (
+            orderItems.map((item) => (
+              <div class="flex items-center justify-between py-3">
+                <div class="flex items-center gap-4">
+                  <div class="h-12 w-12 shrink-0 border border-outline bg-surface flex items-center justify-center overflow-hidden">
+                    {item.image_url ? (
+                      <img src={item.image_url} alt={item.product_name} class="h-full w-full object-cover" />
+                    ) : (
+                      <span class="font-mono text-[8px] text-content-muted">IMG</span>
+                    )}
+                  </div>
+                  <div>
+                    <p class="text-sm font-bold text-content">{item.product_name || 'Unknown Product'}</p>
+                    <p class="font-mono text-[10px] text-content-muted">
+                      SKU: {item.sku || 'N/A'}
+                    </p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="font-mono text-sm font-bold text-content">${Number(item.price || 0).toFixed(2)}</p>
+                  <p class="font-mono text-[10px] text-content-muted">Qty: {item.quantity || 1}</p>
+                </div>
+              </div>
+            ))
+          ) : (
+             <div class="py-6 text-center">
+               <p class="font-mono text-xs text-content-muted uppercase tracking-widest">No manifest data available.</p>
+             </div>
+          )}
+        </div>
+        
+        <div class="mt-4 flex justify-between border-t border-outline pt-4">
+          <span class="font-mono text-xs tracking-widest text-content-muted uppercase">Total Authorized</span>
+          <span class="font-mono text-lg font-black text-content">${Number(order?.total_amount || 0).toFixed(2)}</span>
         </div>
       </div>
     </div>
 
     <div class="space-y-6">
-      <div class="border border-outline bg-base p-6">
+      <div class="border border-outline bg-base p-6 shadow-sm">
         <h3
           class="mb-4 border-b border-outline pb-3 font-mono text-xs font-bold tracking-widest text-content uppercase"
         >
           Execute Action
         </h3>
-        <form class="space-y-4">
+        <form class="space-y-4" action={`/api/admin/orders/${id}/update`} method="POST">
           <div class="space-y-1.5">
             <label
               class="font-mono text-[10px] tracking-widest text-content-muted uppercase"
               >Update Status</label
             >
             <select
+              name="status"
               class="w-full cursor-pointer rounded-none border border-outline bg-surface px-3 py-2 text-sm text-content focus:border-brand/50 focus:outline-none"
             >
-              <option value="pending">Pending</option>
-              <option value="processing" selected>Processing</option>
-              <option value="shipped">Shipped</option>
+              <option value="pending" selected={currentStatus === 'pending'}>Pending</option>
+              <option value="processing" selected={currentStatus === 'processing'}>Processing</option>
+              <option value="shipped" selected={currentStatus === 'shipped'}>Shipped</option>
+              <option value="delivered" selected={currentStatus === 'delivered'}>Delivered</option>
             </select>
           </div>
           <div class="space-y-1.5">
@@ -79,17 +152,28 @@ const breadcrumbs = [
             >
             <input
               type="text"
+              name="tracking_number"
+              value={order?.tracking_number || ''}
               class="w-full rounded-none border border-outline bg-surface px-3 py-2 font-mono text-sm text-content focus:border-brand/50 focus:outline-none"
               placeholder="1Z9999999999999999"
             />
           </div>
           <button
-            type="button"
+            type="submit"
             class="w-full bg-brand px-4 py-3 text-xs font-bold tracking-widest text-black uppercase transition-colors hover:opacity-80 focus:outline-none"
           >
             Commit Changes
           </button>
         </form>
+        
+        <div class="mt-6 border-t border-outline pt-6">
+          <a
+            href={`/admin/orders/${id}/refund`}
+            class="block w-full border border-brand-alert/50 bg-transparent px-4 py-3 text-center text-xs font-bold tracking-widest text-brand-alert uppercase transition-colors hover:bg-brand-alert/10 focus:outline-none"
+          >
+            Reverse Capital (Refund)
+          </a>
+        </div>
       </div>
     </div>
   </div>

@@ -1,10 +1,19 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
+import BulkActions from '../../../components/admin/products/BulkActions.svelte';
+
+// --- STRICT RBAC GATEKEEPER ---
 const user = Astro.locals.user;
-if (!user || user.role !== 'admin') return Astro.redirect('/auth/admin/login');
+if (!user) {
+  return Astro.redirect('/auth/login');
+}
+const role = (user.role || '').toLowerCase();
+if (!['admin', 'manager', 'staff'].includes(role)) {
+  return Astro.redirect('/account');
+}
 ---
 
-<AdminLayout title="Bulk Operations | Admin">
+<AdminLayout title="Bulk Operations | Admin" currentPath="/admin/products">
   <div class="mx-auto max-w-4xl p-8">
     <h1 class="mb-2 text-2xl font-bold tracking-widest text-content uppercase">
       Mass Ingestion Protocol
@@ -12,16 +21,8 @@ if (!user || user.role !== 'admin') return Astro.redirect('/auth/admin/login');
     <p class="mb-8 font-mono text-xs text-content-muted">
       Upload CSV matrix for bulk inventory adjustments.
     </p>
-    <div
-      class="cursor-pointer border border-dashed border-outline bg-base p-12 text-center transition-colors hover:border-brand/50"
-    >
-      <span
-        class="mb-2 block text-xs font-bold tracking-widest text-content uppercase"
-        >Select CSV Payload</span
-      >
-      <span class="font-mono text-[10px] text-content-muted"
-        >Strict schema enforcement active. Max 5MB.</span
-      >
-    </div>
+    
+    <BulkActions client:load />
+    
   </div>
 </AdminLayout>

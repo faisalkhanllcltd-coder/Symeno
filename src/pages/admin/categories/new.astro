@@ -1,0 +1,28 @@
+﻿---
+// src/pages/admin/categories/new.astro
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import CategoryForm from '../../../components/admin/categories/CategoryForm.svelte';
+
+const user = Astro.locals.user;
+if (!user) return Astro.redirect('/auth/login');
+const role = (user.role || '').toLowerCase();
+if (!['admin', 'manager', 'staff'].includes(role)) return Astro.redirect('/account');
+
+const breadcrumbs = [
+  { label: 'Categories', url: '/admin/categories' },
+  { label: 'Create Node' },
+];
+---
+
+<AdminLayout 
+  title="New Taxonomy Node" 
+  subtitle="Register a new product category"
+  breadcrumbs={breadcrumbs}
+  currentPath="/admin/categories"
+>
+  <div class="max-w-4xl">
+    <div class="border border-outline bg-base p-6">
+      <CategoryForm client:load initialData={null} />
+    </div>
+  </div>
+</AdminLayout>

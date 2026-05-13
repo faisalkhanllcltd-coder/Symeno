@@ -1,0 +1,43 @@
+﻿---
+// src/pages/admin/categories/[id].astro
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import CategoryForm from '../../../components/admin/categories/CategoryForm.svelte';
+import { env } from 'cloudflare:workers';
+
+const user = Astro.locals.user;
+if (!user) return Astro.redirect('/auth/login');
+const role = (user.role || '').toLowerCase();
+if (!['admin', 'manager', 'staff'].includes(role)) return Astro.redirect('/account');
+
+const { id } = Astro.params;
+let categoryData = null;
+
+try {
+  const db = env?.DB as any;
+  if (db && id) {
+    const { results } = await db.prepare('SELECT * FROM categories WHERE id = ?1').bind(id).all();
+    if (results.length > 0) categoryData = results[0];
+    else return Astro.redirect('/404');
+  }
+} catch (e) {
+  console.error('[CATEGORY_FETCH_ERROR]', e);
+}
+
+const breadcrumbs = [
+  { label: 'Categories', url: '/admin/categories' },
+  { label: id || 'Edit Node' },
+];
+---
+
+<AdminLayout 
+  title="Modify Taxonomy" 
+  subtitle={Editing Node ID: \}
+  breadcrumbs={breadcrumbs}
+  currentPath="/admin/categories"
+>
+  <div class="max-w-4xl">
+    <div class="border border-outline bg-base p-6">
+      <CategoryForm client:load initialData={categoryData} />
+    </div>
+  </div>
+</AdminLayout>
