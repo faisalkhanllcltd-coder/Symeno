@@ -50,6 +50,7 @@ try {
     const today: any[] = [];
     const recent: any[] = [];
 
+    // THE FIX: Explicitly type 'item: any' to satisfy strict TypeScript compiler
     deployments.forEach((item: any) => {
       const diffHours = (now - item.timestamp.getTime()) / (1000 * 60 * 60);
       if (diffHours <= 48) { // 48h buffer for "Today" to ensure content exists
@@ -123,51 +124,58 @@ try {
             <div class="h-[1px] flex-1 bg-outline/40"></div>
           </div>
 
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-4 lg:gap-6 auto-rows-[minmax(280px,auto)] grid-flow-dense">
+          <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6 auto-rows-[minmax(280px,auto)] grid-flow-dense">
             {group.items.map((product, i) => {
               // The newest item in the first group gets the Hero treatment
               const isHero = groupIdx === 0 && i === 0;
               const spanClass = isHero 
-                ? "sm:col-span-2 sm:row-span-2 lg:col-span-2 lg:row-span-2" 
+                ? "col-span-2 row-span-2 sm:col-span-2 sm:row-span-2 lg:col-span-2 lg:row-span-2" 
                 : "col-span-1";
 
               return (
+                /* THE FIX: Rebuilt card layout to push image edge-to-edge with no padding */
                 <a
                   href={`/shop/product/${product.slug}`}
-                  class={`group bg-surface border-outline/60 hover:border-brand/40 relative flex flex-col border p-4 transition-colors focus:outline-none rounded-md shadow-sm hover:shadow-[0_8px_25px_-8px_rgba(0,0,0,0.2)] ${spanClass}`}
+                  class={`group bg-surface border-outline/60 hover:border-brand/50 relative flex flex-col border transition-colors focus:outline-none rounded-lg shadow-sm hover:shadow-[0_8px_25px_-8px_rgba(0,0,0,0.2)] overflow-hidden ${spanClass}`}
                 >
-                  <div class="mb-4 flex items-start justify-between">
-                    <span class="text-content-muted font-mono text-[9px] tracking-widest uppercase truncate pr-4">
-                      {product.brand}
-                    </span>
+                  <div class={`bg-surface-hover relative flex w-full items-center justify-center overflow-hidden border-b border-outline/30 ${isHero ? 'flex-1 min-h-[200px] sm:min-h-[300px]' : 'aspect-[4/5] sm:aspect-square'}`}>
+                    
+                    {/* Floating Hero Badge */}
                     {isHero && (
-                      <span class="text-brand border-brand/30 bg-brand/5 border px-1.5 py-0.5 text-[8px] font-bold tracking-widest uppercase rounded-sm backdrop-blur-sm animate-pulse">
-                        JUST DROPPED
-                      </span>
+                      <div class="absolute top-3 left-3 z-10">
+                        <span class="text-brand border-brand/30 bg-brand/5 border px-2 py-1 text-[8px] sm:text-[9px] font-bold tracking-widest uppercase rounded-sm backdrop-blur-sm animate-pulse shadow-md">
+                          JUST DROPPED
+                        </span>
+                      </div>
                     )}
-                  </div>
 
-                  <div class={`bg-surface-hover border-outline/30 relative flex flex-1 items-center justify-center overflow-hidden border rounded group-hover:border-brand/20 transition-colors ${isHero ? 'mb-6 aspect-auto min-h-[200px]' : 'mb-4 aspect-[4/5]'}`}>
                     {product.image_url !== '/assets/placeholders/product-unavailable.webp' ? (
                       <img
                         src={product.image_url}
                         alt={product.name}
                         loading="lazy"
-                        class="absolute inset-0 h-full w-full object-contain p-4 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110"
+                        /* Changed to object-cover to stretch edge-to-edge */
+                        class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                       />
                     ) : (
                       <span class="text-content-muted font-mono text-[10px]">Visual Missing</span>
                     )}
                   </div>
 
-                  <h2 class={`text-content group-hover:text-brand font-bold transition-colors leading-snug mb-3 ${isHero ? 'text-lg sm:text-xl line-clamp-3' : 'text-xs line-clamp-2'}`}>
-                    {product.name}
-                  </h2>
-
-                  <div class="mt-auto font-mono">
-                    <span class={`text-brand font-bold ${isHero ? 'text-xl' : 'text-sm'}`}>
-                      ${Number(product.price).toFixed(2)}
+                  <div class="flex flex-col flex-1 p-3 sm:p-4">
+                    <span class="text-content-muted font-mono text-[8px] sm:text-[9px] tracking-widest uppercase truncate mb-1.5">
+                      {product.brand}
                     </span>
+                    
+                    <h2 class={`text-content group-hover:text-brand font-bold transition-colors leading-snug mb-3 ${isHero ? 'text-sm sm:text-xl line-clamp-3' : 'text-[11px] sm:text-[13px] line-clamp-2'}`}>
+                      {product.name}
+                    </h2>
+
+                    <div class="mt-auto font-mono">
+                      <span class={`text-brand font-bold ${isHero ? 'text-lg sm:text-2xl' : 'text-sm sm:text-base'}`}>
+                        ${Number(product.price).toFixed(2)}
+                      </span>
+                    </div>
                   </div>
                 </a>
               );
