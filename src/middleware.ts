@@ -69,8 +69,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
             // Attach user to context so standard Astro pages can access `Astro.locals.user`
             locals.user = user;
 
-            // RBAC Enforcement (Admins/Managers only in /admin)
-            if (isAdminRoute && user.role !== 'admin' && user.role !== 'manager') {
+            // RBAC Enforcement (Admins/Managers/Staff only in /admin)
+            const role = (user.role || '').toLowerCase();
+            if (isAdminRoute && !['admin', 'manager', 'staff'].includes(role)) {
                 console.warn(`[SECURITY_BLOCKED] Customer ${user.email} attempted to access Admin UI.`);
                 return redirect('/account');
             }

@@ -9,7 +9,8 @@ import LowStockAlert from '../../components/admin/dashboard/LowStockAlert.svelte
 import ActivityFeed from '../../components/admin/dashboard/ActivityFeed.svelte';
 import { env } from 'cloudflare:workers';
 
-if (!Astro.locals.user || (Astro.locals.user.role !== 'admin' && Astro.locals.user.role !== 'staff')) {
+const role = (Astro.locals.user?.role || '').toLowerCase();
+if (!Astro.locals.user || !['admin', 'manager', 'staff'].includes(role)) {
   return Astro.redirect('/auth/login');
 }
 

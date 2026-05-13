@@ -12,6 +12,13 @@ if (!user) {
   return Astro.redirect('/auth/login');
 }
 
+// THE FIX: The Server-Side Gatekeeper
+// If the frontend accidentally sends an Admin here, immediately bounce them to their correct dashboard.
+const role = (user.role || '').toLowerCase();
+if (['admin', 'manager', 'staff'].includes(role)) {
+  return Astro.redirect('/admin');
+}
+
 const db = env?.DB;
 
 // STRICT TYPE FIXES
@@ -21,15 +28,17 @@ let recentOrders: any[] = [];
 // SECURE EDGE MATRIX QUERIES
 if (db) {
   try {
+    // THE FIX: Changed 'customer_id' to 'user_id' to match standard schema patterns.
     const ordersQuery = await db.prepare(
-      'SELECT COUNT(*) as count, SUM(total_amount) as total FROM orders WHERE customer_id = ?1'
+      'SELECT COUNT(*) as count, SUM(total_amount) as total FROM orders WHERE user_id = ?1'
     ).bind(user.id).first<{ count: number, total: number }>();
     
     stats.totalOrders = ordersQuery?.count || 0;
     stats.totalSpent = ordersQuery?.total || 0;
 
+    // THE FIX: Changed 'customer_id' to 'user_id' here as well.
     const { results } = await db.prepare(
-      'SELECT id, status, total_amount as total, created_at FROM orders WHERE customer_id = ?1 ORDER BY created_at DESC LIMIT 3'
+      'SELECT id, status, total_amount as total, created_at FROM orders WHERE user_id = ?1 ORDER BY created_at DESC LIMIT 3'
     ).bind(user.id).all();
     
     recentOrders = results || [];

@@ -60,13 +60,19 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
 
     // Apply the actual database role to the JWT session
+    const role = ((user.role as string) || 'customer').toLowerCase();
     await createSession(env, cookies, {
       id: user.id as string,
       email: user.email as string,
-      role: (user.role as string) || 'customer'
+      role: role
     });
 
-    return new Response(JSON.stringify({ success: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    let redirectUrl = '/account/orders';
+    if (role === 'admin' || role === 'manager' || role === 'staff') {
+      redirectUrl = '/admin';
+    }
+
+    return new Response(JSON.stringify({ success: true, redirectUrl }), { status: 200, headers: { 'Content-Type': 'application/json' } });
 
   } catch (err: any) {
     console.error('[AUTH_LOGIN_ERROR]', err);

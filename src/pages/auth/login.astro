@@ -74,7 +74,9 @@ if (Astro.cookies.has('auth_error')) {
 
             if (res.type === 'opaqueredirect' || res.status === 302 || res.status === 301 || res.redirected || (res.status >= 200 && res.status < 300)) {
               let finalRedirect = returnTo;
-              if (!finalRedirect || !finalRedirect.startsWith('/')) finalRedirect = '/account/orders';
+              if (!finalRedirect || !finalRedirect.startsWith('/')) {
+                finalRedirect = data.redirectUrl || '/account/orders';
+              }
               window.location.href = finalRedirect;
               return;
             }
