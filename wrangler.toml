@@ -1,4 +1,4 @@
-﻿name = "symeno-store"
+﻿name = "symeno"
 # Entry point for Astro's SSR bundle
 # main = "./dist/_worker.js/index.js"
 compatibility_date = "2024-09-23"
@@ -8,15 +8,15 @@ compatibility_flags = [ "nodejs_compat_v2" ]
 assets = { directory = "./dist" }
 
 [vars]
-PUBLIC_STRIPE_KEY = "pk_test_placeholder" 
+PUBLIC_STRIPE_KEY = "pk_test_placeholder"
 PUBLIC_SITE_URL = "https://symeno.com"
-R2_ACCOUNT_ID = "your_cloudflare_account_id" 
+R2_ACCOUNT_ID = "your_cloudflare_account_id"
 R2_BUCKET_NAME = "symeno-images"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "symeno-prod-db"
-database_id = "cb2b84d5-a116-4614-8560-becf42434855" 
+database_id = "cb2b84d5-a116-4614-8560-becf42434855"
 migrations_dir = "migrations"
 
 [[kv_namespaces]]
@@ -35,7 +35,7 @@ queue = "symeno-email-queue"
 
 # PREVIEW ENVIRONMENT (Pages/Workers Hybrid)
 [env.preview]
-name = "symeno-store-preview"
+name = "symeno-preview"
 
 [env.preview.vars]
 PUBLIC_STRIPE_KEY = "pk_test_placeholder"
@@ -44,7 +44,7 @@ PUBLIC_SITE_URL = "https://staging.symeno.com"
 [[env.preview.d1_databases]]
 binding = "DB"
 database_name = "symeno-db-staging"
-database_id = "preview-symeno-db-id" 
+database_id = "preview-symeno-db-id"
 
 [[env.preview.kv_namespaces]]
 binding = "SESSION"
