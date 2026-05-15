@@ -7,7 +7,8 @@ import CategoryGrid from '../components/storefront/CategoryGrid.astro';
 import Manifesto from '../components/storefront/Manifesto.astro';
 import FeaturedProducts from '../components/storefront/FeaturedProducts.astro';
 import Testimonials from '../components/storefront/Testimonials.astro';
-import Newsletter from '../components/storefront/Newsletter.astro';
+// THE FIX: Replaced the dead .astro import with the secured Svelte component
+import NewsletterCapture from '../components/storefront/marketing/NewsletterCapture.svelte';
 import BrandStory from '../components/storefront/BrandStory.astro';
 
 export const prerender = false;
@@ -117,5 +118,5 @@ try {
   <Manifesto />
   <FeaturedProducts products={featured} />
   <Testimonials />
-  <Newsletter />
+  <NewsletterCapture client:load />
 </StorefrontLayout>

@@ -1,6 +1,4 @@
 ﻿name = "symeno"
-# Entry point for Astro's SSR bundle
-# main = "./dist/_worker.js/index.js"
 compatibility_date = "2024-09-23"
 compatibility_flags = [ "nodejs_compat_v2" ]
 
@@ -22,10 +20,8 @@ migrations_dir = "migrations"
 
 [[kv_namespaces]]
 binding = "SESSION"
-id = "554c5c4c4a74400e9a14c969f80d0327" # ✅ Mapped to existing symeno-store-session
+id = "554c5c4c4a74400e9a14c969f80d0327" 
 
-# NOTE: If your R2 bucket is not yet enabled in the dashboard, 
-# keep the lines below commented out to prevent a [code: 10042] error.
 # [[r2_buckets]]
 # binding = "IMAGES"
 # bucket_name = "symeno-images"
@@ -41,6 +37,8 @@ name = "symeno-preview"
 [env.preview.vars]
 PUBLIC_STRIPE_KEY = "pk_test_placeholder"
 PUBLIC_SITE_URL = "https://staging.symeno.com"
+# FIXED: Added Turnstile to Preview so staging forms don't crash
+PUBLIC_TURNSTILE_SITE_KEY = "0x4AAAAAADPXEom1ry2-MIFB"
 
 [[env.preview.d1_databases]]
 binding = "DB"
@@ -49,4 +47,4 @@ database_id = "preview-symeno-db-id"
 
 [[env.preview.kv_namespaces]]
 binding = "SESSION"
-id = "554c5c4c4a74400e9a14c969f80d0327" # Using same for now; swap if you make a staging KV
+id = "554c5c4c4a74400e9a14c969f80d0327"

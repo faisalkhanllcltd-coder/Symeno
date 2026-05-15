@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Turnstile from '../../security/Turnstile.svelte';
   let { recentOrders = [] } = $props<{ recentOrders: any[] }>();
 
   let step = $state(1);
@@ -60,6 +61,16 @@
   async function submitRMA(e: Event) {
     e.preventDefault();
     if (isSubmitting) return;
+
+    const formElement = e.currentTarget as HTMLFormElement;
+    const formData = new FormData(formElement);
+    const turnstileToken = formData.get('cf-turnstile-response');
+
+    if (!turnstileToken) {
+      alert('Security token missing. Are you a bot?');
+      return;
+    }
+
     isSubmitting = true;
     
     try {
@@ -70,6 +81,7 @@
           orderId: selectedOrder,
           items: selectedItems,
           resolution,
+          'cf-turnstile-response': turnstileToken
         }),
       });
       if (res.ok) {
@@ -100,7 +112,7 @@
     {/each}
   </div>
 
-  <form onsubmit={submitRMA}>
+  <form onsubmit={submitRMA} data-secured="true">
     {#if step === 1}
       <div class="animate-fade-in space-y-6">
         <h2 class="text-lg font-bold tracking-widest text-content uppercase">       
@@ -342,6 +354,8 @@
             cancellation.
           </p>
         </div>
+
+        <Turnstile />
 
         <div class="flex justify-between pt-4">
           <button

@@ -7,6 +7,9 @@ import mdx from '@astrojs/mdx';
 
 // https://astro.build/config
 export default defineConfig({
+  // Canonical origin for SEO, sitemaps, and absolute URL generation
+  site: 'https://symeno.com',
+
   // We use server output because this is a dynamic e-commerce edge app, not a static blog.
   output: 'server',
 

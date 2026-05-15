@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Turnstile from '../../security/Turnstile.svelte';
   let companyName = $state('');
   let tradeLicense = $state('');
   let taxId = $state('');
@@ -10,6 +11,17 @@
 
   async function submitApplication(e: Event) {
     e.preventDefault();
+    
+    const formElement = e.currentTarget as HTMLFormElement;
+    const formData = new FormData(formElement);
+    const turnstileToken = formData.get('cf-turnstile-response');
+
+    if (!turnstileToken) {
+      status = 'error';
+      message = 'Security token missing. Are you a bot?';
+      return;
+    }
+
     isSubmitting = true;
     status = 'idle';
 
@@ -22,6 +34,7 @@
           trade_license: tradeLicense,
           tax_id: taxId,
           contact_email: contactEmail,
+          'cf-turnstile-response': turnstileToken
         }),
       });
 
@@ -49,6 +62,7 @@
 
 <form
   onsubmit={submitApplication}
+  data-secured="true"
   class="space-y-6 border border-outline bg-base p-8"
 >
   <div class="mb-6 border-b border-outline pb-4">
@@ -130,6 +144,8 @@
         </div>
       </div>
     </div>
+
+    <Turnstile />
 
     <button
       type="submit"

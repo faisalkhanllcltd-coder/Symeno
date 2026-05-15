@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import Turnstile from '../../security/Turnstile.svelte';
   import { ui } from '../../../stores/ui.svelte.ts';
 
   let isLoading = $state(true);
@@ -32,6 +33,16 @@
 
   async function handleSubmit(e: Event) {
     e.preventDefault();
+    
+    const formElement = e.currentTarget as HTMLFormElement;
+    const formData = new FormData(formElement);
+    const turnstileToken = formData.get('cf-turnstile-response');
+
+    if (!turnstileToken) {
+      errorMessage = 'Security token missing. Are you a bot?';
+      return;
+    }
+
     isProcessing = true;
     errorMessage = '';
 
@@ -51,7 +62,8 @@
           customer_email: formData.email,
           shipping_name: formData.fullName,
           shipping_address: shippingAddress,
-          items: payloadItems
+          items: payloadItems,
+          'cf-turnstile-response': turnstileToken
         }),
       });
 
@@ -92,7 +104,7 @@
     </div>
   {/if}
 
-  <form onsubmit={handleSubmit} id="payment-form" class="space-y-8 {isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-500'}">
+  <form onsubmit={handleSubmit} id="payment-form" data-secured="true" class="space-y-8 {isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-500'}">
 
     <div>
       <h3 class="mb-4 font-mono text-[10px] font-bold tracking-widest text-content-muted uppercase">
@@ -166,6 +178,8 @@
         </label>
       </div>
     </div>
+
+    <Turnstile />
 
     <button
       type="submit"
