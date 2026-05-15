@@ -14,8 +14,6 @@ const CATEGORY_QUERIES = {
   "Candles & Aromatherapy": ["soy wax candle gift set", "reed diffuser home"],
   "Desk & Office": ["bamboo desk organizer", "wireless charging stand"],
   "Bath & Shower": ["bamboo shower caddy", "teak bath tray"],
-  "Men's Grooming": ["beard grooming set"],
-  "Skincare Tools": ["gua sha rose quartz set", "jade roller face"],
   "Hair Care & Accessories": ["satin scrunchie set silk", "claw clip hair set"],
   "Wellness Accessories": ["foam roller massage"],
   "Women's Accessories": ["silk scarf square 90cm", "compact umbrella windproof"],
@@ -37,7 +35,7 @@ const CATEGORY_QUERIES = {
   "Eid & Festive": ["eid decoration set lights", "islamic geometric gift wrap"],
   "Plant Care": ["self watering pot terracotta", "plant mister copper"],
   "Sustainable Living": ["bamboo toothbrush set eco", "beeswax food wrap reusable"],
-  "Everyday Carry": ["titanium key multi tool", "slim RFID card holder"],
+  "Everyday Carry": ["titanium key organizer", "slim RFID card holder"],
   "Cable & Device Management": ["cable management box desk", "magnetic cable clips"],
 };
 

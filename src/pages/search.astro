@@ -1,4 +1,4 @@
-﻿---
+---
 import Storefront from '../layouts/Storefront.astro';
 const query = Astro.url.searchParams.get('q') || '';
 ---
@@ -6,12 +6,12 @@ const query = Astro.url.searchParams.get('q') || '';
 <Storefront title={`Search: ${query}`}>
   <div class="mx-auto max-w-7xl px-4 py-24 text-center sm:px-6 lg:px-8">
     <h1 class="mb-4 text-4xl font-bold tracking-tighter uppercase">
-      Query: <span class="text-brand">{query || 'ALL HARDWARE'}</span>
+      Query: <span class="text-brand">{query || 'ALL PRODUCTS'}</span>
     </h1>
     <p
       class="text-content-muted mb-12 font-mono text-sm tracking-widest uppercase"
     >
-      Global hardware indexing and arbitrage search...
+      Global product indexing and arbitrage search...
     </p>
 
     <div

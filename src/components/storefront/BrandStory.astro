@@ -2,40 +2,32 @@
 // src/components/storefront/BrandStory.astro
 ---
 
-<section class="relative w-full overflow-hidden bg-base py-16 sm:py-20 lg:py-32 border-t border-outline/30">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 items-center gap-12 md:grid-cols-12 lg:gap-20">
+<section class="relative w-full overflow-hidden bg-base py-20 sm:py-24 lg:py-32 border-t border-outline/30">
+  
+  <div class="pointer-events-none absolute top-1/2 left-0 z-0 -translate-y-1/2 opacity-[0.03] select-none pl-4 sm:pl-10">
+    <span class="font-mono font-black text-content leading-none tracking-tighter" style="font-size: clamp(8rem, 25vw, 22rem);">
+      34%
+    </span>
+  </div>
+
+  <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 items-center gap-16 md:grid-cols-12 lg:gap-24">
       
-      <div class="relative order-2 md:order-1 md:col-span-5 flex flex-col justify-center">
-        <div
-          class="pointer-events-none absolute -top-12 -left-8 z-0 font-mono text-[9rem] sm:text-[14rem] font-black text-content opacity-5 select-none leading-none tracking-tighter"
-        >
-          34%
-        </div>
-        
-        <div class="relative z-10 pl-2 sm:pl-0">
-          <span
-            class="mb-3 block font-mono text-6xl sm:text-7xl font-bold tracking-tighter text-content lg:text-8xl"
-            >34<span class="text-brand">%</span></span
-          >
-          <p
-            class="max-w-[220px] font-mono text-[11px] sm:text-[12px] tracking-widest text-content-muted uppercase leading-relaxed font-bold border-l-2 border-brand/50 pl-4"
-          >
-            Average customer savings across all hardware categories since launch.
-          </p>
-        </div>
+      <div class="relative order-2 md:order-1 md:col-span-5 flex flex-col justify-center pl-2 sm:pl-0">
+        <span class="mb-4 block font-mono text-7xl sm:text-8xl font-bold tracking-tighter text-content lg:text-9xl">
+          34<span class="text-brand">%</span>
+        </span>
+        <p class="max-w-[260px] font-mono text-xs tracking-widest text-content-muted uppercase leading-relaxed font-bold border-l-2 border-brand/50 pl-5">
+          Average customer savings across all product categories since launch.
+        </p>
       </div>
 
-      <div class="relative z-20 order-1 md:order-2 md:col-span-7 flex flex-col min-w-0">
-        <h2
-          class="mb-6 text-3xl leading-tight font-bold tracking-tight text-content sm:text-4xl lg:text-5xl text-balance"
-        >
+      <div class="relative order-1 md:order-2 md:col-span-7 flex flex-col min-w-0">
+        <h2 class="mb-8 text-3xl leading-tight font-bold tracking-tight text-content sm:text-4xl lg:text-5xl text-balance">
           Built for people who refuse to overpay.
         </h2>
         
-        <div
-          class="max-w-2xl space-y-5 text-[14px] sm:text-[16px] leading-relaxed text-content-muted font-medium"
-        >
+        <div class="max-w-2xl space-y-6 text-base sm:text-lg leading-relaxed text-content-muted font-medium">
           <p>
             Symeno wasn't founded by retailers. It was founded by analysts who
             realized that global supply chain efficiencies were never reaching
@@ -43,7 +35,7 @@
           </p>
           <p>
             We operate on a simple thesis: Volume is power. By aggregating
-            demand and negotiating bulk positions with authorized brand
+            demand and negotiating bulk positions with authorized supply
             partners, we can collapse the retail margin.
           </p>
           <p>
@@ -55,7 +47,7 @@
         <div class="mt-10">
           <a
             href="/about"
-            class="group inline-flex items-center gap-3 border-b border-brand/40 pb-1.5 text-[12px] sm:text-[14px] font-bold tracking-widest uppercase text-content transition-all hover:border-brand hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
+            class="group inline-flex items-center gap-3 border-b border-brand/40 pb-1.5 text-xs sm:text-sm font-bold tracking-widest uppercase text-content transition-all hover:border-brand hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
           >
             Our Sourcing Ethics <span class="transition-transform group-hover:translate-x-2 text-brand">&rarr;</span>
           </a>

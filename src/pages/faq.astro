@@ -17,8 +17,8 @@ const shippingFaqs = [
     answer: 'Yes. Due to the high value of our inventory, any order exceeding $1,000 USD automatically requires a direct adult signature upon delivery. We will not instruct carriers to leave high-value packages unattended.',
   },
   {
-    question: 'Do you actually hold stock, or is this dropshipping?',
-    answer: 'We never dropship. We purchase, own, and physically hold 100% of the inventory listed on our site in our secure logistics hub. If a product is listed as "In Stock" on our site, it is sitting on a shelf ready to ship to you immediately.',
+    question: 'Do you own your inventory?',
+    answer: 'Yes. We purchase, own, and physically hold 100% of the inventory listed on our site in our secure logistics hub. If a product is listed as "In Stock" on our site, it is sitting on a shelf ready to ship to you immediately.',
   }
 ];
 
@@ -30,7 +30,7 @@ const authenticityFaqs = [
   },
   {
     question: 'Do the products come with a manufacturer warranty?',
-    answer: 'Absolutely. Because our hardware is sourced through official distributor channels, every product carries the full, standard manufacturer warranty (e.g., Apple Care eligible, Sony standard 1-year warranty).',
+    answer: 'Yes. Every product carries the full, standard manufacturer warranty, which remains fully intact regardless of the purchase channel. We procure exclusively through Tier-1 authorized distributors, so all manufacturer warranty registrations are valid.',
   },
   {
     question: 'How are your prices so much lower than standard retail?',
@@ -42,11 +42,11 @@ const authenticityFaqs = [
 const returnsFaqs = [
   {
     question: 'What is your return policy?',
-    answer: 'We offer a strict 30-day return window from the date of delivery. Unopened, factory-sealed hardware can be returned for a full refund (minus original shipping costs).',
+    answer: 'We offer a strict 30-day return window from the date of delivery. Unopened, factory-sealed products can be returned for a full refund (minus original shipping costs).',
   },
   {
     question: 'Can I return an opened item?',
-    answer: 'Because we sell hardware at such tight margins, we cannot sell opened electronics as new. Opened items that are undamaged are subject to a mandatory 15% restocking fee. Damaged items or items missing original accessories will be rejected.',
+    answer: 'Because we operate at such tight margins, we cannot sell opened items as new. Opened items that are undamaged are subject to a mandatory 15% restocking fee. Damaged items or items missing original accessories will be rejected.',
   },
   {
     question: 'What happens if my item arrives defective?',
@@ -65,8 +65,8 @@ const paymentFaqs = [
     answer: 'To protect against fraud, our payment gateway uses the Address Verification System (AVS) and 3D Secure 2.0. If your billing address does not perfectly match your bank\'s records, or if the order triggers a high-risk score, it may be automatically canceled or held for manual review.',
   },
   {
-    question: 'I need to procure hardware for my company. Do you do B2B bulk orders?',
-    answer: 'Yes. Our B2B operations team handles volume procurement for startups, studios, and corporate offices. We can often negotiate even deeper discounts on large volume orders. Please email wholesale@symeno.com with your requirements.',
+    question: 'I need to procure products for my company. Do you do B2B bulk orders?',
+    answer: 'Yes. Our B2B operations team handles volume procurement for startups, studios, and corporate offices. We can often negotiate even deeper discounts on large volume orders. Please email support@symeno.com with your requirements.',
   }
 ];
 
@@ -159,7 +159,7 @@ const schema = {
           Contact Support
         </a>
         <a 
-          href="mailto:contact@symeno.com" 
+          href="mailto:support@symeno.com" 
           class="w-full sm:w-auto inline-block border border-outline bg-transparent px-8 py-3.5 font-mono text-xs font-bold tracking-widest text-content uppercase transition-colors hover:bg-surface-hover hover:border-brand/50 rounded-sm"
         >
           Email Us

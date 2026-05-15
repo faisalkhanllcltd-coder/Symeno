@@ -6,8 +6,6 @@ import TrustBar from '../components/storefront/TrustBar.astro';
 import CategoryGrid from '../components/storefront/CategoryGrid.astro';
 import Manifesto from '../components/storefront/Manifesto.astro';
 import FeaturedProducts from '../components/storefront/FeaturedProducts.astro';
-import Testimonials from '../components/storefront/Testimonials.astro';
-// THE FIX: Replaced the dead .astro import with the secured Svelte component
 import NewsletterCapture from '../components/storefront/marketing/NewsletterCapture.svelte';
 import BrandStory from '../components/storefront/BrandStory.astro';
 
@@ -117,6 +115,139 @@ try {
   <BrandStory />
   <Manifesto />
   <FeaturedProducts products={featured} />
-  <Testimonials />
-  <NewsletterCapture client:load />
+  
+  <section class="relative w-full overflow-hidden border-t border-outline bg-base py-24">
+    <div class="pointer-events-none absolute top-1/2 left-1/2 z-0 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand opacity-[0.02] blur-[80px]"></div>
+
+    <div class="relative z-10 mx-auto max-w-4xl px-4 text-center" id="home-newsletter-override">
+      
+      <h2 class="mb-4 text-3xl font-bold tracking-tight text-content md:text-4xl">
+        Secure Comm Channel.
+      </h2>
+      <p class="mx-auto mb-10 max-w-2xl text-lg font-light text-content-muted">
+        Intercept logistics updates, wholesale price drops, and operational intelligence before the public market.
+      </p>
+
+      <div class="mx-auto flex w-full max-w-lg justify-center">
+        <NewsletterCapture client:load />
+      </div>
+
+      <p class="mt-8 font-mono text-[10px] tracking-[0.2em] text-content-muted uppercase">
+        Zero Spam &middot; Encrypted Data &middot; Unsubscribe Anytime
+      </p>
+    </div>
+  </section>
+  
 </StorefrontLayout>
+
+<style is:global>
+  /* * SURGICAL UI OVERRIDE: SHOPIFY/AMAZON NESTED BUTTON
+   * Transmutes the standalone form into a premium, unified input box
+   * with a perfectly nested action button. Isolated to the homepage.
+   */
+
+  /* 1. Hide Svelte's native title and description */
+  #home-newsletter-override h3,
+  #home-newsletter-override p.text-content-muted.text-\[10px\] {
+    display: none !important;
+  }
+
+  /* 2. Clear width constraints */
+  #home-newsletter-override > div {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  /* 3. The Outer Wrapper becomes the "Box" */
+  #home-newsletter-override form > div.relative {
+    display: flex !important;
+    position: relative !important;
+    width: 100% !important;
+    height: 3.5rem !important; /* Premium touch-target height */
+    background-color: var(--color-surface, #1a1a1a) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 0.375rem !important;
+    overflow: hidden !important;
+    transition: border-color 0.2s ease !important;
+    flex-direction: row !important; /* Forces row alignment even on mobile */
+    gap: 0 !important;
+  }
+
+  /* Focus ring applied to the parent wrapper for a unified look */
+  #home-newsletter-override form > div.relative:focus-within {
+    border-color: var(--color-brand) !important;
+    box-shadow: 0 0 0 1px var(--color-brand) !important;
+  }
+
+  /* 4. The Transparent Input Field */
+  #home-newsletter-override input {
+    width: 100% !important;
+    height: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    /* Right padding ensures text slides under the button, not through it */
+    padding: 0 110px 0 1.25rem !important; 
+    font-size: 1rem !important; /* 16px absolutely required to prevent iOS auto-zoom */
+    color: var(--color-content) !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  @media (min-width: 640px) {
+    #home-newsletter-override input {
+      padding-right: 140px !important; /* Wider padding for larger desktop button */
+    }
+  }
+
+  /* 5. The Perfectly Nested Action Button */
+  #home-newsletter-override button {
+    position: absolute !important;
+    top: 0.375rem !important;
+    bottom: 0.375rem !important;
+    right: 0.375rem !important;
+    margin: 0 !important;
+    width: auto !important;
+    padding: 0 1rem !important;
+    background-color: var(--color-brand) !important;
+    color: #000 !important; /* High contrast dark text */
+    font-size: 0.75rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+    border: none !important;
+    border-radius: 0.25rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: transform 0.1s ease, opacity 0.2s ease !important;
+  }
+
+  @media (min-width: 640px) {
+    #home-newsletter-override button {
+      font-size: 0.875rem !important;
+      padding: 0 1.5rem !important;
+    }
+  }
+
+  #home-newsletter-override button:hover:not(:disabled) {
+    opacity: 0.9 !important;
+    transform: scale(0.98) !important;
+  }
+
+  #home-newsletter-override button:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+  }
+
+  /* 6. Centering Turnstile & Messages */
+  #home-newsletter-override .cf-turnstile,
+  #home-newsletter-override iframe {
+    margin: 1rem auto 0 !important;
+  }
+
+  #home-newsletter-override p.animate-fade-in {
+    text-align: center !important;
+    font-size: 0.75rem !important;
+    margin-top: 1rem !important;
+  }
+</style>

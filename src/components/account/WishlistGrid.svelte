@@ -208,7 +208,7 @@
         Your wishlist is empty
       </h3>
       <p class="mb-6 font-mono text-[10px] text-content-muted">
-        Explore the matrix to find hardware and upgrades. 
+        Explore the matrix to find premium goods and upgrades. 
       </p>
       <a
         href="/shop"

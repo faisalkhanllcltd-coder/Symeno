@@ -29,7 +29,7 @@ try {
       return {
         slug: p.slug,
         name: p.name,
-        category: p.category || 'Hardware',
+        category: p.category || 'Lifestyle Goods',
         price: p.price || 0,
         retailPrice: p.price ? p.price * 1.15 : 0,
         image_url: mainImage
@@ -42,8 +42,8 @@ try {
 ---
 
 <StorefrontLayout
-  title={`${displayName} Hardware | Symeno`}
-  description={`Verified wholesale arbitrage for ${displayName} hardware.`}
+  title={`${displayName} Products | Symeno`}
+  description={`Verified wholesale pricing on ${displayName} products.`}
 >
   <div class="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8">
     <div

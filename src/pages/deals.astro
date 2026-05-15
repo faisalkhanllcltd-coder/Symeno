@@ -1,4 +1,4 @@
-﻿---
+---
 import { env } from "cloudflare:workers";
 import StorefrontLayout from '../layouts/Storefront.astro';
 
@@ -55,7 +55,7 @@ try {
         price: price,
         retail: retailPrice,
         savings: savings,
-        category: p.category || 'Hardware',
+        category: p.category || 'Lifestyle Goods',
         brand: p.brand || 'Symeno Select',
         image_url: mainImage,
         inStock: true 
@@ -86,7 +86,7 @@ try {
 
 <StorefrontLayout
   title="Live Arbitrage Deals | Symeno"
-  description="Secure premium hardware at global wholesale rates. Limited allocations."
+  description="Secure premium lifestyle goods at global wholesale rates. Limited allocations."
 >
   <div class="bg-base relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8 lg:py-20 transition-colors duration-300">
     <div class="pointer-events-none absolute inset-0 opacity-[0.02] bg-[linear-gradient(var(--color-outline)_1px,transparent_1px),linear-gradient(90deg,var(--color-outline)_1px,transparent_1px)] bg-[size:32px_32px]"></div>

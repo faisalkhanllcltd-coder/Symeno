@@ -1,4 +1,4 @@
-﻿<div class="grid grid-cols-1 gap-4 md:grid-cols-3">     
+<div class="grid grid-cols-1 gap-4 md:grid-cols-3">     
   <div
     class="border border-outline bg-surface p-4 transition-colors hover:border-content-muted"
   >
@@ -9,7 +9,7 @@
     </div>
     <h4 class="mb-1 text-xs font-bold text-content">Acquisition</h4>
     <p class="font-mono text-[10px] text-content-muted">      
-      Earn 1 point for every 1 AED spent on hardware or services.
+      Earn 1 point for every 1 AED spent on products or services.
     </p>
   </div>
   <div
