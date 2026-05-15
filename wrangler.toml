@@ -12,6 +12,7 @@ PUBLIC_STRIPE_KEY = "pk_test_placeholder"
 PUBLIC_SITE_URL = "https://symeno.com"
 R2_ACCOUNT_ID = "your_cloudflare_account_id"
 R2_BUCKET_NAME = "symeno-images"
+PUBLIC_TURNSTILE_SITE_KEY = "0x4AAAAAADPXEom1ry2-MIFB"
 
 [[d1_databases]]
 binding = "DB"
