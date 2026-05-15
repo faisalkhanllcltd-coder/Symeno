@@ -1,79 +1,236 @@
 ---
 import StorefrontLayout from '../../layouts/Storefront.astro';
+
+const EFFECTIVE_DATE = 'May 15, 2026';
+const COMPANY_NAME = 'SYMENO LLC';
+const RETURNS_EMAIL = 'returns@symeno.com';
+const SUPPORT_EMAIL = 'support@symeno.com';
+const ADDRESS_LINE_1 = '30 N Gould St 59458';
+const ADDRESS_LINE_2 = 'Sheridan, WY 82801, USA';
+const PHONE = '+1 (307) 310-7918';
 ---
 
-<StorefrontLayout 
-  title="Returns & Refunds | Symeno"
-  description="Our 30-day return window, condition requirements, and refund processing."
+<StorefrontLayout
+  title="Returns & Refund Policy | Symeno"
+  description="SYMENO LLC operates a strict 30-day return policy from date of delivery. Understand our RMA process, condition requirements, refund timelines, and eligibility rules."
 >
   <div class="min-h-screen bg-base py-16 md:py-24">
     <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+
+      <!-- Header -->
       <div class="mb-12">
+        <p class="font-mono text-xs tracking-widest text-brand uppercase mb-3">Legal Document</p>
         <h1 class="mb-4 text-4xl font-bold tracking-tighter text-content md:text-5xl uppercase">
-          Returns & Refunds.
+          Returns &amp; Refund Policy.
         </h1>
-        <p class="font-mono text-xs tracking-widest text-brand uppercase">
-          Last Updated: May 13, 2026
+        <p class="font-mono text-xs tracking-widest text-content-muted uppercase">
+          Effective Date: {EFFECTIVE_DATE} &nbsp;|&nbsp; {COMPANY_NAME}
         </p>
+        <div class="mt-6 rounded-lg border border-brand/30 bg-brand/5 p-4">
+          <p class="text-sm text-content-muted leading-relaxed">
+            <strong class="text-content">Important:</strong> This policy constitutes a legally binding agreement between you ("Customer") and {COMPANY_NAME}, a limited liability company registered in the State of Wyoming, USA. By completing a purchase on <em>symeno.com</em>, you acknowledge that you have read, understood, and agree to be bound by the terms of this policy in their entirety.
+          </p>
+        </div>
       </div>
 
+      <!-- Body -->
       <div class="space-y-12 leading-relaxed font-light text-content-muted">
-        <section>
-          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
-            1. The 30-Day Window
-          </h2>
-          <p class="mb-4">
-            We accept returns on eligible products within exactly 30 days of the delivery date. To initiate a return, you must contact our operations team at <a href="mailto:returns@symeno.com" class="text-brand hover:underline">returns@symeno.com</a> to acquire a Return Merchandise Authorization (RMA) number.
-          </p>
-          <p class="mb-4 text-brand-alert font-bold">
-            Unauthorized returns sent to our warehouse without an active RMA number will be rejected and returned to the sender at their expense.
-          </p>
-        </section>
 
+        <!-- Section 1 -->
         <section>
           <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
-            2. Shipping Liability & Costs
+            1. Return Eligibility Window — Strict 30-Day Policy
           </h2>
           <p class="mb-4">
-            Unless the hardware received was mathematically defective out-of-the-box or we shipped the incorrect SKU, <strong class="text-content">the buyer is 100% responsible for all return shipping costs.</strong>
+            {COMPANY_NAME} accepts returns on eligible items within a <strong class="text-content">strict 30-day window, measured from the confirmed date of delivery</strong> as recorded by the carrier's tracking system. Requests received after this 30-day window has elapsed will be automatically declined without exception.
+          </p>
+          <p class="mb-4">
+            The delivery date is determined solely by the carrier's final scan timestamp (e.g., USPS, UPS, FedEx, DHL). If the carrier's system records a delivery date and the package is subsequently reported as missing, the return window is still calculated from the carrier-confirmed delivery date.
           </p>
           <ul class="mb-4 list-disc space-y-2 pl-5">
-            <li>We highly recommend using a trackable shipping service and purchasing shipping insurance. We do not guarantee that we will receive your returned item.</li>
-            <li>Original shipping costs paid at checkout are strictly non-refundable. If you receive a refund, the cost of original shipping will be deducted from your payout.</li>
+            <li>Returns initiated on <strong class="text-content">Day 1 through Day 30</strong> from the delivery date are eligible for review.</li>
+            <li>Returns initiated on <strong class="text-content">Day 31 or later</strong> are categorically ineligible and will not be processed under any circumstances.</li>
+            <li>The date of the customer's email to <a href={`mailto:${RETURNS_EMAIL}`} class="text-brand hover:underline">{RETURNS_EMAIL}</a> constitutes the official initiation date for the purposes of this 30-day window.</li>
           </ul>
         </section>
 
+        <!-- Section 2 -->
         <section>
           <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
-            3. Condition Requirements & Margins
+            2. RMA Process — Return Merchandise Authorization
           </h2>
           <p class="mb-4">
-            Because we operate on compressed margins to offer you wholesale pricing, we must strictly enforce condition requirements upon inspection at our logistics center:
+            All returns require a pre-approved <strong class="text-content">Return Merchandise Authorization (RMA) number</strong> before any item is shipped back to our logistics center. Failure to obtain an RMA number before shipment will result in the package being refused at our facility and returned to the sender at the customer's expense.
           </p>
+
+          <h3 class="mb-3 mt-6 text-base font-semibold text-content uppercase tracking-wide">How to Initiate a Return:</h3>
+          <ol class="mb-4 list-decimal space-y-3 pl-5">
+            <li>
+              <strong class="text-content">Step 1 — Submit Your RMA Request:</strong> Send an email to <a href={`mailto:${RETURNS_EMAIL}`} class="text-brand hover:underline">{RETURNS_EMAIL}</a> with the subject line: <code class="rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-brand">RMA REQUEST — ORDER #[YOUR ORDER NUMBER]</code>.
+            </li>
+            <li>
+              <strong class="text-content">Step 2 — Include Required Information:</strong> Your email must include your full name, order number, the specific item(s) you wish to return, and a clear reason for the return. Incomplete requests will be held pending until the required information is provided.
+            </li>
+            <li>
+              <strong class="text-content">Step 3 — Await Authorization:</strong> Our returns team will review your request and respond within <strong class="text-content">2–3 business days</strong>. If approved, you will receive your unique RMA number and a return shipping address via email.
+            </li>
+            <li>
+              <strong class="text-content">Step 4 — Ship the Item:</strong> Securely package the item in its original packaging, clearly write your RMA number on the outside of the box, and ship it to the address provided. The RMA number must be visible on the package exterior.
+            </li>
+            <li>
+              <strong class="text-content">Step 5 — Inspection &amp; Refund:</strong> Upon receipt, the item undergoes a mandatory inspection. Eligible refunds are processed within 5–10 business days of inspection clearance.
+            </li>
+          </ol>
+
+          <div class="rounded-lg border border-red-500/30 bg-red-500/5 p-4">
+            <p class="text-sm font-semibold text-red-400">
+              ⚠ Unauthorized Returns: Any package shipped to our facility without a valid, pre-approved RMA number will be refused by our receiving team and returned to the sender. {COMPANY_NAME} will not be responsible for any shipping costs incurred for unauthorized returns.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 3 -->
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            3. Condition Requirements — Items Must Be Unused &amp; in Original Packaging
+          </h2>
+          <p class="mb-4">
+            To be eligible for a refund, returned items must meet strict condition requirements. Every returned item undergoes a <strong class="text-content">mandatory physical inspection</strong> by our logistics team upon arrival. The following condition tiers govern the refund amount issued:
+          </p>
+
+          <div class="mb-6 space-y-4">
+            <div class="rounded-lg border border-outline p-4">
+              <div class="flex items-start gap-3">
+                <span class="mt-0.5 flex-shrink-0 text-green-400 font-bold text-lg">✓</span>
+                <div>
+                  <p class="font-semibold text-content">Tier A — Unused &amp; Factory Sealed (Original Packaging Intact)</p>
+                  <p class="text-sm mt-1">Item is <strong class="text-content">completely unused</strong>, seals are unbroken, and all original packaging, accessories, manuals, and documentation are included. Eligible for a <strong class="text-brand">100% refund</strong> to the original payment method, minus the original shipping cost.</p>
+                </div>
+              </div>
+            </div>
+            <div class="rounded-lg border border-outline p-4">
+              <div class="flex items-start gap-3">
+                <span class="mt-0.5 flex-shrink-0 text-yellow-400 font-bold text-lg">~</span>
+                <div>
+                  <p class="font-semibold text-content">Tier B — Opened but Unused (Original Packaging Present)</p>
+                  <p class="text-sm mt-1">Seal has been broken but the item shows absolutely <strong class="text-content">no signs of use, wear, or modification</strong>. All original packaging, accessories, and documentation must be present. Subject to a <strong class="text-brand">15% restocking fee</strong> deducted from the refund amount. Partial packaging will reduce the refund further at our team's discretion.</p>
+                </div>
+              </div>
+            </div>
+            <div class="rounded-lg border border-outline p-4">
+              <div class="flex items-start gap-3">
+                <span class="mt-0.5 flex-shrink-0 text-red-400 font-bold text-lg">✗</span>
+                <div>
+                  <p class="font-semibold text-content">Tier C — Used, Damaged, or Missing Components</p>
+                  <p class="text-sm mt-1">Items showing signs of use, physical damage, scratches, missing components, or missing original packaging are <strong class="text-red-400">categorically ineligible for a refund</strong>. The item will be shipped back to the customer at their expense.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="mb-4">
+            <strong class="text-content">"Unused" is defined as:</strong> The item has not been activated, powered on for functional use, worn, consumed, installed, or operated in any manner beyond a preliminary inspection. "Original Packaging" means the manufacturer's retail box with all original inserts, protective materials, accessories, manuals, and warranty cards, in the condition in which it was shipped to you.
+          </p>
+        </section>
+
+        <!-- Section 4 -->
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            4. Non-Returnable Items
+          </h2>
+          <p class="mb-4">The following categories are strictly excluded from our return policy and are <strong class="text-content">final sale</strong>:</p>
           <ul class="mb-4 list-disc space-y-2 pl-5">
-            <li>
-              <strong class="font-medium text-content">Unopened / Factory Sealed:</strong> Eligible for a 100% full refund to the original payment method (minus original shipping).
-            </li>
-            <li>
-              <strong class="font-medium text-content">Opened / Used (Undamaged):</strong> Subject to a strict <span class="font-mono font-bold text-brand">15% Restocking Fee</span>. We cannot legally or ethically sell opened electronics as new.
-            </li>
-            <li>
-              <strong class="font-medium text-content">Damaged / Missing Parts:</strong> Rejected entirely. Not eligible for a refund. The item will be shipped back to you at your expense.
-            </li>
+            <li>Items explicitly marked as "Final Sale" or "Non-Returnable" at the time of purchase.</li>
+            <li>Downloadable software, digital codes, or gift cards once delivered or revealed.</li>
+            <li>Perishable goods, consumables, or hygiene items (e.g., earbuds, personal care items) once the seal is broken.</li>
+            <li>Items that have been physically altered, customized, or modified from their original factory state.</li>
+            <li>Items damaged due to customer misuse, accidents, unauthorized repairs, or force majeure events after delivery.</li>
+            <li>Items returned outside the 30-day window from the date of delivery.</li>
+            <li>Hazardous materials or goods that cannot legally be returned by mail.</li>
           </ul>
         </section>
 
+        <!-- Section 5 -->
         <section>
           <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
-            4. Refund Processing Pipeline
+            5. Defective or Incorrect Items — Carrier Liability
           </h2>
           <p class="mb-4">
-            Once your return is received at our logistics center, it undergoes a mandatory 48-hour hardware inspection. Once cleared, the refund (minus any applicable restocking fees or shipping deductions) is immediately transmitted to our payment processor (Stripe).
+            If you receive an item that is <strong class="text-content">dead-on-arrival (DOA), physically defective out of the box, or materially different from the item described on our platform</strong>, you must report it within <strong class="text-content">48 hours of the carrier-confirmed delivery date</strong> by emailing <a href={`mailto:${RETURNS_EMAIL}`} class="text-brand hover:underline">{RETURNS_EMAIL}</a> with photographic or video evidence. In verified cases, {COMPANY_NAME} will bear the full cost of return shipping and issue a full refund or send a replacement at no additional charge.
           </p>
           <p class="mb-4">
-            Depending on your financial institution's clearing cycles, funds will physically appear in your account within 5 to 10 business days.
+            Damage sustained during transit must be reported to the carrier directly within 24 hours of delivery to file a carrier insurance claim. {COMPANY_NAME} is not liable for carrier-inflicted damage once a shipment has been confirmed as delivered.
           </p>
         </section>
+
+        <!-- Section 6 -->
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            6. Return Shipping Costs &amp; Liability
+          </h2>
+          <p class="mb-4">
+            Unless the return is the direct result of a verified defective item or our fulfillment error (incorrect SKU shipped), <strong class="text-content">the customer bears 100% of all return shipping costs</strong>.
+          </p>
+          <ul class="mb-4 list-disc space-y-2 pl-5">
+            <li>We strongly recommend using a trackable shipping service with carrier insurance. {COMPANY_NAME} is not responsible for items lost or damaged in transit during the return shipment.</li>
+            <li>Original outbound shipping fees paid at checkout are strictly non-refundable and will be deducted from any applicable refund.</li>
+            <li>International return shipments may be subject to customs duties and import taxes, which are the sole responsibility of the customer.</li>
+          </ul>
+        </section>
+
+        <!-- Section 7 -->
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            7. Refund Processing Timeline
+          </h2>
+          <p class="mb-4">
+            Once a returned item is received at our logistics center, the following processing pipeline applies:
+          </p>
+          <ol class="mb-4 list-decimal space-y-2 pl-5">
+            <li><strong class="text-content">Receipt Confirmation (Day 0):</strong> We confirm receipt of the returned package.</li>
+            <li><strong class="text-content">Physical Inspection (1–2 Business Days):</strong> Our team inspects the item against the condition tier criteria.</li>
+            <li><strong class="text-content">Refund Transmission (Within 24 Hours of Clearance):</strong> Upon inspection approval, the refund (minus applicable deductions) is transmitted to our payment processor.</li>
+            <li><strong class="text-content">Funds Appear in Your Account (5–10 Business Days):</strong> Refund clearing times are governed by your financial institution and are outside our control.</li>
+          </ol>
+          <p class="mb-4">
+            You will receive an email notification at each stage of this pipeline. If you have not received a refund within 10 business days of inspection clearance, contact our support team at <a href={`mailto:${SUPPORT_EMAIL}`} class="text-brand hover:underline">{SUPPORT_EMAIL}</a>.
+          </p>
+        </section>
+
+        <!-- Section 8 -->
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            8. Exchanges
+          </h2>
+          <p class="mb-4">
+            {COMPANY_NAME} does not process direct product exchanges due to the dynamic nature of our inventory and pricing model. To receive a different product, initiate a return under this policy for a refund and place a new, separate order for the desired item.
+          </p>
+        </section>
+
+        <!-- Section 9 — Contact Block -->
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            9. Contact Information
+          </h2>
+          <p class="mb-4">
+            For all return-related inquiries, RMA requests, and refund status updates, contact our dedicated returns team:
+          </p>
+          <div class="rounded-lg border border-outline bg-surface p-6">
+            <p class="font-bold text-content text-base mb-3">{COMPANY_NAME}</p>
+            <p class="text-sm mb-1">{ADDRESS_LINE_1}</p>
+            <p class="text-sm mb-1">{ADDRESS_LINE_2}</p>
+            <p class="text-sm mb-1">
+              Returns Email: <a href={`mailto:${RETURNS_EMAIL}`} class="text-brand hover:underline">{RETURNS_EMAIL}</a>
+            </p>
+            <p class="text-sm mb-1">
+              General Support: <a href={`mailto:${SUPPORT_EMAIL}`} class="text-brand hover:underline">{SUPPORT_EMAIL}</a>
+            </p>
+            <p class="text-sm">
+              Phone: <a href={`tel:${PHONE.replace(/\s/g, '')}`} class="text-brand hover:underline">{PHONE}</a>
+            </p>
+          </div>
+        </section>
+
       </div>
     </div>
   </div>

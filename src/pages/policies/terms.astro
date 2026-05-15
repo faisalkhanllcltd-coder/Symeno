@@ -1,117 +1,246 @@
 ---
 import StorefrontLayout from '../../layouts/Storefront.astro';
+
+const EFFECTIVE_DATE = 'May 15, 2026';
+const COMPANY_NAME = 'SYMENO LLC';
+const CONTACT_EMAIL = 'support@symeno.com';
+const SUPPORT_EMAIL = 'support@symeno.com';
+const ADDRESS_LINE_1 = '30 N Gould St 59458';
+const ADDRESS_LINE_2 = 'Sheridan, WY 82801, USA';
+const PHONE = '+1 (307) 310-7918';
 ---
 
-<StorefrontLayout title="Terms of Service">
+<StorefrontLayout
+  title="Terms of Service | Symeno"
+  description="The Terms of Service governing use of symeno.com, operated by SYMENO LLC, a Wyoming registered limited liability company. Includes limitation of liability, acceptable use, and governing law."
+>
   <div class="min-h-screen bg-base py-16 md:py-24">
     <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+
+      <!-- Header -->
       <div class="mb-12">
-        <h1
-          class="mb-4 text-4xl font-bold tracking-tighter text-content md:text-5xl"
-        >
+        <p class="font-mono text-xs tracking-widest text-brand uppercase mb-3">Legal Document</p>
+        <h1 class="mb-4 text-4xl font-bold tracking-tighter text-content md:text-5xl uppercase">
           Terms of Service.
         </h1>
-        <p class="font-mono text-xs tracking-widest text-brand uppercase">
-          Last Updated: May 13, 2026
+        <p class="font-mono text-xs tracking-widest text-content-muted uppercase">
+          Effective Date: {EFFECTIVE_DATE} &nbsp;|&nbsp; {COMPANY_NAME}
         </p>
+        <div class="mt-6 rounded-lg border border-brand/30 bg-brand/5 p-4">
+          <p class="text-sm text-content-muted leading-relaxed">
+            <strong class="text-content">Please read these Terms of Service ("Terms") carefully.</strong> By accessing or using any part of the website <em>symeno.com</em> (the "Site") or purchasing any product through the Site, you agree to be bound by these Terms. If you do not agree to all the terms and conditions of this agreement, then you may not access the website or use any of its services. These Terms apply to all users of the Site, including without limitation users who are browsers, vendors, customers, merchants, and/or contributors of content.
+          </p>
+        </div>
       </div>
 
+      <!-- Body -->
       <div class="space-y-12 leading-relaxed font-light text-content-muted">
+
+        <!-- Section 1 -->
         <section>
-          <h2
-            class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content"
-          >
-            1. The Symeno Model & Agreement
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            1. Company &amp; Agreement Overview
           </h2>
           <p class="mb-4">
-            By accessing or using the SYMENO LLC ("Symeno", "we", "us") website,
-            you agree to be bound by these Terms. Symeno operates a high-volume
-            retail arbitrage model. We source authentic goods from authorized
-            distributors globally to offer compressed margins to the end
-            consumer. We do not manufacture these products. By agreeing to these Terms, you represent that you are at least the age of majority in your state or province of residence.
+            The Site is operated by <strong class="text-content">{COMPANY_NAME}</strong>, a limited liability company duly organized and in good standing under the laws of the State of Wyoming, United States of America. Our principal place of business is located at {ADDRESS_LINE_1}, {ADDRESS_LINE_2}.
+          </p>
+          <p class="mb-4">
+            By accessing or using the Site, you confirm that you are at least the age of majority in your jurisdiction of residence. {COMPANY_NAME} ("Symeno", "we", "us", "our") operates as a retail commerce platform, sourcing authenticated goods from globally authorized distributors to provide competitive pricing to the end consumer.
+          </p>
+          <p class="mb-4">
+            We reserve the right to update or modify these Terms at any time without prior notice. Your continued use of the Site following the posting of any changes constitutes acceptance of those changes. It is your responsibility to check these Terms periodically for updates.
           </p>
         </section>
 
+        <!-- Section 2 -->
         <section>
-          <h2
-            class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content"
-          >
-            2. Pricing & Algorithmic Errors
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            2. Products &amp; Services
           </h2>
           <p class="mb-4">
-            Our pricing is dynamically updated based on global wholesale data.
-            While we strive for absolute accuracy, our algorithms are managed by
-            humans, and errors can occur. If a product is listed at an incorrect
-            price due to a typographical or systematic error, we reserve the
-            right to refuse or cancel any orders placed for that product,
-            regardless of whether the order has been confirmed and your credit
-            card charged. If your card has been charged, a full refund will be
-            issued immediately.
+            Certain products or services may be available exclusively online through the Site. These products or services may have limited quantities and are subject to return or exchange only according to our Return &amp; Refund Policy.
+          </p>
+          <p class="mb-4">
+            We have made every effort to display as accurately as possible the colors and images of our products that appear at the store. We cannot guarantee that your computer monitor's display of any color will be accurate. We reserve the right, but are not obligated, to limit the sales of our products or Services to any person, geographic region, or jurisdiction at our sole discretion. We may exercise this right on a case-by-case basis.
+          </p>
+          <p class="mb-4">
+            {COMPANY_NAME} does not manufacture the products sold on the Site. All brand names, product names, logos, and trademarks referenced on the Site are the property of their respective owners. We utilize such marks solely under the first-sale doctrine and the principle of nominative fair use to accurately identify the products being resold. Our use of third-party trademarks does not constitute or imply endorsement or affiliation with those trademark owners.
           </p>
         </section>
 
+        <!-- Section 3 -->
         <section>
-          <h2
-            class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content"
-          >
-            3. Intellectual Property & Authenticity
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            3. Pricing, Orders &amp; Payment
           </h2>
           <p class="mb-4">
-            All products sold on Symeno are 100% authentic and acquired through
-            legally verified supply chains. However, all brand names, logos, and
-            trademarks (e.g., Apple, Sony, Dyson) are the property of their
-            respective owners. Symeno makes no claim of ownership over these
-            third-party trademarks and uses them solely under the doctrine of
-            nominal fair use to identify the products being sold.
+            All prices displayed on the Site are in United States Dollars (USD) unless otherwise stated. Prices are subject to change without notice. We reserve the right at any time to modify or discontinue any product (or any part or content thereof) without notice at any time.
+          </p>
+          <p class="mb-4">
+            We shall not be liable to you or to any third party for any modification, price change, suspension, or discontinuance of any product or service.
+          </p>
+          <p class="mb-4">
+            We reserve the right to refuse any order placed through the Site. In our sole discretion, we may limit or cancel quantities purchased per person, per household, or per order. These restrictions may include orders placed by or under the same customer account, the same credit card, and/or orders that use the same billing and/or shipping address. In the event that we cancel an order, we will attempt to notify you by contacting the email address provided at the time the order was made. We reserve the right to limit or prohibit orders that, in our sole judgment, appear to be placed by dealers, resellers, or distributors.
+          </p>
+          <p class="mb-4">
+            If a product is listed at an incorrect price due to a typographical error, data entry error, or any other system error, we reserve the right to refuse or cancel any orders placed for that product regardless of whether the order has been confirmed and your credit card charged. If your credit card has been charged for a purchase and your order is subsequently canceled, we will immediately issue a credit to your original payment method for the amount charged.
           </p>
         </section>
 
+        <!-- Section 4 -->
         <section>
-          <h2
-            class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content"
-          >
-            4. Fraud Prevention & Order Limits
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            4. Acceptable Use Policy
           </h2>
           <p class="mb-4">
-            To maintain our pricing model and prevent unauthorized reselling of
-            our inventory, Symeno reserves the right to limit the quantity of
-            items purchased per person, per household, or per order. We actively
-            monitor for fraudulent activity using strict heuristic models. Any
-            order flagged by our security perimeter will be automatically
-            canceled, a full refund issued, and the buyer notified via the email provided at checkout.
+            You agree to use the Site only for lawful purposes and in a manner that does not infringe the rights of, or restrict or inhibit the use and enjoyment of the Site by any third party. Prohibited conduct includes, but is not limited to, the following:
+          </p>
+          <ul class="mb-4 list-disc space-y-2 pl-5">
+            <li>Engaging in any conduct that is unlawful, fraudulent, abusive, obscene, defamatory, threatening, or invasive of another's privacy.</li>
+            <li>Using any automated data collection, scraping, crawling, or extraction tools (e.g., bots, spiders, scrapers) on the Site without our express written permission.</li>
+            <li>Attempting to gain unauthorized access to any portion or feature of the Site, or any other systems or networks connected to the Site.</li>
+            <li>Using the Site to transmit or upload any material that contains viruses, Trojan horses, worms, time-bombs, keystroke loggers, spyware, adware, or any other harmful programs or similar computer code.</li>
+            <li>Purchasing products for the purpose of unauthorized commercial resale or to circumvent our per-order quantity limits.</li>
+            <li>Impersonating or misrepresenting your affiliation with any person or entity, including {COMPANY_NAME} employees or representatives.</li>
+            <li>Using the Site to engage in any form of money laundering, fraudulent chargebacks, or other financial crimes.</li>
+            <li>Systematically harvesting, collecting, or storing personal data of other users without their express consent.</li>
+          </ul>
+          <p class="mb-4">
+            Violation of this Acceptable Use Policy may result in immediate account termination, cancellation of all pending orders, and, where applicable, reporting to relevant law enforcement authorities.
           </p>
         </section>
 
+        <!-- Section 5 -->
         <section>
-          <h2
-            class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content"
-          >
-            5. Limitation of Liability & Arbitration
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            5. User Accounts
           </h2>
           <p class="mb-4">
-            In no case shall SYMENO LLC, our directors, officers, employees, affiliates, agents, or licensors be liable for any injury, loss, claim, or any direct, indirect, incidental, punitive, special, or consequential damages of any kind, arising from your use of any of the service or any products procured using the service. Our maximum liability to you under all circumstances will be equal to the purchase price you pay for any goods.
-          </p>
-          <p class="mb-4">
-            Any dispute or claim relating in any way to your use of any Symeno service or product will be resolved by binding arbitration, rather than in court, conducted in the State of Wyoming, USA.
+            If you create an account on the Site, you are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You agree to immediately notify us at <a href={`mailto:${SUPPORT_EMAIL}`} class="text-brand hover:underline">{SUPPORT_EMAIL}</a> of any unauthorized use of your account or any other breach of security. {COMPANY_NAME} will not be liable for any loss or damage arising from your failure to comply with this requirement.
           </p>
         </section>
 
+        <!-- Section 6 -->
         <section>
-          <h2
-            class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content"
-          >
-            6. Legal Entity & Governing Law
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            6. Intellectual Property
           </h2>
           <p class="mb-4">
-            SYMENO LLC<br />
-            30 N Gould St 59458<br />
-            Sheridan, WY 82801, USA<br />
-            Email: info@symeno.com
+            All content on the Site, including but not limited to text, graphics, logos, button icons, images, audio clips, data compilations, and software, is the property of {COMPANY_NAME} or its content suppliers and is protected by applicable United States and international intellectual property laws. The compilation of all content on the Site is the exclusive property of {COMPANY_NAME}.
           </p>
           <p class="mb-4">
-            These Terms of Service and any separate agreements whereby we provide you Services shall be governed by and construed in accordance with the laws of the State of Wyoming, USA. Effective date: 2026.
+            You may not reproduce, duplicate, copy, sell, resell, or exploit any portion of the Site, use of the Site, or access to the Site or any contact on the Site through which the service is provided, without express written permission from us.
           </p>
         </section>
+
+        <!-- Section 7 -->
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            7. Disclaimer of Warranties
+          </h2>
+          <p class="mb-4">
+            THE SITE AND ITS PRODUCTS AND SERVICES ARE PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS WITHOUT ANY REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED. {COMPANY_NAME.toUpperCase()} MAKES NO REPRESENTATIONS OR WARRANTIES IN RELATION TO THE SITE OR THE INFORMATION AND MATERIALS PROVIDED ON THE SITE.
+          </p>
+          <p class="mb-4">
+            WITHOUT LIMITING THE FOREGOING, {COMPANY_NAME.toUpperCase()} MAKES NO WARRANTIES THAT: (A) THE SITE WILL BE AVAILABLE ON AN UNINTERRUPTED, TIMELY, SECURE, OR ERROR-FREE BASIS; (B) THE INFORMATION ON THE SITE IS COMPLETE, TRUE, ACCURATE, OR NON-MISLEADING; OR (C) THE SITE OR ITS SERVER ARE FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS.
+          </p>
+          <p class="mb-4">
+            Nothing in these Terms shall affect any statutory rights that you are entitled to as a consumer and that you cannot contractually agree to alter or waive.
+          </p>
+        </section>
+
+        <!-- Section 8 -->
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            8. Limitation of Liability
+          </h2>
+          <p class="mb-4">
+            TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL {COMPANY_NAME.toUpperCase()}, ITS DIRECTORS, OFFICERS, MEMBERS, EMPLOYEES, AFFILIATES, AGENTS, CONTRACTORS, INTERNS, SUPPLIERS, SERVICE PROVIDERS, OR LICENSORS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, PUNITIVE, SPECIAL, OR CONSEQUENTIAL DAMAGES OF ANY KIND, INCLUDING, WITHOUT LIMITATION, LOSS OF PROFITS, LOSS OF REVENUE, LOSS OF DATA, LOSS OF GOODWILL, SERVICE INTERRUPTION, COMPUTER DAMAGE OR SYSTEM FAILURE, OR THE COST OF SUBSTITUTE PRODUCTS OR SERVICES, ARISING OUT OF OR IN CONNECTION WITH THESE TERMS OR FROM THE USE OF OR INABILITY TO USE THE SITE OR ITS CONTENT, WHETHER BASED ON WARRANTY, CONTRACT, TORT (INCLUDING NEGLIGENCE), OR ANY OTHER LEGAL THEORY, EVEN IF {COMPANY_NAME.toUpperCase()} HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+          </p>
+          <p class="mb-4">
+            <strong class="text-content">Liability Cap:</strong> Notwithstanding the foregoing, our maximum aggregate liability to you for all claims arising under or in connection with these Terms shall not exceed the total amount you paid to {COMPANY_NAME} for the specific product(s) that are the subject of the claim during the 12-month period immediately preceding the event giving rise to the claim.
+          </p>
+          <p class="mb-4">
+            Some jurisdictions do not allow the exclusion or limitation of incidental or consequential damages. In such jurisdictions, our liability is limited to the greatest extent permitted by law.
+          </p>
+        </section>
+
+        <!-- Section 9 -->
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            9. Indemnification
+          </h2>
+          <p class="mb-4">
+            You agree to indemnify, defend, and hold harmless {COMPANY_NAME} and its officers, directors, members, employees, agents, contractors, licensors, service providers, subcontractors, and suppliers from and against any claims, liabilities, damages, judgments, awards, losses, costs, expenses, or fees (including reasonable attorneys' fees) arising out of or relating to (a) your use of the Site; (b) your violation of these Terms; (c) your violation of any third-party right, including without limitation any intellectual property right or privacy right; or (d) any claim that your use of the Site caused damage to a third party.
+          </p>
+        </section>
+
+        <!-- Section 10 -->
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            10. Dispute Resolution &amp; Binding Arbitration
+          </h2>
+          <p class="mb-4">
+            <strong class="text-content">Mandatory Arbitration:</strong> Any dispute, controversy, or claim arising out of or relating to these Terms, or the breach, termination, or invalidity thereof, shall be finally settled by binding arbitration conducted in the State of Wyoming, USA, under the rules of the American Arbitration Association (AAA), and judgment on the award rendered by the arbitrator(s) may be entered in any court having jurisdiction thereof. The parties hereby waive any right to a jury trial.
+          </p>
+          <p class="mb-4">
+            <strong class="text-content">Class Action Waiver:</strong> You agree that any arbitration or proceeding shall be limited to the dispute between {COMPANY_NAME} and you individually, and shall not be consolidated with any other matter or joined with any other cases or parties.
+          </p>
+          <p class="mb-4">
+            <strong class="text-content">Small Claims Exception:</strong> Notwithstanding the above, either party may bring an individual action in small claims court for disputes or claims within the scope of that court's jurisdiction.
+          </p>
+          <p class="mb-4">
+            <strong class="text-content">Opt-Out:</strong> You may opt out of the arbitration agreement within 30 days of first accepting these Terms by sending a written notice to <a href={`mailto:${CONTACT_EMAIL}`} class="text-brand hover:underline">{CONTACT_EMAIL}</a> with the subject line "ARBITRATION OPT-OUT."
+          </p>
+        </section>
+
+        <!-- Section 11 -->
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            11. Governing Law — State of Wyoming
+          </h2>
+          <p class="mb-4">
+            <strong class="text-content">{COMPANY_NAME} is a Wyoming registered limited liability company.</strong> These Terms of Service and any separate agreements whereby we provide you services shall be governed by, construed in accordance with, and enforced under the laws of the <strong class="text-content">State of Wyoming, United States of America</strong>, without regard to its conflict of law provisions. You hereby consent to the exclusive personal jurisdiction and venue of the state and federal courts located in the State of Wyoming for any action arising out of or relating to these Terms.
+          </p>
+        </section>
+
+        <!-- Section 12 -->
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            12. Severability &amp; Entire Agreement
+          </h2>
+          <p class="mb-4">
+            In the event that any provision of these Terms is determined to be unlawful, void, or unenforceable, such provision shall nonetheless be enforceable to the fullest extent permitted by applicable law, and the unenforceable portion shall be deemed severed from these Terms. Such determination shall not affect the validity and enforceability of any other remaining provisions.
+          </p>
+          <p class="mb-4">
+            These Terms and any policies or operating rules posted by us on this Site or in respect to the Service constitute the entire agreement and understanding between you and {COMPANY_NAME} and govern your use of the Service, superseding any prior or contemporaneous agreements, communications, and proposals.
+          </p>
+        </section>
+
+        <!-- Section 13 — Contact Block -->
+        <section>
+          <h2 class="mb-4 border-b border-outline pb-2 text-xl font-bold text-content">
+            13. Contact Information
+          </h2>
+          <p class="mb-4">
+            Questions about the Terms of Service should be sent to:
+          </p>
+          <div class="rounded-lg border border-outline bg-surface p-6">
+            <p class="font-bold text-content text-base mb-3">{COMPANY_NAME}</p>
+            <p class="text-sm mb-1">{ADDRESS_LINE_1}</p>
+            <p class="text-sm mb-1">{ADDRESS_LINE_2}</p>
+            <p class="text-sm mb-1">
+              Legal Inquiries: <a href={`mailto:${CONTACT_EMAIL}`} class="text-brand hover:underline">{CONTACT_EMAIL}</a>
+            </p>
+            <p class="text-sm mb-1">
+              General Support: <a href={`mailto:${SUPPORT_EMAIL}`} class="text-brand hover:underline">{SUPPORT_EMAIL}</a>
+            </p>
+            <p class="text-sm">
+              Phone: <a href={`tel:${PHONE.replace(/\s/g, '')}`} class="text-brand hover:underline">{PHONE}</a>
+            </p>
+          </div>
+        </section>
+
       </div>
     </div>
   </div>
