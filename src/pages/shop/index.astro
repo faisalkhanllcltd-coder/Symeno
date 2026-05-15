@@ -1,4 +1,4 @@
-﻿---
+---
 import { env } from "cloudflare:workers";
 import StorefrontLayout from '../../layouts/Storefront.astro';
 import FilterSidebar from '../../components/storefront/catalog/FilterSidebar.svelte';
@@ -27,7 +27,7 @@ try {
   const db = (env.DB as any) || (Astro.locals as any).runtime?.env?.DB;
   if (!db) throw new Error("DB Offline - Check Edge Bindings");
 
-  const { results } = await db.prepare('SELECT id, slug, brand, category, name, price, images_json, scraped_at FROM catalog_cache ORDER BY scraped_at DESC LIMIT 1000').all();  
+  const { results } = await db.prepare('SELECT id, slug, brand, category, name, price, images_json, scraped_at FROM catalog_cache WHERE in_stock = 1 ORDER BY scraped_at DESC LIMIT 1000').all();  
   
   let filtered = results ? [...results] : [];
 
