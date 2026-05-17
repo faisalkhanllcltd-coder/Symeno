@@ -8,14 +8,14 @@
   let isSubmitting = $state(false);
   let status = $state<'idle' | 'success' | 'error'>('idle');
   let message = $state('');
+  
+  // THE FIX: Explicit state container for the Cloudflare token
+  let turnstileToken = $state('');
 
   async function submitApplication(e: Event) {
     e.preventDefault();
     
-    const formElement = e.currentTarget as HTMLFormElement;
-    const formData = new FormData(formElement);
-    const turnstileToken = formData.get('cf-turnstile-response');
-
+    // THE FIX: Direct validation of Svelte state instead of DOM extraction
     if (!turnstileToken) {
       status = 'error';
       message = 'Security token missing. Are you a bot?';
@@ -46,14 +46,17 @@
         tradeLicense = '';
         taxId = '';
         contactEmail = '';
+        if ((window as any).turnstile) (window as any).turnstile.reset();
       } else {
         const err = await res.json();
         status = 'error';
         message = err.error || 'Transmission failed.';
+        if ((window as any).turnstile) (window as any).turnstile.reset();
       }
     } catch {
       status = 'error';
       message = 'Network anomaly detected. Try again.';
+      if ((window as any).turnstile) (window as any).turnstile.reset();
     } finally {
       isSubmitting = false;
     }
@@ -145,7 +148,7 @@
       </div>
     </div>
 
-    <Turnstile />
+    <Turnstile bind:token={turnstileToken} />
 
     <button
       type="submit"

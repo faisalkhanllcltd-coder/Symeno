@@ -48,9 +48,10 @@ export const sendEmail = async (
 ): Promise<boolean> => {
   const apiKey = env?.RESEND_API_KEY;
 
-  if (!apiKey) {
+  // THE FIX: Explicitly reject placeholders to fail fast and prevent silent network drops
+  if (!apiKey || apiKey === 're_placeholder') {
     console.error(
-      '[EMAIL_FATAL] RESEND_API_KEY is missing from environment bindings.'
+      '[EMAIL_FATAL] RESEND_API_KEY is missing or invalid (placeholder detected) in environment bindings.'
     );
     return false;
   }
@@ -63,7 +64,7 @@ export const sendEmail = async (
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Symeno <no-reply@symeno.com>', // Update with your verified Resend domain
+        from: 'Symeno <support@symeno.com>', // Verified domain support email
         to: options.to,
         subject: options.subject,
         html: options.html,

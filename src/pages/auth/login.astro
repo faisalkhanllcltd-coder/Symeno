@@ -55,12 +55,23 @@ if (Astro.cookies.has('auth_error')) {
 
         form.onsubmit = async function(e) {
           e.preventDefault();
-          
           errorContainer.classList.add('hidden');
+          
+          // THE FIX: Directly query Cloudflare's memory object instead of the DOM
+          const cfToken = window.turnstile ? window.turnstile.getResponse() : '';
+          if (!cfToken) {
+            errorText.textContent = 'Security token missing. Are you a bot?';
+            errorContainer.classList.remove('hidden');
+            errorContainer.classList.add('flex');
+            return; 
+          }
+
           submitBtn.disabled = true;
           submitBtn.innerText = 'AUTHENTICATING...';
           
           const payload = Object.fromEntries(new FormData(form));
+          // Explicitly append the token to the JSON payload
+          payload['cf-turnstile-response'] = cfToken;
 
           try {
             const res = await fetch('/api/auth/login', {
@@ -84,10 +95,15 @@ if (Astro.cookies.has('auth_error')) {
             errorText.textContent = data.error || 'The credentials provided are invalid.';
             errorContainer.classList.remove('hidden');
             errorContainer.classList.add('flex');
+            
+            // THE FIX: Reset widget on failure so user can try again
+            if (window.turnstile) window.turnstile.reset();
+            
           } catch (err) {
             errorText.textContent = 'Network error. Check connection.';
             errorContainer.classList.remove('hidden');
             errorContainer.classList.add('flex');
+            if (window.turnstile) window.turnstile.reset();
           } finally {
             submitBtn.disabled = false;
             submitBtn.innerText = 'AUTHENTICATE';

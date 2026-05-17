@@ -14,6 +14,34 @@ if (!API_KEY) {
   process.exit(1);
 }
 
+// ============================================================================
+// THE AIRWALLEX / PAYONEER COMPLIANCE SHIELD
+// ============================================================================
+// Any product title or description containing these exact strings will be dropped.
+const COMPLIANCE_BLOCKLIST = [
+  // Medical & Health Claims
+  "blood pressure", "posture corrector", "brace", "acupressure", "compression sock",
+  "medical", "therapeutic", "healing", "supplement", "vitamin", "serum", "oil",
+
+  // Weapons & Sharp Objects
+  "razor", "blade", "knife", "dagger", "sword", "weapon", "tactical",
+
+  // Restricted High-Profile Brands (Gray Market Risk)
+  "kitchenaid", "apple", "amazon essentials", "anker", "nike", "samsung", "sony"
+];
+
+function isCompliant(title, description, brand) {
+  const checkString = `${title} ${description} ${brand}`.toLowerCase();
+  for (const bannedWord of COMPLIANCE_BLOCKLIST) {
+    if (checkString.includes(bannedWord)) {
+      return false; // Fails compliance check
+    }
+  }
+  return true; // Passes compliance check
+}
+// ============================================================================
+
+
 // 20 CURATED CATEGORIES (USA/CANADA COMPLIANT)
 const SEARCH_TARGETS = [
   // ── CATEGORY 01: Pour-Over & Filter Coffee
@@ -170,11 +198,11 @@ const SEARCH_TARGETS = [
   { cat: "Baby Accessories", catSlug: "baby-accessories", brand: "SproutWear", query: "muslin swaddle blanket set cotton" },
   { cat: "Baby Accessories", catSlug: "baby-accessories", brand: "SproutWear", query: "baby sun hat summer adjustable" },
 
-  // ── CATEGORY 27: Men's Grooming
+  // ── CATEGORY 27: Men's Grooming (Cleaned)
   { cat: "Men's Grooming", catSlug: "mens-grooming", brand: "Groom & Go", query: "beard comb pocket travel wooden" },
   { cat: "Men's Grooming", catSlug: "mens-grooming", brand: "Groom & Go", query: "beard brush boar bristle wood handle" },
   { cat: "Men's Grooming", catSlug: "mens-grooming", brand: "Groom & Go", query: "shaving brush synthetic knot set" },
-  { cat: "Men's Grooming", catSlug: "mens-grooming", brand: "ShaveCraft", query: "razor stand chrome holder blade" },
+  // FIXED: Removed "razor stand chrome holder blade" to prevent weapon flags
   { cat: "Men's Grooming", catSlug: "mens-grooming", brand: "ShaveCraft", query: "beard shaping tool template comb" },
   { cat: "Men's Grooming", catSlug: "mens-grooming", brand: "ShaveCraft", query: "alum block aftershave styptic" },
   { cat: "Men's Grooming", catSlug: "mens-grooming", brand: "EdgeKit", query: "nose ear trimmer manual small" },
@@ -198,14 +226,13 @@ const SEARCH_TARGETS = [
   { cat: "Outdoor & Picnic", catSlug: "outdoor-picnic", brand: "CampBite", query: "camp mug enamel set hiking" },
   { cat: "Outdoor & Picnic", catSlug: "outdoor-picnic", brand: "CampBite", query: "waterproof dry bag pouch phone hiking" },
 
-  // ── CATEGORY 29: Wellness & Supplements Accessories
+  // ── CATEGORY 29: Wellness & Supplements Accessories (Cleaned)
   { cat: "Wellness Accessories", catSlug: "wellness-accessories", brand: "PureHabit", query: "pill organizer 7 day weekly compartment" },
   { cat: "Wellness Accessories", catSlug: "wellness-accessories", brand: "PureHabit", query: "vitamin storage case daily portable" },
   { cat: "Wellness Accessories", catSlug: "wellness-accessories", brand: "PureHabit", query: "protein shaker bottle blender ball" },
-  { cat: "Wellness Accessories", catSlug: "wellness-accessories", brand: "BodyRite", query: "posture corrector back brace lightweight" },
+  // FIXED: Removed "posture corrector" and "blood pressure monitor" to prevent medical flags
   { cat: "Wellness Accessories", catSlug: "wellness-accessories", brand: "BodyRite", query: "eye mask heat warm soothing" },
   { cat: "Wellness Accessories", catSlug: "wellness-accessories", brand: "BodyRite", query: "hot cold gel pack reusable back" },
-  { cat: "Wellness Accessories", catSlug: "wellness-accessories", brand: "MindBody Co", query: "blood pressure monitor wrist compact" },
   { cat: "Wellness Accessories", catSlug: "wellness-accessories", brand: "MindBody Co", query: "foot massager roller ball spiked" },
   { cat: "Wellness Accessories", catSlug: "wellness-accessories", brand: "MindBody Co", query: "tongue scraper stainless steel set" },
   { cat: "Wellness Accessories", catSlug: "wellness-accessories", brand: "ZenDose", query: "herbal tea infuser strainer stainless" },
@@ -348,6 +375,7 @@ async function fetchCatalog() {
   let catalog = [];
   let fetched = 0;
   let failed = 0;
+  let blockedCount = 0; // Tracking compliance blocks
 
   for (const target of SAFE_TARGETS) {
     const url = `https://real-time-amazon-data.p.rapidapi.com/search?query=${encodeURIComponent(target.query)}&page=1&country=US&sort_by=REVIEWS`;
@@ -370,8 +398,15 @@ async function fetchCatalog() {
         continue;
       }
 
-      // Take top 3 products per query
-      const products = json.data.products.slice(0, 3).map(item => {
+      // Filter products through the Compliance Shield BEFORE mapping
+      const validRawProducts = json.data.products.filter(item => {
+        const isSafe = isCompliant(item.product_title, "", target.brand);
+        if (!isSafe) blockedCount++;
+        return isSafe;
+      });
+
+      // Take top 3 compliant products per query
+      const products = validRawProducts.slice(0, 3).map(item => {
         const basePrice = parsePrice(item.product_price) ?? fallbackPrice(target.cat);
         const retailPrice = parsePrice(item.product_original_price) ?? (basePrice * 1.25);
 
@@ -396,7 +431,7 @@ async function fetchCatalog() {
       catalog.push(...products);
       fetched++;
       const pct = ((fetched / SAFE_TARGETS.length) * 100).toFixed(1);
-      console.log(`  ✓ [${pct}%] ${target.cat} › ${target.brand} — ${products.length} products`);
+      console.log(`  ✓ [${pct}%] ${target.cat} › ${target.brand} — ${products.length} products (Blocked: ${blockedCount})`);
       await delay(1200);
     } catch (err) {
       console.error(`  ✗ Error — ${target.cat} / "${target.query}":`, err.message);
@@ -413,7 +448,8 @@ async function fetchCatalog() {
   });
 
   fs.writeFileSync(TARGET_FILE, JSON.stringify(unique, null, 2));
-  console.log(`\n✅ INGEST COMPLETE. Saved ${unique.length} products to ${TARGET_FILE}. Tokens protected.`);
+  console.log(`\n✅ INGEST COMPLETE. Saved ${unique.length} compliant products to ${TARGET_FILE}.`);
+  console.log(`🛡️ COMPLIANCE SHIELD: Successfully blocked ${blockedCount} restricted items from entering the catalog.`);
 }
 
 fetchCatalog();

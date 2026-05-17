@@ -1,3 +1,4 @@
+// src/lib/auth.ts
 import type { AstroCookies } from 'astro';
 
 const SESSION_COOKIE = 'auth_session';
@@ -46,14 +47,13 @@ export async function createSession(env: any, cookies: AstroCookies, payload: { 
     const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(dataToSign));
     const token = `${dataToSign}.${base64UrlEncode(signature)}`;
 
-    // THE FIX: Do not enforce "secure: true" on localhost HTTP, otherwise the browser drops it.
     const isProd = import.meta.env ? import.meta.env.PROD : true;
 
     cookies.set(SESSION_COOKIE, token, {
         path: '/',
         httpOnly: true,
         secure: isProd,
-        sameSite: 'lax', // Changed from strict to lax to survive cross-page redirects
+        sameSite: 'lax',
         maxAge: SESSION_TTL,
     });
 
@@ -75,17 +75,41 @@ export async function verifyJWT(token: string, secret: string) {
         ['verify']
     );
 
-    // THE FIX: Cast to any to bypass strict TS BufferSource signature mismatch
     const isValid = await crypto.subtle.verify('HMAC', key, base64UrlDecode(signatureB64) as any, new TextEncoder().encode(dataToSign));
     if (!isValid) throw new Error('Invalid JWT signature');
 
     const payload = JSON.parse(new TextDecoder().decode(base64UrlDecode(payloadB64)));
-    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) throw new Error('JWT expired');
+
+    // THE FIX: Added a 15-second clock skew buffer for Edge latency
+    if (payload.exp && payload.exp < (Math.floor(Date.now() / 1000) - 15)) {
+        throw new Error('JWT expired');
+    }
 
     return payload;
 }
 
-// THE FIX: Prefix env with underscore to clear unused variable warning
-export async function destroySession(_env: any, cookies: AstroCookies) {
+// THE FIX: Stateful Logout - Extracts the JTI and writes it to Cloudflare KV for the remainder of its TTL
+export async function destroySession(env: any, cookies: AstroCookies) {
+    const token = cookies.get(SESSION_COOKIE)?.value;
     cookies.delete(SESSION_COOKIE, { path: '/' });
+
+    if (token && env.JWT_SECRET) {
+        try {
+            const payload = await verifyJWT(token, env.JWT_SECRET);
+            const kvStore = env.SESSION || env.KV;
+
+            if (kvStore && payload.jti && payload.exp) {
+                // Calculate exact remaining seconds until the token naturally expires
+                const remainingTtl = payload.exp - Math.floor(Date.now() / 1000);
+
+                if (remainingTtl > 0) {
+                    // Push to the KV blacklist. It will auto-delete itself when the TTL expires.
+                    await kvStore.put(`revoked:${payload.jti}`, 'true', { expirationTtl: remainingTtl });
+                }
+            }
+        } catch (e) {
+            // If verifyJWT throws (e.g., token already expired), we silently swallow the error
+            // because the token is mathematically useless anyway.
+        }
+    }
 }

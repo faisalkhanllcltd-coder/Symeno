@@ -2,6 +2,8 @@
   import Turnstile from '../../security/Turnstile.svelte';
 
   let email = $state('');
+  // THE FIX: Explicit state container for the token
+  let turnstileToken = $state('');
   let status = $state<'idle' | 'loading' | 'success' | 'error'>('idle');
   let message = $state('');
 
@@ -9,11 +11,7 @@
     e.preventDefault();
     if (!email) return;
 
-    // Extract the security token from the DOM before sending
-    const formElement = e.currentTarget as HTMLFormElement;
-    const formData = new FormData(formElement);
-    const turnstileToken = formData.get('cf-turnstile-response');
-
+    // Direct memory validation instead of fragile DOM extraction
     if (!turnstileToken) {
       status = 'error';
       message = 'Security token missing. Are you a bot?';
@@ -27,7 +25,6 @@
       const res = await fetch('/api/marketing/newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // Explicitly append the token to Svelte's JSON payload
         body: JSON.stringify({ 
           email, 
           source: 'footer_module',
@@ -39,14 +36,17 @@
         status = 'success';
         message = 'Signal acquired. You are on the grid.';
         email = '';
+        if ((window as any).turnstile) (window as any).turnstile.reset();
       } else {
         const err = await res.json();
         status = 'error';
         message = err.error || 'Transmission rejected.';
+        if ((window as any).turnstile) (window as any).turnstile.reset();
       }
     } catch {
       status = 'error';
       message = 'Network anomaly detected.';
+      if ((window as any).turnstile) (window as any).turnstile.reset();
     }
   }
 </script>
@@ -83,7 +83,7 @@
       </button>
     </div>
 
-    <Turnstile />
+    <Turnstile bind:token={turnstileToken} />
 
   </form>
 

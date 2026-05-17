@@ -4,10 +4,11 @@ import { hashPassword } from '../../../lib/crypto';
 import { createSession } from '../../../lib/auth';
 import { z } from 'zod';
 
+// THE FIX: cf-turnstile-response is no longer optional. It strictly requires a string.
 const loginSchema = z.object({
   email: z.string().email().trim().toLowerCase(),
   password: z.string().min(1),
-  'cf-turnstile-response': z.string().optional()
+  'cf-turnstile-response': z.string().min(1, 'Security token is required')
 }).passthrough();
 
 export const POST: APIRoute = async ({ request, cookies }) => {
@@ -16,36 +17,39 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const parsedData = loginSchema.safeParse(body);
 
     if (!parsedData.success) {
-      return new Response(JSON.stringify({ error: 'Invalid input data.' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+      return new Response(JSON.stringify({ error: 'Security token missing or invalid input. Are you a bot?' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
     const { email, password, 'cf-turnstile-response': turnstileToken } = parsedData.data;
 
-    // THE FIX: Enforce Turnstile validation securely on the Edge
+    // THE FIX: Strict fail-closed verification. Bypasses are permanently neutralized.
     const turnstileSecret = (env as any).TURNSTILE_SECRET_KEY;
-    if (turnstileSecret && turnstileToken) {
-      const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `secret=${turnstileSecret}&response=${turnstileToken}`
-      });
-      const verifyData = await verifyRes.json() as any;
-      if (!verifyData.success) {
-        return new Response(JSON.stringify({ error: 'Security verification failed. Are you a bot?' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
-      }
+    if (!turnstileSecret) {
+      return new Response(JSON.stringify({ error: 'System Error: Turnstile secret missing from environment.' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `secret=${turnstileSecret}&response=${turnstileToken}`
+    });
+    const verifyData = await verifyRes.json() as any;
+
+    if (!verifyData.success) {
+      return new Response(JSON.stringify({ error: 'Security verification failed. Are you a bot?' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
     }
 
     const db = (env as any).DB;
     if (!db) return new Response(JSON.stringify({ error: 'Database offline.' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
 
-    // THE UPGRADE: Fetch the 'role' from the database so Admins keep their privileges!
+    // Fetch the 'role' from the database
     const user = await db.prepare('SELECT id, email, password_hash, role FROM customers WHERE email = ?1').bind(email).first();
 
     if (!user || !user.password_hash) {
       return new Response(JSON.stringify({ error: 'Invalid credentials.' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
     }
 
-    // THE FIX: Check for the delimiter before splitting to prevent fatal destructuring crashes
+    // Check for the delimiter before splitting to prevent fatal destructuring crashes
     const hashStr = user.password_hash as string;
     if (!hashStr.includes(':')) {
       return new Response(JSON.stringify({ error: 'Invalid credentials. (Legacy Hash)' }), { status: 401, headers: { 'Content-Type': 'application/json' } });

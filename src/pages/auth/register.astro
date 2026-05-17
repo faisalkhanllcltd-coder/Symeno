@@ -69,13 +69,23 @@ import Turnstile from '../../components/security/Turnstile.svelte';
 
       form.onsubmit = async function(e) {
         e.preventDefault(); 
-        
         errorAlert.classList.add('hidden');
+        
+        // THE FIX: Directly query Cloudflare's memory object instead of the DOM
+        const cfToken = window.turnstile ? window.turnstile.getResponse() : '';
+        if (!cfToken) {
+          errorAlert.innerText = 'Security token missing. Are you a bot?';
+          errorAlert.classList.remove('hidden');
+          return;
+        }
+
         submitBtn.disabled = true;
         submitBtn.innerText = 'SECURING IDENTITY...';
 
         const payload = Object.fromEntries(new FormData(form));
         payload.cartItems = []; 
+        // Explicitly append the token
+        payload['cf-turnstile-response'] = cfToken;
 
         try {
           const response = await fetch('/api/auth/register', {
@@ -86,7 +96,10 @@ import Turnstile from '../../components/security/Turnstile.svelte';
 
           const data = await response.json().catch(() => ({}));
 
-          if (!response.ok) throw new Error(data.error || 'Identity initialization failed.');
+          if (!response.ok) {
+            if (window.turnstile) window.turnstile.reset();
+            throw new Error(data.error || 'Identity initialization failed.');
+          }
 
           let finalRedirect = returnTo;
           if (!finalRedirect || !finalRedirect.startsWith('/')) {

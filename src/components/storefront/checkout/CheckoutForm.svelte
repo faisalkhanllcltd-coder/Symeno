@@ -6,6 +6,9 @@
   let isLoading = $state(true);
   let isProcessing = $state(false);
   let errorMessage = $state('');
+  
+  // THE FIX: Explicit state container for the Cloudflare token
+  let turnstileToken = $state('');
 
   let formData = $state({
     fullName: '',
@@ -34,10 +37,7 @@
   async function handleSubmit(e: Event) {
     e.preventDefault();
     
-    const formElement = e.currentTarget as HTMLFormElement;
-    const formData = new FormData(formElement);
-    const turnstileToken = formData.get('cf-turnstile-response');
-
+    // THE FIX: Direct validation of Svelte state instead of DOM extraction
     if (!turnstileToken) {
       errorMessage = 'Security token missing. Are you a bot?';
       return;
@@ -49,8 +49,8 @@
     try {
       const shippingAddress = `${formData.city}, ${formData.country}`;
       
-      // THE FIX: Accurately map Svelte 5 cart store properties to the API payload
-      const payloadItems = cartItems.map(item => ({       
+      // Accurately map Svelte 5 cart store properties to the API payload
+      const payloadItems = cartItems.map(item => ({        
         productId: item.id || item.slug, 
         qty: item.qty || 1
       }));
@@ -70,16 +70,18 @@
       const data = await res.json();
 
       if (!res.ok || data.error) {
+        if ((window as any).turnstile) (window as any).turnstile.reset();
         throw new Error(data.error || 'Failed to process authorization.');
       }
 
       if (data.success && data.orderId) {
-        // THE FIX: Route perfectly to the dedicated Success Terminal
+        // Route perfectly to the dedicated Success Terminal
         window.location.href = `/checkout/success?order=${data.orderId}`;
       }
     } catch (e: any) {
       errorMessage = e.message || 'Transmission failed. Retrying required.';
       isProcessing = false;
+      if ((window as any).turnstile) (window as any).turnstile.reset();
     }
   }
 </script>
@@ -90,7 +92,7 @@
   </h2>
 
   {#if isLoading}
-    <div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-base/80 backdrop-blur-sm rounded-xl">       
+    <div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-base/80 backdrop-blur-sm rounded-xl">        
       <div class="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-brand/20 border-t-brand"></div>
       <p class="animate-pulse font-mono text-[10px] tracking-widest text-brand uppercase">
         Initializing native gateway...
@@ -179,7 +181,7 @@
       </div>
     </div>
 
-    <Turnstile />
+    <Turnstile bind:token={turnstileToken} />
 
     <button
       type="submit"
