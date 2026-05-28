@@ -56,7 +56,7 @@
     Secure Comm Channel
   </h3>
   <p class="mb-4 font-mono text-[10px] text-content-muted">
-    Intercept logistics updates, wholesale price drops, and operational intelligence.
+    Get early access to new arrivals, exclusive deals, and restocks before they sell out.
   </p>
 
   <form onsubmit={executeSubscription} data-secured="true" class="flex flex-col gap-3">

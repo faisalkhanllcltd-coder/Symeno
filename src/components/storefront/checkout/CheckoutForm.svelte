@@ -133,10 +133,7 @@
             class="w-full rounded border border-outline bg-base p-3 uppercase focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand transition-colors"
           >
             <option value="US">United States</option>
-            <option value="AE">United Arab Emirates</option>
-            <option value="SA">Saudi Arabia</option>
-            <option value="GB">United Kingdom</option>
-            <option value="EU">European Union</option>
+            <option value="CA">Canada</option>
           </select>
           <input
             type="text"

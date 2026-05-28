@@ -78,7 +78,7 @@
       Your cart is empty.
     </h2>
     <p class="mb-8 font-light text-content-muted">
-      Access our wholesale catalog to begin adding inventory.
+      Your cart is empty. Browse our store to find something you'll love.
     </p>
     <a
       href="/shop"
@@ -259,7 +259,7 @@
         <p
           class="mt-6 text-center font-mono text-[10px] tracking-[0.1em] text-content-muted uppercase"
         >
-          Taxes calculated at checkout
+          No applicable tax (Wyoming LLC)
         </p>
       </div>
     </div>

@@ -8,7 +8,7 @@ interface SeoConfig {
 }
 
 const DEFAULT_DESCRIPTION =
-  'Operational efficiency applied to consumer electronics. Guaranteed Arbitrage Sourcing.';
+  'Symeno is an independent online retailer offering premium lifestyle, tech, and home goods at competitive prices. Sourced from established distributors.';
 const SITE_NAME = 'Symeno';
 
 export function generateSeoMeta(config: SeoConfig) {
