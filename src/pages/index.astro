@@ -23,9 +23,8 @@ try {
     // We pull extra rows (15 instead of 10) so we have backup inventory if we filter things out
     const { results: productResults } = await db.prepare("SELECT * FROM catalog_cache WHERE in_stock = 1 LIMIT 15").all();
 
-    // THE FIX: The Curation Blacklist
-    // Add any part of a product name here to instantly banish it from the homepage
-    const HOMEPAGE_BLACKLIST = ['kitchenaid', 'kitchen aid'];
+    // FIXED: Removed restricted strings to comply with underwriting
+    const HOMEPAGE_BLACKLIST = ['test_dummy_product_string'];
 
     const mappedProducts = productResults
       .map((p: any) => {
@@ -107,7 +106,7 @@ try {
 
 <StorefrontLayout
   title="Curated Premium Goods | Symeno"
-  description="Skip the retail markup. We secure premium lifestyle, home, and tech goods in volume so you pay strictly wholesale prices."
+  description="Shop premium lifestyle, tech, and home goods at competitive prices. Symeno sources from established wholesale distributors so you get quality brands without overpaying."
 >
   <Hero deal={heroDeal} />
   <TrustBar />
@@ -125,7 +124,7 @@ try {
         Secure Comm Channel.
       </h2>
       <p class="mx-auto mb-10 max-w-2xl text-lg font-light text-content-muted">
-        Intercept logistics updates, wholesale price drops, and operational intelligence before the public market.
+        Get early access to new arrivals, exclusive deals, and restocks before they sell out.
       </p>
 
       <div class="mx-auto flex w-full max-w-lg justify-center">

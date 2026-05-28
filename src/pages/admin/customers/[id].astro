@@ -12,21 +12,24 @@ let orders: any[] = [];
 
 if (db) {
   try {
+    // FIXED: Target 'users' table, not 'customers'
     customer = await db
-      .prepare(`SELECT id, email, first_name, last_name FROM customers WHERE id = ?1`)
+      .prepare(`SELECT id, email, first_name, last_name FROM users WHERE id = ?1`)
       .bind(id)
       .first();
+      
     if (customer) {
       const { results } = await db
         .prepare(
-          `SELECT id, status, amount_total, created_at FROM orders WHERE customer_email = ?1 ORDER BY created_at DESC`
+          // FIXED: Corrected 'amount_total' to schema-compliant 'total_amount'
+          `SELECT id, status, total_amount, created_at FROM orders WHERE customer_email = ?1 ORDER BY created_at DESC`
         )
         .bind(customer.email)
         .all();
       orders = results || [];
     }
   } catch (e) {
-    console.warn('DB not fully migrated', e);
+    console.warn('DB query failed', e);
   }
 }
 
@@ -39,7 +42,7 @@ const breadcrumbs = [
 ---
 
 <AdminLayout
-  title={`${customer.first_name} ${customer.last_name}`}
+  title={`${customer.first_name || ''} ${customer.last_name || ''}`.trim() || 'Unknown User'}
   subtitle={customer.email}
   breadcrumbs={breadcrumbs}
   currentPath="/admin/customers"
@@ -102,7 +105,7 @@ const breadcrumbs = [
                     {order.status}
                   </td>
                   <td class="px-6 py-4 text-right font-mono text-xs text-content">
-                    ${(order.amount_total || 0).toFixed(2)}
+                    ${(order.total_amount || 0).toFixed(2)}
                   </td>
                 </tr>
               ))

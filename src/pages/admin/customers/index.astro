@@ -11,16 +11,29 @@ let customers: any[] = [];
 
 if (db) {
   try {
+    // FIXED: Target 'users' table instead of 'customers'. 
+    // Upgraded to a LEFT JOIN on 'orders' using 'user_id' so order_count and total_spent resolve dynamically without crashing D1.
     const { results } = await db
-      .prepare(`SELECT id, first_name, last_name, email, total_spent, order_count, status, created_at FROM customers ORDER BY created_at DESC LIMIT 50`)
+      .prepare(`
+        SELECT 
+          u.id, u.first_name, u.last_name, u.email, u.created_at, 
+          COUNT(o.id) as order_count, 
+          SUM(o.total_amount) as total_spent 
+        FROM users u 
+        LEFT JOIN orders o ON u.id = o.user_id 
+        GROUP BY u.id 
+        ORDER BY u.created_at DESC 
+        LIMIT 50
+      `)
       .all();
+
     // Map DB row to exactly what the Svelte 5 component expects
     customers = (results || []).map((c: any) => ({
       name: `${c.first_name || 'Unknown'} ${c.last_name || ''}`.trim(),
       email: c.email,
       totalSpent: c.total_spent || 0,
       orderCount: c.order_count || 0,
-      status: c.status || 'active',
+      status: 'active', // Since 'status' was dropped from users, defaulting to active
     }));
   } catch (error: unknown) {
     if (error instanceof Error) {

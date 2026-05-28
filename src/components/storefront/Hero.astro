@@ -28,7 +28,7 @@ if (!deal) {
           title: p.name, 
           basePrice: p.price || 0,
           retailPrice: p.price ? p.price * 1.15 : 0, 
-          images: mainImage ? [mainImage] : ['https://placehold.co/600x400/1a1a1a/36F4A4?text=Image+Unavailable']
+          images: mainImage ? [mainImage] : ['/assets/placeholders/hero-unavailable.svg']
         };
       }
     }
@@ -46,7 +46,7 @@ if (!displayDeal) {
     title: 'Catalog Updating - Check Back Soon',
     basePrice: 0,
     retailPrice: 0,
-    images: ['https://placehold.co/600x400/1a1a1a/36F4A4?text=Processing...']
+    images: ['/assets/placeholders/hero-unavailable.svg']
   };
 }
 

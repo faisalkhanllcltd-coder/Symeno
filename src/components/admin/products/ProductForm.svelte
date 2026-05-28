@@ -88,7 +88,7 @@
             bind:value={name}
             required
             class="w-full rounded-sm border border-outline bg-base px-3 py-2 text-xs text-content transition-colors focus:border-brand/50 focus:outline-none focus-visible:ring-1 focus-visible:ring-brand shadow-inner"
-            placeholder="e.g. Sony WH-1000XM5"
+            placeholder="e.g. Premium Wireless Headphones"
           />
         </div>
 
@@ -100,7 +100,7 @@
               bind:value={slug}
               required
               class="w-full rounded-sm border border-outline bg-base px-3 py-2 font-mono text-xs text-content transition-colors focus:border-brand/50 focus:outline-none focus-visible:ring-1 focus-visible:ring-brand shadow-inner"
-              placeholder="sony-wh-1000xm5"
+              placeholder="premium-wireless-headphones"
             />
           </div>
           <div class="space-y-1.5">
@@ -122,7 +122,7 @@
               type="text"
               bind:value={brand}
               class="w-full rounded-sm border border-outline bg-base px-3 py-2 text-xs text-content transition-colors focus:border-brand/50 focus:outline-none focus-visible:ring-1 focus-visible:ring-brand shadow-inner"
-              placeholder="Sony"
+              placeholder="Symeno Originals"
             />
           </div>
           <div class="space-y-1.5">

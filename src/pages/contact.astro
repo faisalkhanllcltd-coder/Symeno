@@ -1,6 +1,6 @@
 ---
-// src/pages/contact.astro
 import StorefrontLayout from '../layouts/Storefront.astro';
+import Turnstile from '../components/security/Turnstile.svelte';
 ---
 
 <StorefrontLayout
@@ -78,6 +78,10 @@ import StorefrontLayout from '../layouts/Storefront.astro';
               ></textarea>
             </div>
 
+            <div class="pt-2 pb-4">
+               <Turnstile client:load />
+            </div>
+
             <button
               type="submit"
               id="contact-submit-btn"
@@ -111,7 +115,7 @@ import StorefrontLayout from '../layouts/Storefront.astro';
               </li>
               <li class="flex flex-col">
                 <span class="mb-1 text-[10px] tracking-wider text-content-muted uppercase">Headquarters</span>
-                <span class="text-content">30 N Gould St 59458<br />Sheridan, WY 82801, USA</span>
+                <span class="text-content">30 N Gould St 59458, Sheridan, WY 82801, USA</span>
               </li>
             </ul>
           </div>
@@ -136,20 +140,30 @@ import StorefrontLayout from '../layouts/Storefront.astro';
 </StorefrontLayout>
 
 <script>
-  // THE FIX: Client-side interception
+  // THE FIX: Added boolean isSubmitting guard and Turnstile payload extraction
   const form = document.getElementById('contact-form') as HTMLFormElement;
   const btn = document.getElementById('contact-submit-btn') as HTMLButtonElement;
   const successOverlay = document.getElementById('contact-success');
   const errorBox = document.getElementById('contact-error');
+  
+  let isSubmitting = false;
 
   if (form && btn && successOverlay && errorBox) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       
+      if (isSubmitting) return;
+      isSubmitting = true;
+      
       errorBox.classList.add('hidden');
       
       const formData = new FormData(form);
       const payload = Object.fromEntries(formData.entries());
+
+      // Extract Turnstile response manually if the hidden input didn't append natively
+      if ((window as any).turnstile) {
+        payload['cf-turnstile-response'] = (window as any).turnstile.getResponse() || '';
+      }
 
       // Lock UI
       const inputs = form.querySelectorAll('input, textarea');
@@ -168,15 +182,22 @@ import StorefrontLayout from '../layouts/Storefront.astro';
           successOverlay.classList.remove('hidden');
           successOverlay.classList.add('flex');
         } else {
-          throw new Error('Transmission failed');
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.error || 'Transmission failed');
         }
-      } catch (err) {
+      } catch (err: any) {
         // Unlock UI on failure
         inputs.forEach(el => (el as HTMLInputElement).disabled = false);
         btn.disabled = false;
         btn.textContent = 'Transmit Message';
-        errorBox.textContent = 'Connection failed. Please verify your connection or use the direct email channels.';
+        errorBox.textContent = err.message || 'Connection failed. Please verify your connection or use the direct email channels.';
         errorBox.classList.remove('hidden');
+        isSubmitting = false;
+        
+        // Reset Turnstile on failure
+        if ((window as any).turnstile) {
+          (window as any).turnstile.reset();
+        }
       }
     });
   }

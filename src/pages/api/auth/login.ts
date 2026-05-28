@@ -4,7 +4,6 @@ import { hashPassword } from '../../../lib/crypto';
 import { createSession } from '../../../lib/auth';
 import { z } from 'zod';
 
-// THE FIX: cf-turnstile-response is no longer optional. It strictly requires a string.
 const loginSchema = z.object({
   email: z.string().email().trim().toLowerCase(),
   password: z.string().min(1),
@@ -22,7 +21,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     const { email, password, 'cf-turnstile-response': turnstileToken } = parsedData.data;
 
-    // THE FIX: Strict fail-closed verification. Bypasses are permanently neutralized.
     const turnstileSecret = (env as any).TURNSTILE_SECRET_KEY;
     if (!turnstileSecret) {
       return new Response(JSON.stringify({ error: 'System Error: Turnstile secret missing from environment.' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
@@ -42,14 +40,13 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const db = (env as any).DB;
     if (!db) return new Response(JSON.stringify({ error: 'Database offline.' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
 
-    // Fetch the 'role' from the database
-    const user = await db.prepare('SELECT id, email, password_hash, role FROM customers WHERE email = ?1').bind(email).first();
+    // FIXED: Querying the unified 'users' table, not the deleted 'customers' table.
+    const user = await db.prepare('SELECT id, email, password_hash, role FROM users WHERE email = ?1').bind(email).first();
 
     if (!user || !user.password_hash) {
       return new Response(JSON.stringify({ error: 'Invalid credentials.' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
     }
 
-    // Check for the delimiter before splitting to prevent fatal destructuring crashes
     const hashStr = user.password_hash as string;
     if (!hashStr.includes(':')) {
       return new Response(JSON.stringify({ error: 'Invalid credentials. (Legacy Hash)' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
@@ -63,7 +60,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(JSON.stringify({ error: 'Invalid credentials.' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
     }
 
-    // Apply the actual database role to the JWT session
     const role = ((user.role as string) || 'customer').toLowerCase();
     await createSession(env, cookies, {
       id: user.id as string,

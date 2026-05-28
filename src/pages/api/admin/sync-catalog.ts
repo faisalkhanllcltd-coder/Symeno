@@ -24,7 +24,8 @@ const CATEGORY_QUERIES = {
   "Outdoor & Picnic": ["waterproof picnic blanket", "collapsible water bottle"],
   "Fitness Accessories": ["resistance band set gym", "ab wheel roller"],
   "Yoga & Mindfulness": ["non slip yoga mat 6mm", "meditation cushion buckwheat"],
-  "Travel Accessories": ["packing cubes compression set", "RFID passport holder"],
+  // FIXED: Purged restricted "compression" term for Tier-1 Underwriting Compliance
+  "Travel Accessories": ["packing cubes travel set", "RFID passport holder"],
   "Cycling & Urban Mobility": ["bike phone mount handlebar", "cycling gloves padded"],
   "Baby Accessories": ["silicone bib baby set", "muslin swaddle blanket"],
   "Kids Toys & Learning": ["magnetic drawing board kids", "sensory fidget toys"],
@@ -119,6 +120,6 @@ export const POST: APIRoute = async ({ locals }) => {
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
   } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    return new Response(JSON.stringify({ error: 'An unexpected error occurred.' }), { status: 500 });
   }
 };

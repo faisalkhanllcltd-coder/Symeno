@@ -10,14 +10,15 @@ try {
   if (db) {
     const { results } = await db.prepare(`
       SELECT 
-        c.name, 
+        u.first_name || ' ' || u.last_name as name, 
         r.rating, 
         r.body, 
         p.name as product_name, 
         '/shop/product/' || p.slug as product_url, 
         r.created_at 
       FROM reviews r
-      JOIN customers c ON c.id = r.customer_id
+      -- FIXED: Join 'users' table via 'user_id'
+      JOIN users u ON u.id = r.user_id
       JOIN catalog_cache p ON p.id = r.product_id
       WHERE r.status = 'approved'
       ORDER BY r.created_at DESC 
@@ -72,7 +73,7 @@ function formatDate(dateStr: string) {
             <div class="flex items-end justify-between border-t border-outline/40 pt-4">
               <div>
                 <span class="block font-mono text-[9px] uppercase tracking-widest text-content-muted">
-                  {r.name}
+                  {r.name || (r.is_verified_buyer ? 'Verified Buyer' : 'Customer')}
                 </span>
                 <span class="mt-1 block font-mono text-[9px] tracking-widest text-content-muted uppercase">
                   {formatDate(r.created_at)}

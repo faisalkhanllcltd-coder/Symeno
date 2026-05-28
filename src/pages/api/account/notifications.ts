@@ -5,12 +5,12 @@ export const GET: APIRoute = async ({ locals }) => {
   try {
     if (!locals.user) throw new Error('UNAUTHENTICATED');
 
-    // Fetch notifications for the user. We assume a 'customer_notifications' table exists.
+    // FIXED: Targeting user_notifications table and user_id column
     const { results } = await env.DB.prepare(
       `
       SELECT id, type, title, message, is_read, action_url, created_at 
-      FROM customer_notifications 
-      WHERE customer_id = ?1 
+      FROM user_notifications 
+      WHERE user_id = ?1 
       ORDER BY is_read ASC, created_at DESC 
       LIMIT 50
     `
@@ -36,7 +36,8 @@ export const PUT: APIRoute = async ({ request, locals }) => {
     if (action === 'MARK_ALL_READ') {
       await db
         .prepare(
-          'UPDATE customer_notifications SET is_read = 1 WHERE customer_id = ?1 AND is_read = 0'
+          // FIXED: Targeting user_notifications table and user_id column
+          'UPDATE user_notifications SET is_read = 1 WHERE user_id = ?1 AND is_read = 0'
         )
         .bind(locals.user.id)
         .run();
@@ -44,7 +45,8 @@ export const PUT: APIRoute = async ({ request, locals }) => {
       // Mark specific notification
       await db
         .prepare(
-          'UPDATE customer_notifications SET is_read = 1 WHERE id = ?1 AND customer_id = ?2'
+          // FIXED: Targeting user_notifications table and user_id column
+          'UPDATE user_notifications SET is_read = 1 WHERE id = ?1 AND user_id = ?2'
         )
         .bind(id, locals.user.id)
         .run();
@@ -52,6 +54,6 @@ export const PUT: APIRoute = async ({ request, locals }) => {
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 400 });
+    return new Response(JSON.stringify({ error: 'An unexpected error occurred.' }), { status: 400 });
   }
 };

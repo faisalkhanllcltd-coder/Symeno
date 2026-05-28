@@ -75,7 +75,7 @@
       Wholesale Authorization
     </h2>
     <p class="mt-1 font-mono text-[10px] text-content-muted">
-      Submit corporate credentials to unlock Net-30 terms and Tier-1 pricing.
+      Submit your details and we'll get back to you regarding bulk order availability and pricing.
     </p>
   </div>
 

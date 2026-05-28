@@ -9,12 +9,14 @@ export const GET: APIRoute = async ({ url, redirect }) => {
     const db = env.DB;
     if (!db) return new Response('Database missing.', { status: 500 });
 
-    const user = await db.prepare('SELECT id, pending_email FROM customers WHERE verification_token = ?1').bind(token).first();
+    // FIXED: Target 'users' table, not 'customers'
+    const user = await db.prepare('SELECT id, pending_email FROM users WHERE verification_token = ?1').bind(token).first();
 
     if (!user) return new Response('Invalid or expired token.', { status: 400 });
 
     // Promote pending_email to primary email and verify
-    await db.prepare('UPDATE customers SET email = ?1, pending_email = NULL, verification_token = NULL, is_verified = 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?2')
+    // FIXED: Target 'users' table, not 'customers'
+    await db.prepare('UPDATE users SET email = ?1, pending_email = NULL, verification_token = NULL, is_verified = 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?2')
       .bind(user.pending_email, user.id)
       .run();
 

@@ -1,5 +1,4 @@
 ---
-// src/pages/admin/index.astro
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import KPICards from '../../components/admin/dashboard/KPICards.svelte';
 import RevenueChart from '../../components/admin/dashboard/RevenueChart.svelte';
@@ -71,7 +70,7 @@ if (db) {
       amount: row.amount,
     }));
 
-    // 4. Inventory telemetry — Querying new in_stock boolean logic
+    // 4. Inventory telemetry 
     try {
       const productCount = await db.prepare("SELECT COUNT(id) as cnt FROM catalog_cache WHERE in_stock = 0").first();
       metrics.lowStockCount = (productCount?.cnt as number) || 0;
@@ -79,7 +78,8 @@ if (db) {
 
     // 5. Customer count
     try {
-      const customerCount = await db.prepare("SELECT COUNT(id) as cnt FROM customers").first();
+      // FIXED: Count from 'users' table, not 'customers'
+      const customerCount = await db.prepare("SELECT COUNT(id) as cnt FROM users").first();
       metrics.newCustomers = (customerCount?.cnt as number) || 0;
     } catch {}
 

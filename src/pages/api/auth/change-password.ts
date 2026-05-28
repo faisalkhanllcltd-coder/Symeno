@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(1),
-  newPassword: z.string().min(6), // THE FIX: Down from 8 to 6
+  newPassword: z.string().min(8), // FIXED: PCI-DSS Compliance - Upgraded minimum length from 6 to 8
 });
 
 export const POST: APIRoute = async ({ request, locals }) => {
@@ -23,7 +23,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const db = (env as any).DB;
     if (!db) return new Response(JSON.stringify({ error: 'Database missing.' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
 
-    const user = await db.prepare('SELECT password_hash FROM customers WHERE id = ?1').bind(locals.user.id).first();
+    // FIXED: Target 'users' table, not 'customers'
+    const user = await db.prepare('SELECT password_hash FROM users WHERE id = ?1').bind(locals.user.id).first();
 
     if (!user || !user.password_hash) {
       return new Response(JSON.stringify({ error: 'User not found or password not set.' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
@@ -40,7 +41,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const newSalt = crypto.getRandomValues(new Uint8Array(16));
     const newHash = await hashPassword(parsed.data.newPassword, newSalt);
 
-    await db.prepare('UPDATE customers SET password_hash = ?1, updated_at = CURRENT_TIMESTAMP WHERE id = ?2')
+    // FIXED: Target 'users' table, not 'customers'
+    await db.prepare('UPDATE users SET password_hash = ?1, updated_at = CURRENT_TIMESTAMP WHERE id = ?2')
       .bind(newHash, locals.user.id)
       .run();
 

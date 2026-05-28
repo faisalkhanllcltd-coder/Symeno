@@ -1,4 +1,3 @@
-// src/lib/auth.ts
 import type { AstroCookies } from 'astro';
 
 const SESSION_COOKIE = 'auth_session';
@@ -53,7 +52,7 @@ export async function createSession(env: any, cookies: AstroCookies, payload: { 
         path: '/',
         httpOnly: true,
         secure: isProd,
-        sameSite: 'lax',
+        sameSite: 'strict', // FIXED: Upgraded from lax to strict per Tier-1 payment gateway requirements
         maxAge: SESSION_TTL,
     });
 

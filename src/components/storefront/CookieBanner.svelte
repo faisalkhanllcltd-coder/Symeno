@@ -18,7 +18,7 @@
     localStorage.setItem('cookie_consent', status);
     
     // Store as a secure cookie for edge-worker checks
-    document.cookie = `cookie_consent=${status}; max-age=31536000; path=/; SameSite=Lax`;
+    document.cookie = `cookie_consent=${status}; max-age=31536000; path=/; SameSite=Strict`;
     
     // If accepted, we can initialize analytics here if needed
     if (accepted) {

@@ -5,7 +5,7 @@ import { env } from 'cloudflare:workers';
 
 const schema = z.object({
   token: z.string().min(10),
-  newPassword: z.string().min(6) // THE FIX: Down from 8 to 6
+  newPassword: z.string().min(8) // FIXED: PCI-DSS Compliance - Upgraded minimum length from 6 to 8
 });
 
 export const POST: APIRoute = async (context) => {
@@ -25,7 +25,8 @@ export const POST: APIRoute = async (context) => {
     const newSalt = crypto.getRandomValues(new Uint8Array(16));
     const newHash = await hashPassword(newPassword, newSalt);
 
-    await db.prepare('UPDATE customers SET password_hash = ?1, updated_at = CURRENT_TIMESTAMP WHERE id = ?2')
+    // FIXED: Target 'users' table, not 'customers'
+    await db.prepare('UPDATE users SET password_hash = ?1, updated_at = CURRENT_TIMESTAMP WHERE id = ?2')
       .bind(newHash, userId)
       .run();
 

@@ -24,8 +24,10 @@ export const POST: APIRoute = async (context) => {
 
     const productId = crypto.randomUUID();
 
+    // FIXED: Mapped the camelCase JSON payload to the correct snake_case D1 columns
+    // FIXED: Added 'brand_id' because the schema expects a foreign key, not a raw 'brand' string.
     await db.prepare(
-      `INSERT INTO products (id, slug, title, brand, category, basePrice, retailPrice, stockStatus, is_active, description, image_url)
+      `INSERT INTO products (id, slug, title, brand_id, category, base_price, retail_price, stock_status, is_active, description, image_url)
        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)`
     ).bind(
       productId,

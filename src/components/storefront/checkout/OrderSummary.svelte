@@ -72,7 +72,7 @@
       <span class="font-mono text-xs font-bold tracking-widest text-content uppercase">Total Due</span>
       <div class="text-right">
         <span class="font-mono text-2xl font-bold text-brand">${total.toFixed(2)}</span>
-        <p class="mt-1 font-mono text-[9px] text-content-muted uppercase tracking-widest">Includes VAT</p>
+        <p class="mt-1 font-mono text-[9px] text-content-muted uppercase tracking-widest">No applicable tax (Wyoming LLC)</p>
       </div>
     </div>
   {/if}

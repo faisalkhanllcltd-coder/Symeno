@@ -13,7 +13,7 @@
   let formData = $state({
     fullName: '',
     email: '',
-    country: 'AE',
+    country: 'US',
     city: '',
     paymentMethod: 'pre_order',
   });
@@ -132,10 +132,11 @@
             bind:value={formData.country}
             class="w-full rounded border border-outline bg-base p-3 uppercase focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand transition-colors"
           >
+            <option value="US">United States</option>
             <option value="AE">United Arab Emirates</option>
-            <option value="SA">Saudi Arabia</option>      
-            <option value="US">United States</option>     
-            <option value="GB">United Kingdom</option>    
+            <option value="SA">Saudi Arabia</option>
+            <option value="GB">United Kingdom</option>
+            <option value="EU">European Union</option>
           </select>
           <input
             type="text"
@@ -153,31 +154,7 @@
         2. Financial Authorization Method
       </h3>
       <div class="space-y-3 font-mono text-xs">
-        <label class="flex cursor-pointer items-center gap-3 rounded border border-outline bg-base p-4 transition-colors hover:border-brand has-[:checked]:border-brand has-[:checked]:bg-brand/5">
-          <input
-            type="radio"
-            bind:group={formData.paymentMethod}
-            value="bank_transfer"
-            class="h-4 w-4 accent-brand"
-          />
-          <div class="flex flex-col">
-            <span class="font-bold text-content uppercase">Direct Bank Transfer / Invoice</span>
-            <span class="mt-1 text-[10px] text-content-muted">Secure your order now. We will email you an invoice with banking instructions.</span>
-          </div>
-        </label>
 
-        <label class="flex cursor-pointer items-center gap-3 rounded border border-outline bg-base p-4 transition-colors hover:border-brand has-[:checked]:border-brand has-[:checked]:bg-brand/5">
-          <input
-            type="radio"
-            bind:group={formData.paymentMethod}
-            value="pre_order"
-            class="h-4 w-4 accent-brand"
-          />
-          <div class="flex flex-col">
-            <span class="font-bold text-content uppercase">Waitlist / Pre-Order</span>
-            <span class="mt-1 text-[10px] text-content-muted">Reserve your allocation. Payment will be collected when infrastructure is live.</span>
-          </div>
-        </label>
       </div>
     </div>
 
@@ -185,10 +162,10 @@
 
     <button
       type="submit"
-      disabled={isProcessing || isLoading}
+      disabled
       class="w-full rounded bg-brand px-4 py-4 font-mono text-xs font-bold tracking-widest text-brand-dark uppercase shadow-[0_0_15px_var(--color-brand)] transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark"
     >
-      {isProcessing ? 'Processing Transaction...' : 'Authorize Payload'}
+      Payment Integration Coming Soon
     </button>
   </form>
 </div>

@@ -37,7 +37,7 @@ export const PUT: APIRoute = async ({ request, params, locals }) => {
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 400 });
+    return new Response(JSON.stringify({ error: 'An unexpected error occurred.' }), { status: 400 });
   }
 };
 
@@ -59,6 +59,6 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
       .run();
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 400 });
+    return new Response(JSON.stringify({ error: 'An unexpected error occurred.' }), { status: 400 });
   }
 };

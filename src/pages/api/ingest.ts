@@ -110,6 +110,6 @@ export const POST: APIRoute = async ({ request }) => {
 
   } catch (error: any) {
     console.error('[INGESTION_ERROR]', error);
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    return new Response(JSON.stringify({ error: 'An unexpected error occurred.' }), { status: 500 });
   }
 };

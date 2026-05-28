@@ -85,8 +85,8 @@ try {
 ---
 
 <StorefrontLayout
-  title="Live Arbitrage Deals | Symeno"
-  description="Secure premium lifestyle goods at global wholesale rates. Limited allocations."
+  title="Live Sourced Deals | Symeno"
+  description="Shop discounted premium lifestyle goods at competitive prices. Inventory refreshed regularly. Limited stock available."
 >
   <div class="bg-base relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8 lg:py-20 transition-colors duration-300">
     <div class="pointer-events-none absolute inset-0 opacity-[0.02] bg-[linear-gradient(var(--color-outline)_1px,transparent_1px),linear-gradient(90deg,var(--color-outline)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
@@ -109,10 +109,10 @@ try {
           </p>
         </div>
         <h1 class="text-content mb-2 text-3xl font-bold tracking-tighter uppercase sm:text-4xl md:text-5xl lg:text-6xl">
-          Arbitrage<span class="text-brand">.</span>
+          Sourced Deals<span class="text-brand">.</span>
         </h1>
         <p class="text-content-muted font-mono text-xs sm:text-sm">
-          Deeply discounted global allocations. Inventory updates every 15 minutes.
+          Competitive prices on premium goods. Inventory refreshed regularly.
         </p>
       </div>
 
@@ -155,7 +155,7 @@ try {
     ) : dealProducts.length === 0 ? (
       <div class="bg-surface border-outline/50 relative z-10 mb-8 rounded-lg border p-10 text-center">
         <h2 class="text-content mb-2 font-mono text-sm sm:text-base tracking-widest uppercase font-bold">Allocations Depleted</h2>
-        <p class="text-content-muted font-mono text-[10px] sm:text-xs">No active arbitrage nodes match your criteria.</p>
+        <p class="text-content-muted font-mono text-[10px] sm:text-xs">No products match your current filters.</p>
         {q && <a href="/deals" class="text-brand mt-4 inline-block text-xs font-bold hover:underline">Clear Search</a>}
       </div>
     ) : (
@@ -210,7 +210,7 @@ try {
                   
                   <span class="text-content-muted mt-2 flex items-center gap-1.5 text-[8px] sm:text-[9px] tracking-widest uppercase pt-2 border-t border-outline/30">
                     <span class="h-1.5 w-1.5 rounded-full bg-brand" />
-                    Verified Allocation
+                    In Stock
                   </span>
                 </div>
               </div>

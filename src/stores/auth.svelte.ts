@@ -37,11 +37,18 @@ class AuthStore {
     }
   }
 
-  logout() {
+  // FIXED: Executing a secure POST fetch to clear the HttpOnly cookie and eliminate CSRF vulnerability.
+  async logout() {
     this.user = null;
     if (typeof window !== 'undefined') {
-      // Force a hard redirect to let the server clear the HttpOnly cookie
-      window.location.href = '/api/auth/logout';
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        window.location.href = '/auth/login';
+      } catch (e) {
+        console.error('Logout failed', e);
+        // Fallback to home if the network is interrupted
+        window.location.href = '/';
+      }
     }
   }
 }
