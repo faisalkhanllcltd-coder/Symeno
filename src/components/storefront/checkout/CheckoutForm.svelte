@@ -10,6 +10,9 @@
   // THE FIX: Explicit state container for the Cloudflare token
   let turnstileToken = $state('');
 
+  // Set to true when Stripe/Airwallex payment integration is live
+  const paymentIntegrationReady = false;
+
   let formData = $state({
     fullName: '',
     email: '',
@@ -159,7 +162,7 @@
 
     <button
       type="submit"
-      disabled
+      disabled={!paymentIntegrationReady || isProcessing}
       class="w-full rounded bg-brand px-4 py-4 font-mono text-xs font-bold tracking-widest text-brand-dark uppercase shadow-[0_0_15px_var(--color-brand)] transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-dark"
     >
       Payment Integration Coming Soon

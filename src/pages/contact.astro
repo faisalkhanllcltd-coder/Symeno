@@ -160,10 +160,15 @@ import Turnstile from '../components/security/Turnstile.svelte';
       const formData = new FormData(form);
       const payload = Object.fromEntries(formData.entries());
 
-      // Extract Turnstile response manually if the hidden input didn't append natively
-      if ((window as any).turnstile) {
-        payload['cf-turnstile-response'] = (window as any).turnstile.getResponse() || '';
+      // Guard: ensure Turnstile widget has completed before submitting
+      const cfToken = (window as any).turnstile?.getResponse?.() ?? '';
+      if (!cfToken) {
+        errorBox.textContent = 'Please complete the security check before submitting.';
+        errorBox.classList.remove('hidden');
+        isSubmitting = false;
+        return;
       }
+      payload['cf-turnstile-response'] = cfToken;
 
       // Lock UI
       const inputs = form.querySelectorAll('input, textarea');

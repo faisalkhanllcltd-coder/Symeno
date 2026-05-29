@@ -10,13 +10,10 @@
   let comment = $state('');
   let isSubmitting = $state(false);
   let errorMsg = $state('');
+  let turnstileToken = $state('');
 
   async function submit(e: Event) {
     e.preventDefault();
-    
-    const formElement = e.currentTarget as HTMLFormElement;
-    const formData = new FormData(formElement);
-    const turnstileToken = formData.get('cf-turnstile-response');
 
     if (!turnstileToken) {
       errorMsg = 'Security token missing. Are you a bot?';
@@ -117,7 +114,7 @@
     ></textarea>
   </div>
 
-  <Turnstile />
+  <Turnstile bind:token={turnstileToken} />
 
   <button
     type="submit"
