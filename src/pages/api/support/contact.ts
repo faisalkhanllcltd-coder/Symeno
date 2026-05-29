@@ -18,8 +18,7 @@ const contactSchema = z.object({
     name: z.string().min(2, 'Name is required'),
     email: z.string().email('Valid email is required'),
     order_id: z.string().optional(),
-    message: z.string().min(10, 'Message is too short'),
-    'cf-turnstile-response': z.string().optional()
+    message: z.string().min(10, 'Message is too short')
 }).passthrough();
 
 export const POST: APIRoute = async ({ request }) => {

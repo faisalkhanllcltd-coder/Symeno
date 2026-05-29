@@ -1,6 +1,5 @@
 ---
 import StorefrontLayout from '../layouts/Storefront.astro';
-import Turnstile from '../components/security/Turnstile.svelte';
 ---
 
 <StorefrontLayout
@@ -79,7 +78,6 @@ import Turnstile from '../components/security/Turnstile.svelte';
             </div>
 
             <div class="pt-2 pb-4">
-               <Turnstile client:load />
             </div>
 
             <button
@@ -157,16 +155,6 @@ import Turnstile from '../components/security/Turnstile.svelte';
       const formData = new FormData(form);
       const payload = Object.fromEntries(formData.entries());
 
-      // Guard: ensure Turnstile widget has completed before submitting
-      const cfToken = formData.get('cf-turnstile-response') || '';
-      if (!cfToken) {
-        errorBox.textContent = 'Please complete the security check before submitting.';
-        errorBox.classList.remove('hidden');
-        isSubmitting = false;
-        return;
-      }
-      payload['cf-turnstile-response'] = cfToken;
-
       // Lock UI
       const inputs = form.querySelectorAll('input, textarea');
       inputs.forEach(el => (el as HTMLInputElement).disabled = true);
@@ -195,11 +183,6 @@ import Turnstile from '../components/security/Turnstile.svelte';
         errorBox.textContent = err.message || 'Connection failed. Please verify your connection or use the direct email channels.';
         errorBox.classList.remove('hidden');
         isSubmitting = false;
-        
-        // Reset Turnstile on failure
-        if ((window as any).turnstile) {
-          (window as any).turnstile.reset();
-        }
       }
     });
   }

@@ -1,23 +1,11 @@
 <script lang="ts">
-  import Turnstile from '../../security/Turnstile.svelte';
-
   let email = $state('');
-  // THE FIX: Explicit state container for the token
-  let turnstileToken = $state('');
-  let turnstileComponent: ReturnType<typeof import('../../security/Turnstile.svelte').default> | undefined;
   let status = $state<'idle' | 'loading' | 'success' | 'error'>('idle');
   let message = $state('');
 
   async function executeSubscription(e: Event) {
     e.preventDefault();
     if (!email) return;
-
-    // Direct memory validation instead of fragile DOM extraction
-    if (!turnstileToken) {
-      status = 'error';
-      message = 'Security token missing. Are you a bot?';
-      return;
-    }
 
     status = 'loading';
     message = '';
@@ -28,8 +16,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           email, 
-          source: 'footer_module',
-          'cf-turnstile-response': turnstileToken 
+          source: 'footer_module'
         }),
       });
 
@@ -37,17 +24,14 @@
         status = 'success';
         message = 'Signal acquired. You are on the grid.';
         email = '';
-        turnstileComponent?.resetWidget();
       } else {
         const err = await res.json();
         status = 'error';
         message = err.error || 'Transmission rejected.';
-        turnstileComponent?.resetWidget();
       }
     } catch {
       status = 'error';
       message = 'Network anomaly detected.';
-      turnstileComponent?.resetWidget();
     }
   }
 </script>
@@ -83,9 +67,6 @@
         {/if}
       </button>
     </div>
-
-    <Turnstile bind:token={turnstileToken} bind:this={turnstileComponent} />
-
   </form>
 
   {#if message}

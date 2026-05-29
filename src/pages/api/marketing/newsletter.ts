@@ -5,7 +5,6 @@ export const POST: APIRoute = async ({ request, redirect }) => {
   try {
     let email = '';
     let source = 'footer_capture';
-    let turnstileToken = ''; // Token extracted for context; verified by middleware
 
     // Universal parser for both JSON and standard HTML Form Data
     const contentType = request.headers.get('content-type') || '';
@@ -14,12 +13,10 @@ export const POST: APIRoute = async ({ request, redirect }) => {
       const body = (await request.json()) as any;
       email = body.email;
       source = body.source || source;
-      turnstileToken = body['cf-turnstile-response'] || '';
     } else {
       const formData = await request.formData();
       email = formData.get('email')?.toString() || '';
       source = formData.get('source')?.toString() || 'hero_banner_html';
-      turnstileToken = formData.get('cf-turnstile-response')?.toString() || '';
     }
 
     // Edge-native regex validation
