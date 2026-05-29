@@ -19,7 +19,7 @@ const contactSchema = z.object({
     email: z.string().email('Valid email is required'),
     order_id: z.string().optional(),
     message: z.string().min(10, 'Message is too short'),
-    'cf-turnstile-response': z.string().min(1, 'Security token is required')
+    'cf-turnstile-response': z.string().optional()
 }).passthrough();
 
 export const POST: APIRoute = async ({ request }) => {
@@ -31,24 +31,7 @@ export const POST: APIRoute = async ({ request }) => {
             return new Response(JSON.stringify({ error: parsedData.error.issues[0].message }), { status: 400 });
         }
 
-        const { name, email, order_id, message, 'cf-turnstile-response': turnstileToken } = parsedData.data;
-
-        // 1. Turnstile Verification
-        const turnstileSecret = (env as any).TURNSTILE_SECRET_KEY;
-        if (!turnstileSecret) {
-            return new Response(JSON.stringify({ error: 'System config error.' }), { status: 500 });
-        }
-
-        const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `secret=${turnstileSecret}&response=${turnstileToken}`
-        });
-
-        const verifyData = await verifyRes.json() as any;
-        if (!verifyData.success) {
-            return new Response(JSON.stringify({ error: 'Security verification failed.' }), { status: 403 });
-        }
+        const { name, email, order_id, message } = parsedData.data;
 
         // 2. Dispatch Email via Resend
         const resendKey = (env as any).RESEND_API_KEY;

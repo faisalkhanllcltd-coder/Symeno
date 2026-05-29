@@ -16,10 +16,7 @@ interface Props {
 const { title, description = 'Top Brands. Real Prices. No Games.', image } = Astro.props;
 const isLoggedIn = !!Astro.locals.user;
 
-// EXPOSE SECURITY VARIABLES GLOBALLY
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
-// Fallback gracefully if your middleware hasn't mounted the CSRF token yet
-const csrfToken = Astro.locals.csrfToken || 'dev_fallback_csrf_token';
 ---
 <!doctype html>
 <html lang="en" class="scroll-smooth w-full">
@@ -40,7 +37,7 @@ const csrfToken = Astro.locals.csrfToken || 'dev_fallback_csrf_token';
       document.documentElement.classList.toggle('dark', theme === 'dark');
     </script>
 
-    <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=initGlobalSecurity" async defer></script>
+    <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
   </head>
   <body class="bg-base text-content flex min-h-screen w-full flex-col overflow-x-hidden font-sans antialiased selection:bg-brand/20 selection:text-content">
     
@@ -57,63 +54,8 @@ const csrfToken = Astro.locals.csrfToken || 'dev_fallback_csrf_token';
       wishlist.init((window as any).SYMENO_IS_LOGGED_IN);
     </script>
 
-    <script is:inline define:vars={{ turnstileSiteKey, csrfToken }}>
+    <script is:inline define:vars={{ turnstileSiteKey }}>
       window.PUBLIC_TURNSTILE_SITE_KEY = turnstileSiteKey;
-      window.initGlobalSecurity = function() {
-        
-        // This function wires a single form mathematically
-        function secureForm(form) {
-          // Skip if we already secured it, or if it is a safe GET request
-          if (form.dataset.secured || form.getAttribute('method')?.toUpperCase() !== 'POST') return;
-          form.dataset.secured = 'true';
-
-          // A. Inject the Invisible CSRF Shield
-          const csrfInput = document.createElement('input');
-          csrfInput.type = 'hidden';
-          csrfInput.name = 'csrf_token';
-          csrfInput.value = csrfToken;
-          form.appendChild(csrfInput);
-
-          // B. Inject the Visual Turnstile Shield
-          const tsContainer = document.createElement('div');
-          tsContainer.className = 'my-4 flex justify-center w-full';
-          
-          // Find the submit button and insert the widget right above it
-          const submitBtn = form.querySelector('button[type="submit"]');
-          if (submitBtn) {
-            form.insertBefore(tsContainer, submitBtn);
-          } else {
-            form.appendChild(tsContainer);
-          }
-
-          // C. Explicitly render the widget
-          const theme = localStorage.getItem('theme') || 'dark';
-          window.turnstile.render(tsContainer, {
-            sitekey: turnstileSiteKey,
-            theme: theme
-          });
-        }
-
-        // Phase 1: Secure all forms currently on the page
-        document.querySelectorAll('form').forEach(secureForm);
-
-        // Phase 2: The Watcher. If Svelte dynamically loads a form later, catch it and secure it.
-        const observer = new MutationObserver((mutations) => {
-          mutations.forEach((mutation) => {
-            mutation.addedNodes.forEach((node) => {
-              if (node.tagName === 'FORM') {
-                secureForm(node);
-              } else if (node.querySelectorAll) {
-                // If a container was added, look for forms inside it
-                node.querySelectorAll('form').forEach(secureForm);
-              }
-            });
-          });
-        });
-
-        // Start watching the entire body for structural changes
-        observer.observe(document.body, { childList: true, subtree: true });
-      };
     </script>
   </body>
 </html>
