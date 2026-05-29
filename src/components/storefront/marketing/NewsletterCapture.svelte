@@ -4,6 +4,7 @@
   let email = $state('');
   // THE FIX: Explicit state container for the token
   let turnstileToken = $state('');
+  let turnstileComponent: ReturnType<typeof import('../../security/Turnstile.svelte').default> | undefined;
   let status = $state<'idle' | 'loading' | 'success' | 'error'>('idle');
   let message = $state('');
 
@@ -36,17 +37,17 @@
         status = 'success';
         message = 'Signal acquired. You are on the grid.';
         email = '';
-        if ((window as any).turnstile) (window as any).turnstile.reset();
+        turnstileComponent?.resetWidget();
       } else {
         const err = await res.json();
         status = 'error';
         message = err.error || 'Transmission rejected.';
-        if ((window as any).turnstile) (window as any).turnstile.reset();
+        turnstileComponent?.resetWidget();
       }
     } catch {
       status = 'error';
       message = 'Network anomaly detected.';
-      if ((window as any).turnstile) (window as any).turnstile.reset();
+      turnstileComponent?.resetWidget();
     }
   }
 </script>
@@ -83,7 +84,7 @@
       </button>
     </div>
 
-    <Turnstile bind:token={turnstileToken} />
+    <Turnstile bind:token={turnstileToken} bind:this={turnstileComponent} />
 
   </form>
 

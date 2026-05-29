@@ -37,7 +37,12 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       document.documentElement.classList.toggle('dark', theme === 'dark');
     </script>
 
-    <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+    <script is:inline>
+      window.onTurnstileLoad = function() {
+        window.dispatchEvent(new Event('turnstileLoaded'));
+      };
+    </script>
+    <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad" async defer></script>
   </head>
   <body class="bg-base text-content flex min-h-screen w-full flex-col overflow-x-hidden font-sans antialiased selection:bg-brand/20 selection:text-content">
     
