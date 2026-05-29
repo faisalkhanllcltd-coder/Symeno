@@ -4,10 +4,14 @@ import { hashPassword } from '../../../lib/crypto';
 import { createSession } from '../../../lib/auth';
 import { z } from 'zod';
 
+// Dummy hash prevents timing attacks when email is not found.
+// Format: {32-hex-char salt}:{64-hex-char PBKDF2-SHA256 hash} — matches hashPassword() output.
+const DUMMY_HASH = '0000000000000000000000000000000000000000000000000000000000000000:0000000000000000000000000000000000000000000000000000000000000000';
+
 const loginSchema = z.object({
   email: z.string().email().trim().toLowerCase(),
   password: z.string().min(1),
-  'cf-turnstile-response': z.string().min(1, 'Security token is required')
+  'cf-turnstile-response': z.string().optional()
 }).passthrough();
 
 export const POST: APIRoute = async ({ request, cookies }) => {
@@ -19,23 +23,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(JSON.stringify({ error: 'Security token missing or invalid input. Are you a bot?' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
-    const { email, password, 'cf-turnstile-response': turnstileToken } = parsedData.data;
-
-    const turnstileSecret = (env as any).TURNSTILE_SECRET_KEY;
-    if (!turnstileSecret) {
-      return new Response(JSON.stringify({ error: 'System Error: Turnstile secret missing from environment.' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
-    }
-
-    const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `secret=${turnstileSecret}&response=${turnstileToken}`
-    });
-    const verifyData = await verifyRes.json() as any;
-
-    if (!verifyData.success) {
-      return new Response(JSON.stringify({ error: 'Security verification failed. Are you a bot?' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
-    }
+    const { email, password } = parsedData.data;
 
     const db = (env as any).DB;
     if (!db) return new Response(JSON.stringify({ error: 'Database offline.' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
@@ -43,20 +31,14 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     // FIXED: Querying the unified 'users' table, not the deleted 'customers' table.
     const user = await db.prepare('SELECT id, email, password_hash, role FROM users WHERE email = ?1').bind(email).first();
 
-    if (!user || !user.password_hash) {
-      return new Response(JSON.stringify({ error: 'Invalid credentials.' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-    }
-
-    const hashStr = user.password_hash as string;
-    if (!hashStr.includes(':')) {
-      return new Response(JSON.stringify({ error: 'Invalid credentials. (Legacy Hash)' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-    }
-
+    // Timing-safe: always run hashPassword regardless of whether user exists.
+    // Using DUMMY_HASH when no user found ensures constant-time response.
+    const hashStr = (user?.password_hash as string | undefined) ?? DUMMY_HASH;
     const [saltHex] = hashStr.split(':');
     const saltBytes = new Uint8Array(saltHex.match(/.{1,2}/g)!.map((byte: any) => parseInt(byte, 16)));
     const hashCheck = await hashPassword(password, saltBytes);
 
-    if (hashCheck !== user.password_hash) {
+    if (!user || hashCheck !== hashStr) {
       return new Response(JSON.stringify({ error: 'Invalid credentials.' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
     }
 

@@ -11,8 +11,8 @@ const registerSchema = z.object({
   firstName: z.string().trim().optional().default(''),
   lastName: z.string().trim().optional().default(''),
   cartItems: z.array(z.any()).optional().default([]),
-  // FIXED: Turnstile is now strictly fail-closed to prevent bot bypass
-  'cf-turnstile-response': z.string().min(1, 'Security token is required')
+  // Turnstile verified by middleware before this route is reached
+  'cf-turnstile-response': z.string().optional()
 }).passthrough();
 
 export const POST: APIRoute = async ({ request, cookies }) => {
@@ -24,28 +24,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(JSON.stringify({ error: parsedData.error.issues[0].message }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
-    const { email, password, firstName, lastName, 'cf-turnstile-response': turnstileToken } = parsedData.data;
-
-    const turnstileSecret = (env as any).TURNSTILE_SECRET_KEY;
-    if (!turnstileSecret) {
-      return new Response(JSON.stringify({ error: 'System Error: Turnstile secret missing.' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
-    }
-
-    // FIXED: Strict hard-fail gate. No token = No entry.
-    if (!turnstileToken) {
-      return new Response(JSON.stringify({ error: 'Security token missing.' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
-    }
-
-    const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `secret=${turnstileSecret}&response=${turnstileToken}`
-    });
-
-    const verifyData = await verifyRes.json() as any;
-    if (!verifyData.success) {
-      return new Response(JSON.stringify({ error: 'Security verification failed. Are you a bot?' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
-    }
+    const { email, password, firstName, lastName } = parsedData.data;
 
     const db = (env as any).DB;
     if (!db) return new Response(JSON.stringify({ error: 'Database connection offline.' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
