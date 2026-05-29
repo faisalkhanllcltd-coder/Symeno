@@ -10,7 +10,6 @@ export const GET: APIRoute = async ({ site }) => {
     'deals',
     'new-arrivals',
     'faq',
-    'blog',
     'contact',
   ];
 
