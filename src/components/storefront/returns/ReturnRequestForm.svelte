@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Turnstile from '../../security/Turnstile.svelte';
   let { recentOrders = [] } = $props<{ recentOrders: any[] }>();
 
   let step = $state(1);
@@ -8,9 +7,6 @@
   let resolution = $state('refund');
   let isSubmitting = $state(false);
   let rmaResult = $state<string | null>(null);
-  
-  // THE FIX: Explicit state container for the Cloudflare token
-  let turnstileToken = $state('');
 
   // Dynamically fetched order items when an order is selected
   let orderItems = $state<any[]>([]);
@@ -65,12 +61,6 @@
     e.preventDefault();
     if (isSubmitting) return;
 
-    // THE FIX: Direct validation of Svelte state instead of DOM extraction
-    if (!turnstileToken) {
-      alert('Security token missing. Are you a bot?');
-      return;
-    }
-
     isSubmitting = true;
     
     try {
@@ -80,8 +70,7 @@
         body: JSON.stringify({
           orderId: selectedOrder,
           items: selectedItems,
-          resolution,
-          'cf-turnstile-response': turnstileToken
+          resolution
         }),
       });
       if (res.ok) {
@@ -91,7 +80,6 @@
       }
     } finally {
       isSubmitting = false;
-      if ((window as any).turnstile) (window as any).turnstile.reset();
     }
   }
 </script>
@@ -265,7 +253,6 @@
           </p>
         </div>
 
-        <Turnstile bind:token={turnstileToken} />
 
         <div class="flex justify-between pt-4">
           <button

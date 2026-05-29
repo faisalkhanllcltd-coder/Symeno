@@ -1,15 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import Turnstile from '../../security/Turnstile.svelte';
   import { ui } from '../../../stores/ui.svelte.ts';
 
   let isLoading = $state(true);
   let isProcessing = $state(false);
   let errorMessage = $state('');
   
-  // THE FIX: Explicit state container for the Cloudflare token
-  let turnstileToken = $state('');
-
   // Set to true when Stripe/Airwallex payment integration is live
   const paymentIntegrationReady = false;
 
@@ -40,12 +36,6 @@
   async function handleSubmit(e: Event) {
     e.preventDefault();
     
-    // THE FIX: Direct validation of Svelte state instead of DOM extraction
-    if (!turnstileToken) {
-      errorMessage = 'Security token missing. Are you a bot?';
-      return;
-    }
-
     isProcessing = true;
     errorMessage = '';
 
@@ -65,15 +55,13 @@
           customer_email: formData.email,
           shipping_name: formData.fullName,
           shipping_address: shippingAddress,
-          items: payloadItems,
-          'cf-turnstile-response': turnstileToken
+          items: payloadItems
         }),
       });
 
       const data = await res.json();
 
       if (!res.ok || data.error) {
-        if ((window as any).turnstile) (window as any).turnstile.reset();
         throw new Error(data.error || 'Failed to process authorization.');
       }
 
@@ -84,7 +72,6 @@
     } catch (e: any) {
       errorMessage = e.message || 'Transmission failed. Retrying required.';
       isProcessing = false;
-      if ((window as any).turnstile) (window as any).turnstile.reset();
     }
   }
 </script>
@@ -157,8 +144,6 @@
 
       </div>
     </div>
-
-    <Turnstile bind:token={turnstileToken} />
 
     <button
       type="submit"

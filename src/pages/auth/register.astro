@@ -1,6 +1,5 @@
 ---
 import Storefront from '../../layouts/Storefront.astro';
-import Turnstile from '../../components/security/Turnstile.svelte';
 ---
 
 <Storefront title="Secure Registration | Symeno">
@@ -30,8 +29,6 @@ import Turnstile from '../../components/security/Turnstile.svelte';
         </div>
         <input type="email" id="email" name="email" required placeholder="Email Address" class="bg-base border-outline text-content focus:border-brand w-full rounded-lg border px-4 py-3 font-mono text-xs outline-none" />
         <input type="password" id="password" name="password" required placeholder="Password" class="bg-base border-outline text-content focus:border-brand w-full rounded-lg border px-4 py-3 font-mono text-xs outline-none" />
-        
-        <Turnstile client:load />
         
         <button type="submit" id="submit-btn" class="bg-brand text-brand-dark w-full rounded-lg py-4 text-[11px] font-bold tracking-widest uppercase transition-all duration-300 hover:opacity-90 disabled:opacity-50">
           Create Account
@@ -71,21 +68,11 @@ import Turnstile from '../../components/security/Turnstile.svelte';
         e.preventDefault(); 
         errorAlert.classList.add('hidden');
         
-        // THE FIX: Directly query Cloudflare's memory object instead of the DOM
-        const cfToken = window.turnstile ? window.turnstile.getResponse() : '';
-        if (!cfToken) {
-          errorAlert.innerText = 'Security token missing. Are you a bot?';
-          errorAlert.classList.remove('hidden');
-          return;
-        }
-
         submitBtn.disabled = true;
         submitBtn.innerText = 'SECURING IDENTITY...';
 
         const payload = Object.fromEntries(new FormData(form));
         payload.cartItems = []; 
-        // Explicitly append the token
-        payload['cf-turnstile-response'] = cfToken;
 
         try {
           const response = await fetch('/api/auth/register', {
@@ -97,7 +84,6 @@ import Turnstile from '../../components/security/Turnstile.svelte';
           const data = await response.json().catch(() => ({}));
 
           if (!response.ok) {
-            if (window.turnstile) window.turnstile.reset();
             throw new Error(data.error || 'Identity initialization failed.');
           }
 

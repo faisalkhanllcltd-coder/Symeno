@@ -15,8 +15,6 @@ interface Props {
 
 const { title, description = 'Top Brands. Real Prices. No Games.', image } = Astro.props;
 const isLoggedIn = !!Astro.locals.user;
-
-const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 <!doctype html>
 <html lang="en" class="scroll-smooth w-full">
@@ -50,10 +48,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     <script>
       import { wishlist } from '../stores/wishlist.svelte.ts'; 
       wishlist.init((window as any).SYMENO_IS_LOGGED_IN);
-    </script>
-
-    <script is:inline define:vars={{ turnstileSiteKey }}>
-      window.PUBLIC_TURNSTILE_SITE_KEY = turnstileSiteKey;
     </script>
   </body>
 </html>

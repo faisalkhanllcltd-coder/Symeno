@@ -10,8 +10,7 @@ const DUMMY_HASH = '000000000000000000000000000000000000000000000000000000000000
 
 const loginSchema = z.object({
   email: z.string().email().trim().toLowerCase(),
-  password: z.string().min(1),
-  'cf-turnstile-response': z.string().optional()
+  password: z.string().min(1)
 }).passthrough();
 
 export const POST: APIRoute = async ({ request, cookies }) => {

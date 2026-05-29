@@ -23,77 +23,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
 
     // --------------------------------------------------------
-    // 2. THE TURNSTILE GLOBAL API GUARD
-    // --------------------------------------------------------
-    // Define exact API endpoints that MUST have a valid Turnstile token on POST.
-    const PROTECTED_ENDPOINTS = [
-        '/api/auth/register',
-        '/api/auth/login',
-        '/api/auth/forgot-password',
-        '/api/auth/reset-password',
-        '/api/support/contact',
-        '/api/marketing/newsletter',
-        '/api/checkout/process',
-        '/api/account/returns',
-        '/api/reviews'
-    ];
-
-    if (request.method === 'POST' && PROTECTED_ENDPOINTS.some(endpoint => url.pathname.startsWith(endpoint))) {
-        try {
-            // Clone the request so we can read the JSON body without breaking the downstream API endpoints.
-            const clonedRequest = request.clone();
-
-            // THE FIX: Explicitly cast the parsed JSON so TypeScript knows it is an object
-            const body = await clonedRequest.json() as Record<string, any>;
-            const token = body['cf-turnstile-response'];
-
-            if (!token) {
-                console.warn(`[TURNSTILE_BLOCKED] Missing token on ${url.pathname}`);
-                return new Response(JSON.stringify({ success: false, error: 'Security token missing. Are you human?' }), {
-                    status: 400,
-                    headers: { 'Content-Type': 'application/json' }
-                });
-            }
-
-            // Cryptographic Verification via Cloudflare Edge
-            const secretKey = safeEnv?.TURNSTILE_SECRET_KEY || (context.locals as any).runtime?.env?.TURNSTILE_SECRET_KEY || import.meta.env.TURNSTILE_SECRET_KEY;
-
-            if (!secretKey) {
-                console.error('[SECURITY_FATAL] TURNSTILE_SECRET_KEY missing from environment.');
-                return new Response(JSON.stringify({ error: 'Server configuration error.' }), { status: 500 });
-            }
-
-            const verifyEndpoint = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
-            const verifyResponse = await fetch(verifyEndpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(token)}`,
-            });
-
-            // THE FIX: Explicitly cast the Cloudflare verification response
-            const verifyData = await verifyResponse.json() as Record<string, any>;
-
-            // The Kill-Switch: Reject if Cloudflare declares the token invalid
-            if (!verifyData.success) {
-                console.warn('[TURNSTILE_BLOCKED] Failed verification:', verifyData['error-codes']);
-                return new Response(JSON.stringify({ success: false, error: 'Security verification failed.' }), {
-                    status: 403,
-                    headers: { 'Content-Type': 'application/json' }
-                });
-            }
-
-            console.log(`[TURNSTILE_PASSED] Human verified for ${url.pathname}`);
-
-        } catch (error) {
-            // Catch JSON parsing errors or fetch failures
-            console.error('[TURNSTILE_ERROR] Middleware processing error:', error);
-            return new Response(JSON.stringify({ error: 'Invalid request format.' }), { status: 400 });
-        }
-    }
-
-
-    // --------------------------------------------------------
-    // 3. AUTHENTICATION & ROUTE GUARDING
+    // 2. AUTHENTICATION & ROUTE GUARDING
     // --------------------------------------------------------
     const isAdminRoute = url.pathname.startsWith('/admin') || url.pathname.startsWith('/api/admin');
     const isAccountRoute = url.pathname.startsWith('/account') || url.pathname.startsWith('/api/account');

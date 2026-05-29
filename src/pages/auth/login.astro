@@ -1,6 +1,5 @@
 ---
 import Storefront from '../../layouts/Storefront.astro';
-import Turnstile from '../../components/security/Turnstile.svelte';
 
 if (Astro.cookies.has('auth_error')) {
   Astro.cookies.delete('auth_error', { path: '/' });
@@ -21,8 +20,6 @@ if (Astro.cookies.has('auth_error')) {
       <form id="login-form" class="space-y-6">
         <input type="email" id="email" name="email" required placeholder="Email address" class="bg-base border-outline text-content focus:border-brand w-full rounded-lg border px-4 py-3 font-mono text-sm outline-none" />
         <input type="password" id="password" name="password" required placeholder="Password" class="bg-base border-outline text-content focus:border-brand w-full rounded-lg border px-4 py-3 font-mono text-sm outline-none" />
-        
-        <Turnstile client:load />
         
         <button type="submit" id="auth-submit-btn" class="bg-brand text-brand-dark w-full rounded-lg py-4 font-bold tracking-widest uppercase hover:opacity-90 disabled:opacity-50">
           Authenticate
@@ -57,21 +54,10 @@ if (Astro.cookies.has('auth_error')) {
           e.preventDefault();
           errorContainer.classList.add('hidden');
           
-          // THE FIX: Directly query Cloudflare's memory object instead of the DOM
-          const cfToken = window.turnstile ? window.turnstile.getResponse() : '';
-          if (!cfToken) {
-            errorText.textContent = 'Security token missing. Are you a bot?';
-            errorContainer.classList.remove('hidden');
-            errorContainer.classList.add('flex');
-            return; 
-          }
-
           submitBtn.disabled = true;
           submitBtn.innerText = 'AUTHENTICATING...';
           
           const payload = Object.fromEntries(new FormData(form));
-          // Explicitly append the token to the JSON payload
-          payload['cf-turnstile-response'] = cfToken;
 
           try {
             const res = await fetch('/api/auth/login', {
@@ -96,14 +82,10 @@ if (Astro.cookies.has('auth_error')) {
             errorContainer.classList.remove('hidden');
             errorContainer.classList.add('flex');
             
-            // THE FIX: Reset widget on failure so user can try again
-            if (window.turnstile) window.turnstile.reset();
-            
           } catch (err) {
             errorText.textContent = 'Network error. Check connection.';
             errorContainer.classList.remove('hidden');
             errorContainer.classList.add('flex');
-            if (window.turnstile) window.turnstile.reset();
           } finally {
             submitBtn.disabled = false;
             submitBtn.innerText = 'AUTHENTICATE';

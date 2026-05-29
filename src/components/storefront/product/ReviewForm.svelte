@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Turnstile from '../../security/Turnstile.svelte';
   let { productId, onSuccess } = $props<{
     productId: string;
     onSuccess: () => void;
@@ -10,15 +9,9 @@
   let comment = $state('');
   let isSubmitting = $state(false);
   let errorMsg = $state('');
-  let turnstileToken = $state('');
 
   async function submit(e: Event) {
     e.preventDefault();
-
-    if (!turnstileToken) {
-      errorMsg = 'Security token missing. Are you a bot?';
-      return;
-    }
 
     isSubmitting = true;
     errorMsg = '';
@@ -31,8 +24,7 @@
           product_id: productId, 
           rating, 
           title, 
-          comment,
-          'cf-turnstile-response': turnstileToken 
+          comment
         }),
       });
 
@@ -53,7 +45,6 @@
 
 <form
   onsubmit={submit}
-  data-secured="true"
   class="space-y-4 border border-outline bg-surface p-6 transition-colors duration-300"
 >
   <h3
@@ -113,8 +104,6 @@
       class="w-full border border-outline bg-base px-3 py-2 font-mono text-sm text-content focus:border-brand focus:outline-none transition-colors"
     ></textarea>
   </div>
-
-  <Turnstile bind:token={turnstileToken} />
 
   <button
     type="submit"

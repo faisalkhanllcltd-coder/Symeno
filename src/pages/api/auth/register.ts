@@ -10,9 +10,7 @@ const registerSchema = z.object({
   password: z.string().min(8, 'Password must be at least 8 characters'),
   firstName: z.string().trim().optional().default(''),
   lastName: z.string().trim().optional().default(''),
-  cartItems: z.array(z.any()).optional().default([]),
-  // Turnstile verified by middleware before this route is reached
-  'cf-turnstile-response': z.string().optional()
+  cartItems: z.array(z.any()).optional().default([])
 }).passthrough();
 
 export const POST: APIRoute = async ({ request, cookies }) => {
