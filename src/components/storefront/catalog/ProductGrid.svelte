@@ -1,7 +1,30 @@
 <script lang="ts">
   import { cart } from '../../../stores/cart.svelte.ts';
+  import { onMount } from 'svelte';
 
   let { products = [] } = $props<{ products: any[] }>();
+
+  // Responsive initial limit: 6 on mobile, 9 on desktop
+  let isMobile = $state(true);
+  let limit = $state(6);
+  let allVisible = $derived(limit >= products.length);
+  let visibleProducts = $derived(products.slice(0, limit));
+
+  onMount(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const update = (e: MediaQueryListEvent | MediaQueryList) => {
+      isMobile = !e.matches;
+      if (!isMobile && limit < 9) limit = 9;
+    };
+    update(mq);
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  });
+
+  function loadMore() {
+    const step = isMobile ? 6 : 9;
+    limit = Math.min(limit + step, products.length);
+  }
 
   // Secure Cart Injection utilizing Claude Schema
   function handleAddToCart(e: Event, product: any) {
@@ -27,7 +50,7 @@
   </div>
 {:else}
   <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-    {#each products as product}
+    {#each visibleProducts as product}
       <div class="group relative flex h-full flex-col rounded-lg border border-outline bg-surface shadow-sm transition-all hover:border-brand/50 hover:shadow-md focus-within:ring-1 focus-within:ring-brand">
         
         <a
@@ -86,5 +109,25 @@
         </div>
       </div>
     {/each}
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="mt-10 flex flex-col items-center gap-4">
+    {#if !allVisible}
+      <button
+        onclick={loadMore}
+        class="inline-flex items-center gap-2 rounded-sm border border-outline bg-surface px-8 py-3.5 font-mono text-xs font-bold tracking-widest text-content uppercase transition-all hover:border-brand hover:bg-brand hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+      >
+        View More
+        <span class="text-content-muted font-normal">({products.length - limit} remaining)</span>
+      </button>
+    {:else if products.length > (isMobile ? 6 : 9)}
+      <a
+        href="#top"
+        class="font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors hover:text-brand"
+      >
+        ↑ Back to Top
+      </a>
+    {/if}
   </div>
 {/if}

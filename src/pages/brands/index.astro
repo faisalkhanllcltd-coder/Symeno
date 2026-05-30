@@ -118,15 +118,9 @@ try {
               <div class="absolute inset-0 -z-10 translate-y-full bg-gradient-to-t from-brand/5 to-transparent opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100"></div>
 
               <div class="flex items-start justify-between gap-4 relative z-10">
-                <h2 class={`font-bold tracking-tight text-content uppercase transition-colors group-hover:text-brand ${isHero ? 'text-3xl sm:text-4xl pr-12' : 'text-lg pr-4'}`}>
+                <h2 class={`font-bold tracking-tight text-content uppercase transition-colors group-hover:text-brand ${isHero ? 'text-3xl sm:text-4xl pr-4' : 'text-lg pr-2'}`}>
                   {brand.name}
                 </h2>
-                <div class="flex shrink-0 items-center gap-1.5 rounded-full border border-outline/50 bg-base/50 px-2.5 py-1 backdrop-blur-md">
-                  <span class="h-1.5 w-1.5 bg-brand animate-pulse rounded-full" />
-                  <span class="font-mono text-[8px] tracking-widest text-content-muted uppercase">
-                    {brand.status}
-                  </span>
-                </div>
               </div>
               
               <div class={`mt-8 flex items-end justify-between relative z-10 ${isHero ? 'mt-16' : ''}`}>
@@ -149,33 +143,84 @@ try {
         })
       }
     </div>
+
+    <!-- Pagination Controls -->
+    <div id="brands-pagination" class="hidden mt-10 flex flex-col items-center gap-4">
+      <button
+        id="brands-view-more"
+        class="inline-flex items-center gap-2 rounded-sm border border-outline bg-surface px-8 py-3.5 font-mono text-xs font-bold tracking-widest text-content uppercase transition-all hover:border-brand hover:bg-brand hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+      >
+        View More
+      </button>
+      <a
+        id="brands-back-top"
+        href="#top"
+        class="hidden font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors hover:text-brand"
+      >
+        ↑ Back to Top
+      </a>
+    </div>
+
   </div>
 </StorefrontLayout>
 
+
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('brand-search') as HTMLInputElement;
-    const brandCards = document.querySelectorAll('.brand-card');
+    const searchInput = document.getElementById('brand-search');
+    const brandCards = Array.from(document.querySelectorAll('.brand-card'));
     const emptyState = document.getElementById('search-empty');
     const brandGrid = document.getElementById('brand-grid');
+    const paginationContainer = document.getElementById('brands-pagination');
+    const viewMoreBtn = document.getElementById('brands-view-more');
+    const backTopLink = document.getElementById('brands-back-top');
 
     if (!searchInput || !brandCards.length) return;
 
+    // --- Pagination Logic ---
+    const isMobile = () => window.innerWidth < 768;
+    let limit = isMobile() ? 6 : 9;
+    let isSearching = false;
+
+    function applyPagination() {
+      if (isSearching) return;
+      brandCards.forEach((card, i) => {
+        (card).style.display = i < limit ? '' : 'none';
+      });
+      const allVisible = limit >= brandCards.length;
+      const initialLimit = isMobile() ? 6 : 9;
+      if (paginationContainer) {
+        paginationContainer.classList.toggle('hidden', brandCards.length <= initialLimit);
+      }
+      if (viewMoreBtn) viewMoreBtn.classList.toggle('hidden', allVisible);
+      if (backTopLink) backTopLink.classList.toggle('hidden', !allVisible || brandCards.length <= initialLimit);
+    }
+
+    if (viewMoreBtn) {
+      viewMoreBtn.addEventListener('click', () => {
+        const step = isMobile() ? 6 : 9;
+        limit = Math.min(limit + step, brandCards.length);
+        applyPagination();
+      });
+    }
+
+    applyPagination();
+
+    // --- Search Logic (preserves existing behaviour) ---
     searchInput.addEventListener('input', (e) => {
-      const term = (e.target as HTMLInputElement).value.toLowerCase().trim();
+      const term = e.target.value.toLowerCase().trim();
+      isSearching = term.length > 0;
       let visibleCount = 0;
 
       brandCards.forEach(card => {
         const brandName = card.getAttribute('data-brand') || '';
-        
-        // THE FIX: Toggle inline display to protect the Bento CSS Grid structure
-        if (brandName.includes(term)) {
-          (card as HTMLElement).style.display = '';
-          visibleCount++;
-        } else {
-          (card as HTMLElement).style.display = 'none';
-        }
+        const match = brandName.includes(term);
+        card.style.display = match ? '' : 'none';
+        if (match) visibleCount++;
       });
+
+      // Hide pagination during search
+      if (paginationContainer) paginationContainer.classList.toggle('hidden', isSearching);
 
       if (emptyState && brandGrid) {
         if (visibleCount === 0) {
@@ -188,6 +233,9 @@ try {
           brandGrid.classList.remove('hidden');
         }
       }
+
+      // Re-apply pagination when search cleared
+      if (!isSearching) applyPagination();
     });
   });
-</script>
+</script>

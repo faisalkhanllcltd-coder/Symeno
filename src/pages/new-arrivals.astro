@@ -76,7 +76,7 @@ try {
   title="Latest Deployments | Symeno"
   description="The newest premium goods added to our logistics pipeline."
 >
-  <div class="bg-base relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8 lg:py-20 transition-colors duration-300">
+  <div id="top" class="bg-base relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8 lg:py-20 transition-colors duration-300">
     <div class="pointer-events-none absolute inset-0 opacity-[0.02] bg-[linear-gradient(var(--color-outline)_1px,transparent_1px),linear-gradient(90deg,var(--color-outline)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
 
     <nav class="text-content-muted relative z-10 mb-6 flex font-mono text-[10px] tracking-widest uppercase">
@@ -97,7 +97,7 @@ try {
           Latest Deployments<span class="text-brand">.</span>
         </h1>
         <p class="text-content-muted font-mono text-xs sm:text-sm">
-          Chronological feed of verified product deployments.
+          Chronological feed of product deployments.
         </p>
       </div>
     </div>
@@ -114,7 +114,7 @@ try {
       </div>
     )}
 
-    <div class="relative z-10 space-y-16">
+    <div id="feed-grid-root" class="relative z-10 space-y-16">
       {timelineGroups.map((group, groupIdx) => (
         <section>
           <div class="mb-6 flex items-center gap-4">
@@ -184,5 +184,63 @@ try {
         </section>
       ))}
     </div>
+
+    <!-- Pagination Controls -->
+    <div id="feed-pagination" class="hidden relative z-10 mt-10 flex flex-col items-center gap-4">
+      <button
+        id="feed-view-more"
+        class="inline-flex items-center gap-2 rounded-sm border border-outline bg-surface px-8 py-3.5 font-mono text-xs font-bold tracking-widest text-content uppercase transition-all hover:border-brand hover:bg-brand hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+      >
+        View More
+      </button>
+      <a
+        id="feed-back-top"
+        href="#top"
+        class="hidden font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors hover:text-brand"
+      >
+        ↑ Back to Top
+      </a>
+    </div>
+
   </div>
 </StorefrontLayout>
+
+<script is:inline>
+  (function () {
+    document.addEventListener('DOMContentLoaded', function () {
+      // Collect all product cards across all timeline sections
+      var allCards = Array.from(document.querySelectorAll('#feed-grid-root a[href^="/shop/product/"]'));
+      var paginationContainer = document.getElementById('feed-pagination');
+      var viewMoreBtn = document.getElementById('feed-view-more');
+      var backTopLink = document.getElementById('feed-back-top');
+
+      if (!allCards.length) return;
+
+      var isMobile = function () { return window.innerWidth < 768; };
+      var limit = isMobile() ? 6 : 9;
+
+      function applyPagination() {
+        allCards.forEach(function (card, i) {
+          card.style.display = i < limit ? '' : 'none';
+        });
+        var allVisible = limit >= allCards.length;
+        var initialLimit = isMobile() ? 6 : 9;
+        if (paginationContainer) {
+          paginationContainer.classList.toggle('hidden', allCards.length <= initialLimit);
+        }
+        if (viewMoreBtn) viewMoreBtn.classList.toggle('hidden', allVisible);
+        if (backTopLink) backTopLink.classList.toggle('hidden', !allVisible || allCards.length <= initialLimit);
+      }
+
+      if (viewMoreBtn) {
+        viewMoreBtn.addEventListener('click', function () {
+          var step = isMobile() ? 6 : 9;
+          limit = Math.min(limit + step, allCards.length);
+          applyPagination();
+        });
+      }
+
+      applyPagination();
+    });
+  })();
+</script>
