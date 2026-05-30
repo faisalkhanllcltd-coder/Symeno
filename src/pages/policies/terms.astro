@@ -228,12 +228,8 @@ const PHONE = '+1 (307) 310-7918';
           <div class="rounded-lg border border-outline bg-surface p-6">
             <p class="font-bold text-content text-base mb-3">{COMPANY_NAME}</p>
             <p class="text-sm mb-1">{ADDRESS_LINE_1}</p>
-            <p class="text-sm mb-1">{ADDRESS_LINE_2}</p>
             <p class="text-sm mb-1">
-              Legal Inquiries: <a href={`mailto:${CONTACT_EMAIL}`} class="text-brand hover:underline">{CONTACT_EMAIL}</a>
-            </p>
-            <p class="text-sm mb-1">
-              General Support: <a href={`mailto:${SUPPORT_EMAIL}`} class="text-brand hover:underline">{SUPPORT_EMAIL}</a>
+              Support &amp; Legal Inquiries: <a href={`mailto:${CONTACT_EMAIL}`} class="text-brand hover:underline">{CONTACT_EMAIL}</a>
             </p>
             <p class="text-sm">
               Phone: <a href={`tel:${PHONE.replace(/\s/g, '')}`} class="text-brand hover:underline">{PHONE}</a>

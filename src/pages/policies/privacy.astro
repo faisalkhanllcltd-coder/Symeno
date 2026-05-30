@@ -12,7 +12,7 @@ const PHONE = '+1 (307) 310-7918';
 
 <StorefrontLayout
   title="Privacy Policy | Symeno"
-  description="The Privacy Policy of SYMENO LLC. Learn what personal data we collect (email, shipping address, payment details), how we protect it, and how our third-party payment processors (Stripe, Airwallex) handle your financial data."
+  description="The Privacy Policy of SYMENO LLC. Learn what personal data we collect (email, shipping address, payment details), how we protect it, and how our PCI-compliant payment processors handle your financial data."
 >
   <div class="min-h-screen bg-base py-16 md:py-24">
     <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
@@ -150,15 +150,7 @@ const PHONE = '+1 (307) 310-7918';
               <strong class="text-content">{COMPANY_NAME} does not collect, store, transmit, or process raw credit card numbers, CVV codes, or full payment card data on our own servers at any time.</strong> All payment card data is handled exclusively by our certified third-party payment processors, who are independently certified to PCI-DSS (Payment Card Industry Data Security Standard) Level 1 — the highest standard in the industry.
             </p>
           </div>
-          <p class="mb-4">Our active payment processors are:</p>
-          <ul class="mb-4 list-disc space-y-3 pl-5">
-            <li>
-              <strong class="text-content">Stripe, Inc.</strong> — A PCI-DSS Level 1 certified payment processor. When you enter your card details, the data is transmitted directly from your browser to Stripe's secure servers via an encrypted channel (TLS 1.2+). Stripe returns a payment token (a non-sensitive reference ID) to our system. Stripe's privacy policy is available at <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer" class="text-brand hover:underline">stripe.com/privacy</a>.
-            </li>
-            <li>
-              <strong class="text-content">Airwallex Pty Ltd.</strong> — A licensed global payment service provider and money services business. Airwallex processes payments under its own regulatory authorizations. Airwallex's privacy policy is available at <a href="https://www.airwallex.com/us/legal/privacy-notice" target="_blank" rel="noopener noreferrer" class="text-brand hover:underline">airwallex.com/us/legal/privacy-notice</a>.
-            </li>
-          </ul>
+          <p class="mb-4">Payment processing is handled exclusively by industry-standard, PCI-DSS Level 1 certified third-party processors. When you enter your card details, the data is transmitted directly from your browser to the processor's secure servers via an encrypted channel (TLS 1.2+). The processor returns a payment token (a non-sensitive reference ID) to our system. Your raw card data never touches our servers.</p>
           <p class="mb-4">
             By submitting payment information, you expressly consent to the transfer of your payment data to the relevant payment processor for the purpose of completing your transaction. {COMPANY_NAME} is not responsible for the data practices of these third-party processors; their use of your payment data is governed by their respective privacy policies.
           </p>
@@ -181,13 +173,8 @@ const PHONE = '+1 (307) 310-7918';
               </thead>
               <tbody class="divide-y divide-outline">
                 <tr>
-                  <td class="py-3 px-4 font-medium text-content">Stripe, Inc.</td>
-                  <td class="py-3 px-4">Payment authorization &amp; PCI processing</td>
-                  <td class="py-3 px-4">Payment tokens, transaction metadata</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 font-medium text-content">Airwallex Pty Ltd.</td>
-                  <td class="py-3 px-4">Global payment processing</td>
+                  <td class="py-3 px-4 font-medium text-content">Industry-standard PCI-compliant payment gateways</td>
+                  <td class="py-3 px-4">Payment authorization &amp; processing</td>
                   <td class="py-3 px-4">Payment tokens, transaction metadata</td>
                 </tr>
                 <tr>
@@ -318,12 +305,8 @@ const PHONE = '+1 (307) 310-7918';
           <div class="rounded-lg border border-outline bg-surface p-6">
             <p class="font-bold text-content text-base mb-1">Privacy Officer — {COMPANY_NAME}</p>
             <p class="text-sm mb-1">{ADDRESS_LINE_1}</p>
-            <p class="text-sm mb-1">{ADDRESS_LINE_2}</p>
             <p class="text-sm mb-1">
-              Privacy &amp; Legal Inquiries: <a href={`mailto:${CONTACT_EMAIL}`} class="text-brand hover:underline">{CONTACT_EMAIL}</a>
-            </p>
-            <p class="text-sm mb-1">
-              General Support: <a href={`mailto:${SUPPORT_EMAIL}`} class="text-brand hover:underline">{SUPPORT_EMAIL}</a>
+              Support &amp; Legal Inquiries: <a href={`mailto:${CONTACT_EMAIL}`} class="text-brand hover:underline">{CONTACT_EMAIL}</a>
             </p>
             <p class="text-sm">
               Phone: <a href={`tel:${PHONE.replace(/\s/g, '')}`} class="text-brand hover:underline">{PHONE}</a>
