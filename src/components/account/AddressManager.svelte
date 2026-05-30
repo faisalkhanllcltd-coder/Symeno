@@ -2,9 +2,9 @@
   import AddressForm from './AddressForm.svelte';        
   import AddressCard from './AddressCard.svelte';        
 
-  let { initialAddresses = [] } = $props<{ initialAddresses?: any[] }>();
+  let props = $props<{ initialAddresses?: any[] }>();
 
-  let addresses = $state(structuredClone(initialAddresses));
+  let addresses = $state<any[]>([...(props.initialAddresses ?? [])]);
   let isEditing = $state(false);
   let editTarget = $state<any>(null);
   let isProcessing = $state(false);

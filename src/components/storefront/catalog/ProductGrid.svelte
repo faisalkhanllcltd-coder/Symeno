@@ -116,10 +116,10 @@
     {#if !allVisible}
       <button
         onclick={loadMore}
-        class="inline-flex items-center gap-2 rounded-sm border border-outline bg-surface px-8 py-3.5 font-mono text-xs font-bold tracking-widest text-content uppercase transition-all hover:border-brand hover:bg-brand hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+        class="inline-flex items-center gap-2 rounded-sm border border-outline bg-surface px-8 py-3.5 font-mono text-xs font-bold tracking-widest text-content uppercase transition-all hover:border-brand hover:bg-brand hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
       >
         View More
-        <span class="text-content-muted font-normal">({products.length - limit} remaining)</span>
+        <span class="text-content-muted font-normal">({products.length - limit})</span>
       </button>
     {:else if products.length > (isMobile ? 6 : 9)}
       <a

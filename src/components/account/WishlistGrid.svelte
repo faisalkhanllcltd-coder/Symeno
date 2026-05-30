@@ -2,12 +2,13 @@
   // FIX: Removed the explicit .ts extension 
   import { cart } from '../../stores/cart.svelte.ts';
 
-  let { initialItems = [], shareId = '' } = $props<{    
+  let props = $props<{
     initialItems?: any[];
     shareId?: string;
   }>();
-  let items = $state(structuredClone(initialItems));
+  let items = $state<any[]>([...(props.initialItems ?? [])]);
   let shareCopied = $state(false);
+
 
   async function removeItem(productId: string) {        
     items = items.filter((i) => i.product_id !== productId); 
@@ -50,7 +51,7 @@
   }
 
   function copyShareLink() {
-    const url = `${window.location.origin}/wishlist/${shareId}`;
+    const url = `${window.location.origin}/wishlist/${props.shareId}`;
     navigator.clipboard.writeText(url);
     shareCopied = true;
     setTimeout(() => (shareCopied = false), 2000);        

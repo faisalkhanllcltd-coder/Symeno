@@ -1,26 +1,29 @@
-﻿<script lang="ts">
-  let {
-    address = null,
-    onSave,
-    onCancel,
-  } = $props<{
+<script lang="ts">
+  let props = $props<{
     address?: any;
     onSave: (data: any) => void;
     onCancel: () => void;
   }>();
 
+  // Direct references to props callbacks — avoids state_referenced_locally
+  const onSave = props.onSave;
+  const onCancel = props.onCancel;
+
+  // Snapshot the address prop to break the live reference before passing to $state()
+  const _addr = props.address ? { ...props.address } : null;
+
   let formData = $state({
-    id: address?.id || '',
-    label: address?.label || 'Home',
-    full_name: address?.full_name || '',
-    phone: address?.phone || '',
-    country: address?.country || 'United Arab Emirates', // Defaults to your primary market
-    state: address?.state || 'Dubai',
-    city: address?.city || '',
-    line1: address?.line1 || '',
-    line2: address?.line2 || '',
-    landmark: address?.landmark || '',
-    is_default: address ? address.is_default === 1 : false,
+    id: _addr?.id || '',
+    label: _addr?.label || 'Home',
+    full_name: _addr?.full_name || '',
+    phone: _addr?.phone || '',
+    country: _addr?.country || 'United Arab Emirates',
+    state: _addr?.state || 'Dubai',
+    city: _addr?.city || '',
+    line1: _addr?.line1 || '',
+    line2: _addr?.line2 || '',
+    landmark: _addr?.landmark || '',
+    is_default: _addr ? _addr.is_default === 1 : false,
   });
 
   const countries = [
@@ -55,7 +58,7 @@
 
   function submit(e: Event) {
     e.preventDefault();
-    onSave(formData);
+    props.onSave(formData);
   }
 </script>
 
@@ -67,7 +70,7 @@
     <h3
       class="font-mono text-xs font-bold tracking-widest text-content uppercase"
     >
-      {address ? 'Edit Address' : 'New Address'}        
+      {props.address ? 'Edit Address' : 'New Address'}
     </h3>
     <label class="flex cursor-pointer items-center gap-2">
       <input

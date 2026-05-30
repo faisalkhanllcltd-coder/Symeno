@@ -1,12 +1,14 @@
 <script lang="ts">
-  let { user } = $props<{
+  let props = $props<{
     user: { id: string; first_name: string; last_name: string; email: string; phone?: string; };
   }>();
 
-  let initialUser = structuredClone(user);
-  let firstName = $state(initialUser?.first_name || '');
-  let lastName = $state(initialUser?.last_name || '');
-  let phone = $state(initialUser?.phone || '');
+  // Snapshot prop to break live reference before $state() initialisation
+  const _user = props.user ? { ...props.user } : null;
+
+  let firstName = $state(_user?.first_name || '');
+  let lastName = $state(_user?.last_name || '');
+  let phone = $state(_user?.phone || '');
   let isSaving = $state(false);
   let notification = $state<{ type: 'success' | 'error', text: string } | null>(null);
 
@@ -75,7 +77,7 @@
     <input
       id="email"
       type="email"
-      value={user?.email || ''}
+      value={props.user?.email || ''}
       disabled
       class="bg-base border-outline text-content-muted mt-2 w-full cursor-not-allowed rounded-md border p-3 font-mono text-sm opacity-60"
     />

@@ -21,8 +21,8 @@
 
 @layer base {
   :root {
-    --theme-base: #F2FAF4;
-    --theme-surface: #F4FBF6;
+    --theme-base: #f8fafc;
+    --theme-surface: #ffffff;
     --theme-surface-hover: #f1f5f9;
     --theme-content: #0f172a;
     --theme-content-muted: #64748b;

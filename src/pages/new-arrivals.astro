@@ -76,7 +76,7 @@ try {
   title="Latest Deployments | Symeno"
   description="The newest premium goods added to our logistics pipeline."
 >
-  <div id="top" class="bg-base relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8 lg:py-20 transition-colors duration-300">
+  <div id="top" class="bg-base relative mx-auto max-w-[1920px] px-4 py-8 sm:px-6 sm:py-14 lg:px-8 lg:py-20 transition-colors duration-300">
     <div class="pointer-events-none absolute inset-0 opacity-[0.02] bg-[linear-gradient(var(--color-outline)_1px,transparent_1px),linear-gradient(90deg,var(--color-outline)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
 
     <nav class="text-content-muted relative z-10 mb-6 flex font-mono text-[10px] tracking-widest uppercase">
@@ -186,7 +186,7 @@ try {
     </div>
 
     <!-- Pagination Controls -->
-    <div id="feed-pagination" class="hidden relative z-10 mt-10 flex flex-col items-center gap-4">
+    <div id="feed-pagination" style="display:none" class="relative z-10 mt-10 flex flex-col items-center gap-4">
       <button
         id="feed-view-more"
         class="inline-flex items-center gap-2 rounded-sm border border-outline bg-surface px-8 py-3.5 font-mono text-xs font-bold tracking-widest text-content uppercase transition-all hover:border-brand hover:bg-brand hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
@@ -196,7 +196,8 @@ try {
       <a
         id="feed-back-top"
         href="#top"
-        class="hidden font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors hover:text-brand"
+        style="display:none"
+        class="font-mono text-[10px] tracking-widest text-content-muted uppercase transition-colors hover:text-brand"
       >
         ↑ Back to Top
       </a>
@@ -221,15 +222,14 @@ try {
 
       function applyPagination() {
         allCards.forEach(function (card, i) {
-          card.style.display = i < limit ? '' : 'none';
+          if (card) card.style.display = i < limit ? '' : 'none';
         });
         var allVisible = limit >= allCards.length;
         var initialLimit = isMobile() ? 6 : 9;
-        if (paginationContainer) {
-          paginationContainer.classList.toggle('hidden', allCards.length <= initialLimit);
-        }
-        if (viewMoreBtn) viewMoreBtn.classList.toggle('hidden', allVisible);
-        if (backTopLink) backTopLink.classList.toggle('hidden', !allVisible || allCards.length <= initialLimit);
+        var hasEnough = allCards.length > initialLimit;
+        if (paginationContainer) paginationContainer.style.display = hasEnough ? 'flex' : 'none';
+        if (viewMoreBtn) viewMoreBtn.style.display = allVisible ? 'none' : '';
+        if (backTopLink) backTopLink.style.display = (allVisible && hasEnough) ? '' : 'none';
       }
 
       if (viewMoreBtn) {

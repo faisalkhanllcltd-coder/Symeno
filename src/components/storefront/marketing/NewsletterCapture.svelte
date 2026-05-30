@@ -51,7 +51,7 @@
         type="email"
         bind:value={email}
         disabled={status === 'loading' || status === 'success'}
-        placeholder="operator@domain.com"
+        placeholder="your@email.com"
         required
         class="w-full border border-outline bg-base px-4 py-3 font-mono text-sm text-content transition-colors focus:border-brand/50 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
       />
